@@ -11,7 +11,7 @@ CREATE TABLE users (
 CREATE TABLE recipes (
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-  name VARCHAR(100) NOT NULL CHECK (LENGTH(recipe_name) >= 10),
+  name VARCHAR(100) NOT NULL,
   description VARCHAR(255) NOT NULL,
   ingredients VARCHAR NOT NULL,
   directions VARCHAR NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE remixes (
   user_id INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
   recipe_id INT NOT NULL REFERENCES recipes (id) ON DELETE CASCADE,
   purpose VARCHAR(255) NOT NULL CHECK (LENGTH(purpose) >= 10),
-  name VARCHAR(100) NOT NULL CHECK (LENGTH(title) >= 10),
+  name VARCHAR(100) NOT NULL,
   description VARCHAR(255) NOT NULL,
   ingredients VARCHAR NOT NULL,
   directions VARCHAR NOT NULL,
