@@ -93,6 +93,161 @@ NULL, 10, 'https://assets.epicurious.com/photos/64e67cc1709a7ec6701c4b38/1:1/w_1
   Arrange oysters and garlic on a platter and top with fried sage and bacon. Serve with mustard.
   Oysters can be dredged 4 hours ahead. Keep chilled.",
 NULL, 8, 'https://assets.epicurious.com/photos/59233d7bbb553a5f5751b90e/1:1/w_1920,c_limit/fried-oysters-with-bacon-garlic-and-sage-BA-052217.jpg'),
+(2, "Lamb Bulgogi with Asian Pear Dipping Sauce", 
+"Bulgogi (grilled marinated beef) is a traditional Korean dish. Here, lamb stands in for the steak. The meat is served with lettuce leaves and other veggies.",
+"4 green onions, coarsely chopped,
+  3 tablespoons sugar,
+  3 garlic cloves, coarsely chopped,
+  1 2-inch piece fresh ginger, peeled, cut into thin rounds,
+  2/3 cup soy sauce,
+  2/3 cup mirin (sweet Japanese rice wine),
+  1/3 cup Asian sesame oil,
+  2 tablespoons toasted sesame seeds,
+  1 teaspoon freshly ground black pepper,
+  1 boned butterflied leg of lamb (about 5 1/2 pounds; from one 6 1/2- to 7-pound bone-in leg), trimmed of excess fat,
+  1 cup chopped peeled cored Asian pear (about 1/2 large),
+  10 green onions; 2 chopped, 8 trimmed,
+  1/2 cup soy sauce,
+  1/2 cup mirin (sweet Japanese rice wine),
+  3 tablespoons sugar,
+  3 tablespoons Asian sesame oil,
+  4 tablespoons toasted sesame seeds, divided,
+  Nonstick vegetable oil spray,
+  8 jalape\u00f1o chiles, halved (seeded, if desired),
+  8 garlic cloves, peeled,
+  1/2 cup kochujang (Korean hot pepper paste),
+  1 large head of butter lettuce, leaves separated and left whole,
+  3 metal skewers or bamboo skewers soaked in water at least 1 hour",
+"Place green onions, sugar, chopped garlic, and sliced ginger in processor and blend until finely chopped, stopping occasionally to scrape down sides of bowl. Transfer mixture to medium bowl. 
+  Add soy sauce, mirin, Asian sesame oil, toasted sesame seeds, and black pepper; whisk marinade to blend. 
+  Pour 1 cup marinade into 15x10x2-inch glass baking dish. Open boned leg of lamb like book; add to baking dish, arranging in single layer. 
+  Pour remaining marinade over lamb, spreading to cover evenly. 
+  Cover and refrigerate at least 4 hours and up to 1 day, turning lamb occasionally.
+  Puree Asian pear and chopped green onions in processor until smooth. 
+  Add soy sauce, mirin, and sugar and process until sugar dissolves. 
+  Add Asian sesame oil and 2 tablespoons toasted sesame seeds; process until sesame oil is incorporated (most sesame seeds will remain intact). 
+  Transfer sauce to 2-cup measuring cup. Season sauce to taste with salt and pepper. 
+  DO AHEAD: Dipping sauce can be made 1 day ahead. Cover and refrigerate.
+  Coat grill rack with nonstick spray; prepare barbecue (medium heat). Thread jalapeno chile halves onto 2 metal skewers, dividing equally. 
+  Thread garlic cloves onto another metal skewer, spacing slightly apart. 
+  Place jalapeno and garlic skewers on plate and set aside.
+  Remove lamb from marinade and place on prepared grill with some marinade still clinging to surface (discard marinade in dish). 
+  Grill lamb until meat is cooked to desired doneness, about 15 to 20 minutes per side for medium (if lamb begins to burn, slide large sheet of heavy-duty aluminum foil underneath and continue to grill). 
+  Transfer lamb to work surface and let rest 10 minutes.
+  While lamb rests, grill jalapenos, garlic, and trimmed green onions until slightly charred and tender, 3 to 4 minutes per side. Transfer to work surface.
+  Place kochujang (hot pepper paste) in small bowl. Stir dipping sauce and divide among 8 small dishes. 
+  Arrange butter lettuce leaves on large serving platter to cover. 
+  Thinly slice grilled lamb and arrange over lettuce leaves. 
+  Cut garlic cloves lengthwise in half. 
+  Cut green onions into 2-inch pieces. 
+  Arrange jalapenos, garlic, and green onions around lamb. 
+  Sprinkle remaining 2 tablespoons toasted sesame seeds over lamb. 
+  Serve grilled lamb and vegetables with hot pepper paste. 
+  Allow guests to spread very small amounts of kochujang over lettuce leaves, arrange lamb and vegetables in lettuce leaves, then wrap filling with lettuce leaves and dip into sauce.",
+NULL, 8, "https://assets.bonappetit.com/photos/57afeff353e63daf11a4e825/master/w_1280,c_limit/mare_lamb_bulgogi_with_asian_pear_dipping_sauce_v.jpg"),
+(2, "One-pan Chicken Drumsticks with Rice and Beans", 
+"Clean out your pantry with this customizable one-pan dinner that can be seasoned with whatever spices you happen to have on hand.",
+"8 chicken drumsticks,
+  2 1/2 tsp. kosher salt, divided,
+  1 tsp. freshly ground black pepper,
+  3 Tbsp. extra-virgin olive oil,
+  1 onion, finely chopped,
+  1 tsp. ground cinnamon or cumin,
+  1 tsp. ground turmeric, curry powder, or ground coriander,
+  1/2 cup white rice (any type except for sticky rice),
+  1 (15-oz.) can chickpeas, white beans, black beans, or other beans, drained, rinsed,
+  1/2 cup dried fruit, such as currants, raisins, cherries, or cranberries (optional),
+  1/2 tsp. crushed red pepper flakes (optional),
+  1/4 cup coarsely chopped tender herbs, such as cilantro, parsley, mint, basil, and/or dill",
+"Season drumsticks on all sides with 2 tsp. salt and 1 tsp. black pepper.
+  Heat oil in a large deep-sided skillet over medium-high. 
+  Add chicken and cook, turning once halfway through, until skin is golden brown, about 10 minutes total. Transfer to a plate.
+  Add onion, cinnamon, and turmeric to fat in skillet and cook over medium-high heat, stirring constantly, until fragrant, about 1 minute. 
+  Add rice and stir to coat. 
+  Add 1 1/4 cups hot water, scraping up browned bits from pan, then stir in chickpeas, dried fruit (if using), red pepper (if using), and remaining 1/2 tsp. salt. 
+  Nestle chicken back into skillet and bring liquid to a boil. 
+  Immediately reduce heat to low, cover, and cook until rice is tender and chicken is cooked through, 20-25 minutes.
+  Remove from heat and let sit 5 minutes. Fluff rice with a fork, then scatter herbs over.",
+50, 4, "https://assets.epicurious.com/photos/5afb26b6c1066d74d76e5847/1:1/w_1920,c_limit/One-Pan-Chicken-Drumsticks-with-Rice-and-Beans-10052018.jpg");
+
+-- the_admin has 2 remixes: 1 for Albacore Tuna Sliders and 1 for One-pan Chicken Drumsticks with Rice and Beans.
+-- second_admin has 1 remix: 1 for One-pan Chicken Drumsticks with Rice and Beans.
+INSERT INTO remixes (user_id, recipe_id, purpose, name, description, ingredients, directions, cooking_time, servings, image_url)
+VALUES
+(1, 1, "Replacing the brioche buns with wheat slider buns is a healthy alternative",
+"Albacore Tuna Wheat Sliders", 
+"Features a seared whole piece of tuna loin that's seared on a grill and then cut into slices and slid into wheat slider buns.",
+"1 pound albacore tuna loin (ask for a piece off the front end, for even thickness),
+  2 tablespoons soy sauce,
+  2 tablespoons extra-virgin olive oil,
+  2 tablespoons Northwest Seafood Seasoning,
+  1/2 teaspoon crushed red pepper flakes,
+  Slider buns (whole wheat),
+  1 medium heirloom tomato or other ripe beefsteak tomato, thinly sliced,
+  Arugula leaves, rinsed and dried,
+  Tartar sauce, such as Pike Place Fish Smoked Walla Walla Onion Tartar Sauce",
+"Remove the skin from the tuna and score the flesh every inch with a knife, as if you were making steaks. 
+  Repeat on all sides, but make sure not to cut all the way through.
+  Mix the soy sauce, olive oil, seafood seasoning, and red pepper flakes in a small bowl. 
+  Using a basting brush, brush the mixture on all sides of the tuna, making sure to get some marinade inside the scored parts of the fish, so it's well coated. Marinate at room temperature for 15 to 20 minutes.
+  Preheat a grill to high. Make sure the grates are clean and well oiled. 
+  Put the tuna directly on the grill and cook for about 2 to 3 minutes on each side, or 6 minutes total for rare. 
+  During the last minute of cooking, toast the buns on the grill. 
+  Slice the tuna into four sections along score lines. 
+  Serve on the buns with sliced tomato, arugula, and your favorite condiment.",
+NULL, 4, 'https://assets.epicurious.com/photos/5aeb6e8ecd4694640994c6c1/1:1/w_1920,c_limit/tuna-sliders-recipe-050318.jpg'),
+(1, 6, "Replace white rice with basmati rice for a stronger fragrant flavor",
+"One-pan Chicken Drumsticks with Basmati Rice and Beans", 
+"Clean out your pantry with this customizable one-pan dinner that can be seasoned with whatever spices you happen to have on hand.",
+"8 chicken drumsticks,
+  2 1/2 tsp. kosher salt, divided,
+  1 tsp. freshly ground black pepper,
+  3 Tbsp. extra-virgin olive oil,
+  1 onion, finely chopped,
+  1 tsp. ground cinnamon or cumin,
+  1 tsp. ground turmeric, curry powder, or ground coriander,
+  1/2 cup basmati rice,
+  1 (15-oz.) can chickpeas, white beans, black beans, or other beans, drained, rinsed,
+  1/2 cup dried fruit, such as currants, raisins, cherries, or cranberries (optional),
+  1/2 tsp. crushed red pepper flakes (optional),
+  1/4 cup coarsely chopped tender herbs, such as cilantro, parsley, mint, basil, and/or dill",
+"Season drumsticks on all sides with 2 tsp. salt and 1 tsp. black pepper.
+  Heat oil in a large deep-sided skillet over medium-high. 
+  Add chicken and cook, turning once halfway through, until skin is golden brown, about 10 minutes total. Transfer to a plate.
+  Add onion, cinnamon, and turmeric to fat in skillet and cook over medium-high heat, stirring constantly, until fragrant, about 1 minute. 
+  Add rice and stir to coat. 
+  Add 1 1/4 cups hot water, scraping up browned bits from pan, then stir in chickpeas, dried fruit (if using), red pepper (if using), and remaining 1/2 tsp. salt. 
+  Nestle chicken back into skillet and bring liquid to a boil. 
+  Immediately reduce heat to low, cover, and cook until rice is tender and chicken is cooked through, 20-25 minutes.
+  Remove from heat and let sit 5 minutes. Fluff rice with a fork, then scatter herbs over.",
+50, 4, NULL),
+(2, 6, "Add some more spices and beans for an even better flavor",
+"One-pan Chicken Drumsticks with Basmati Rice and Beans", 
+"Clean out your pantry with this customizable one-pan dinner that can be seasoned with whatever spices you happen to have on hand.",
+"8 chicken drumsticks,
+  2 1/2 tsp. kosher salt, divided,
+  1 tsp. freshly ground black pepper,
+  3 Tbsp. extra-virgin olive oil,
+  1 onion, finely chopped,
+  1 tsp. ground cinnamon or cumin,
+  1 tsp. paprika,
+  1 tsp. ground turmeric, curry powder, or ground coriander,
+  1/2 cup basmati rice,
+  1 (15-oz.) can chickpeas, black beans, and kidney beans, drained, rinsed,
+  1/2 cup dried fruit, such as currants, raisins, cherries, or cranberries (optional),
+  1/2 tsp. crushed red pepper flakes (optional),
+  1/4 cup coarsely chopped tender herbs, such as cilantro, parsley, mint, basil, and/or dill",
+"Season drumsticks on all sides with 2 tsp. salt and 1 tsp. black pepper.
+  Heat oil in a large deep-sided skillet over medium-high. 
+  Add chicken and cook, turning once halfway through, until skin is golden brown, about 10 minutes total. Transfer to a plate.
+  Add onion, cinnamon, paprika, and turmeric to fat in skillet and cook over medium-high heat, stirring constantly, until fragrant, about 1 minute. 
+  Add rice and stir to coat. 
+  Add 1 1/4 cups hot water, scraping up browned bits from pan, then stir in chickpeas, dried fruit (if using), red pepper (if using), and remaining 1/2 tsp. salt. 
+  Nestle chicken back into skillet and bring liquid to a boil. 
+  Immediately reduce heat to low, cover, and cook until rice is tender and chicken is cooked through, 20-25 minutes.
+  Remove from heat and let sit 5 minutes. Fluff rice with a fork, then scatter herbs over.",
+50, 4, NULL);
+
 
 
 
