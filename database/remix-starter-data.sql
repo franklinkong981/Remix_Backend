@@ -222,7 +222,7 @@ NULL, 4, 'https://assets.epicurious.com/photos/5aeb6e8ecd4694640994c6c1/1:1/w_19
   Remove from heat and let sit 5 minutes. Fluff rice with a fork, then scatter herbs over.",
 50, 4, NULL),
 (2, 6, "Add some more spices and beans for an even better flavor",
-"One-pan Chicken Drumsticks with Basmati Rice and Beans", 
+"One-pan Paprika Chicken Drumsticks with Rice and Beans", 
 "Clean out your pantry with this customizable one-pan dinner that can be seasoned with whatever spices you happen to have on hand.",
 "8 chicken drumsticks,
   2 1/2 tsp. kosher salt, divided,
@@ -248,7 +248,25 @@ NULL, 4, 'https://assets.epicurious.com/photos/5aeb6e8ecd4694640994c6c1/1:1/w_19
   Remove from heat and let sit 5 minutes. Fluff rice with a fork, then scatter herbs over.",
 50, 4, NULL);
 
+-- the_admin favorites are Albacore Tuna Sliders and One-pan Chicken drumsticks.
+-- second_admin favorites are Crunchy Chili Onion Rings and Lamb Bulgogi with Asian Pear Dipping Sauce.
+INSERT INTO recipe_favorites (user_id, recipe_id)
+VALUES (1, 1), (1, 6), (2, 2), (2, 5);
 
+-- the_admin has no remix favorites.
+-- second_admin favorites are Albacore Tuna Wheat Sliders
+INSERT INTO remix_favorites (user_id, remix_id)
+VALUES (2, 1);
+
+-- the_admin has one review: The Albacore Tuna Wheat Sliders remix (positive review).
+-- second_admin has one review: Original recipe Mashed Sweet Potatoes (negative review).
+INSERT INTO recipe_reviews (user_id, recipe_id, title, content)
+VALUES
+(2, 3, "Absolutely Disgusting!", "I tried this recipe today and I hated how it tasted. Mashed potatoes should not taste sweet!");
+
+INSERT INTO remix_reviews (user_id, remix_id, title, content)
+VALUES
+(1, 1, "Great alternative recipe!", "It tasted just as good as the original recipe with brioche buns!");
 
 
 
