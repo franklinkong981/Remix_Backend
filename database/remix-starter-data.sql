@@ -6,10 +6,10 @@ VALUES
 -- the_admin password: admin_password
 -- second_admin password: admin2_password
 
-INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
+INSERT INTO recipes (user_id, recipe_name, recipe_description, ingredients, directions, cooking_time, servings, image_url)
 VALUES
-(1, "Albacore Tuna Sliders", 
-"Features a seared whole piece of tuna loin that's seared on a grill and then cut into slices and slid into brioche buns.",
+(1, 'Albacore Tuna Sliders', 
+'Features a seared whole piece of tuna loin that''s seared on a grill and then cut into slices and slid into brioche buns.',
 "1 pound albacore tuna loin (ask for a piece off the front end, for even thickness),
   2 tablespoons soy sauce,
   2 tablespoons extra-virgin olive oil,
@@ -172,7 +172,7 @@ NULL, 8, "https://assets.bonappetit.com/photos/57afeff353e63daf11a4e825/master/w
 
 -- the_admin has 2 remixes: 1 for Albacore Tuna Sliders and 1 for One-pan Chicken Drumsticks with Rice and Beans.
 -- second_admin has 1 remix: 1 for One-pan Chicken Drumsticks with Rice and Beans.
-INSERT INTO remixes (user_id, recipe_id, purpose, name, description, ingredients, directions, cooking_time, servings, image_url)
+INSERT INTO remixes (user_id, recipe_id, purpose, remix_name, remix_description, ingredients, directions, cooking_time, servings, image_url)
 VALUES
 (1, 1, "Replacing the brioche buns with wheat slider buns is a healthy alternative",
 "Albacore Tuna Wheat Sliders", 
