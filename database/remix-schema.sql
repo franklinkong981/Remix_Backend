@@ -56,7 +56,7 @@ CREATE TABLE recipe_reviews (
 );
 
 CREATE TABLE remix_reviews (
-  id INT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   user_id INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
   remix_id INT NOT NULL REFERENCES remixes (id) ON DELETE CASCADE,
   title VARCHAR(100) NOT NULL,
