@@ -11,6 +11,7 @@ const { errorMonitor } = require("supertest/lib/test");
 //middleware imports here
 
 //routes imports here
+const usersRoutes = require("./routes/users.js");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(morgan('dev'));
 app.get('/favicon.ico', (req, res) => res.sendStatus(204));
 
 //app.use route files here
+app.use("/users", usersRoutes);
 
 //Handle 404 errors passed from Express here.
 app.use(function(req, res, next) {

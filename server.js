@@ -4,7 +4,7 @@ This is here so that app.listen doesn't run and the server doesn't start when we
  */
 
 const app = require("./app");
-const { PORT } = require("config.js");
+const { PORT } = require("./config.js");
 
 app.listen(PORT, function() {
   console.log(`Server started, base URL is http://localhost:${PORT}`);
