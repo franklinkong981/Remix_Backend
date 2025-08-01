@@ -17,7 +17,8 @@ CREATE TABLE recipes (
   directions VARCHAR NOT NULL,
   cooking_time INT,
   servings INT,
-  image_url VARCHAR NOT NULL DEFAULT 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg' 
+  image_url VARCHAR NOT NULL DEFAULT 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg',
+  created_at TIMESTAMP NOT NULL DEFAULT NOW() 
 );
 
 CREATE TABLE remixes (
@@ -31,7 +32,8 @@ CREATE TABLE remixes (
   directions VARCHAR NOT NULL,
   cooking_time INT,
   servings INT,
-  image_url VARCHAR NOT NULL DEFAULT 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg'  
+  image_url VARCHAR NOT NULL DEFAULT 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg',
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()  
 );
 
 CREATE TABLE recipe_favorites (
