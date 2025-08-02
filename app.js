@@ -1,4 +1,4 @@
-/* This is the main file of Remix that runs the website.
+/* This is the main Express file of Remix that runs the backend server. 
 */
 
 const express = require("express");
