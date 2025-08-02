@@ -10,7 +10,7 @@ const SECRET_KEY = process.env.SECRET_KEY || "remix-secret-dev";
 
 //by default, backend server runs on port 3001. 
 //NOTE: + converts process.env.port to a number in case it's stored as a string.
-const PORT = +process.env.port || 3001;
+const PORT = +process.env.PORT || 3001;
 
 //Use dev database or testing database, according to whether you're running the app locally or running tests.
 function getDatabaseUri() {
@@ -25,7 +25,7 @@ function getDatabaseUri() {
 }
 
 //Speed up bcrypt during tests, for dev/production set it to standard work factor of 12 hashing rounds.
-const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
+const BCRYPT_WORK_FACTOR = (process.env.NODE_ENV === "test") ? 1 : 12;
 
 //print out configurations for current runtime instance on terminal.
 //list of environmental variables of interest: SECRET_KEY, PORT, DATABASE_URL, TEST_DATABASE_URL, BCRYPT_WORK_FACTOR
