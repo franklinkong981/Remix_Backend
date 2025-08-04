@@ -10,7 +10,7 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 async function commonBeforeAll() {
   // deletes any data that might be leftover in the test database tables.
   await db.query("DELETE FROM users");
-  await db.query("ALTER SEQUENCE jobs_id_seq RESTART WITH 1");
+  await db.query("ALTER SEQUENCE users_id_seq RESTART WITH 1");
   await db.query("DELETE FROM recipes");
   await db.query("ALTER SEQUENCE recipes_id_seq RESTART WITH 1");
   await db.query("DELETE FROM remixes");
@@ -34,18 +34,18 @@ async function commonBeforeAll() {
   );
 
   //3 recipes: 2 by user1 and 1 by user2.
-  await db.query(`INSERT into recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
+  await db.query(`INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
         VALUES (1, 'recipe 1.1', 'The first recipe by user 1', 'Onions, celery, garlic', 'Put everything in a pot and let it cook', 30, 4, 'http://recipe1.img'),
                (1, 'recipe 1.2', 'The second recipe by user 1', 'Cherries, apple, water', 'Put everything into blender', 10, 6, 'http://recipe2.img'),
-               (2, 'recipe 2.1'. 'The first recipe by user 2', 'beef, chicken, pork', 'Let it cook in the oven', 120, 3, 'http://recipe3.img')`,            
+               (2, 'recipe 2.1', 'The first recipe by user 2', 'beef, chicken, pork', 'Let it cook in the oven', 120, 3, 'http://recipe3.img')`,            
   );
 
   //3 remixes: 1 by user1 and 2 by user2.
   // user1 remixes recipe 2.1, user2 remixes recipe 1.1 and 1.2.
   await db.query(`INSERT INTO remixes (user_id, recipe_id, purpose, name, description, ingredients, directions, cooking_time, servings, image_url)
-        VALUES (1, 3, 'Add a new meat', 'recipe 2.1 remix', 'The remixed first recipe by user 2', 'beef, chicken, pork, mutton', 'Let all the meats cook in the oven', 150, 4, 'http://remix1.img),
-               (2, 1, 'Add a new vegetable', 'recipe 1.1 remix', 'The remixed first recipe by user 1', 'Onions, celery, garlix, tomatoes', 'Put everything in a pot and let it cook', 30, 4, 'http://remix2.img),
-               (2, 2, 'Add ice', 'recipe 1.2 remix', 'The remixed second recipe by user 1', 'Cherries, apple, water, ice', 'Put everything into a blender and let ice melt', 20, 6, 'http://remix3.img')`
+        VALUES (1, 3, 'Add a new meat', 'recipe 2.1 remix', 'The remixed first recipe by user 2', 'beef, chicken, pork, mutton', 'Let all the meats cook in the oven', 150, 4, 'http://remix1.img'),
+               (2, 1, 'Add a new vegetable', 'recipe 1.1 remix', 'The remixed first recipe by user 1', 'Onions, celery, garlix, tomatoes', 'Put everything in a pot and let it cook', 30, 4, 'http://remix2.img'),
+               (2, 2, 'Add more ice', 'recipe 1.2 remix', 'The remixed second recipe by user 1', 'Cherries, apple, water, ice', 'Put everything into a blender and let ice melt', 20, 6, 'http://remix3.img')`
   );
 
   //3 recipe favorites: user1 likes recipe 1.1 and recipe 2.1, user2 likes recipe 1.2.
@@ -63,8 +63,8 @@ async function commonBeforeAll() {
 
   //2 remix reviews: user1 reviews recipe 1.1 remix and user2 reviews recipe 2.1 remix.
   await db.query(`INSERT INTO remix_reviews (user_id, remix_id, title, content)
-        VALUES (1, 2, 'I love vegetables!', "I'm going to add more vegetables to this remix later."),
-               (2, 1, 'I love meat!', "I'm going add another meat to this remix later.")`);
+        VALUES (1, 2, 'I love vegetables!', 'I''m going to add more vegetables to this remix later.'),
+               (2, 1, 'I love meat!', 'I''m going add another meat to this remix later.')`);
 }
 
 //starts SQL transaction block.
