@@ -23,7 +23,7 @@ class User {
     if (username.length < 5 || username.length > 30) {
       throw new BadRequestError("The username must be between 5-30 characters.");
     } else if (!(email.includes("@"))) {
-      throw new BadRequestError("The email must have a valid format");
+      throw new BadRequestError("The email must have a valid format.");
     } else if (password.length < 8) {
       throw new BadRequestError("The password must be at least 8 characters.");
     }

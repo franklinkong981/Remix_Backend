@@ -43,6 +43,85 @@ describe("registerNewUser works as intended", function() {
     expect(found.rows[0].hashed_password.startsWith("$2b$")).toEqual(true);
   });
 
+  test("Returns a BadRequestError if a user with a duplicate username is registered", async function() {
+    try {
+      await User.registerNewUser({
+        username: usernames[0],
+        email: emails[0],
+        password: passwords[0]
+      });
+      await User.registerNewUser({
+        username: usernames[0],
+        email: emails[0],
+        password: passwords[0]
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The username new_user is already taken. Please try another username.");
+    }
+  });
+
+  test("Returns a BadRequestError if the username is too short", async function() {
+    try {
+      await User.registerNewUser({
+        username: usernames[1],
+        email: emails[0],
+        password: passwords[0]
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The username must be between 5-30 characters.");
+    }
+  });
+
+  test("Returns a BadRequestError if the username is too long", async function() {
+    try {
+      await User.registerNewUser({
+        username: usernames[2],
+        email: emails[0],
+        password: passwords[0]
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The username must be between 5-30 characters.");
+    }
+  });
+
+  test("Returns a BadRequestError if the email is of the wrong format", async function() {
+    try {
+      await User.registerNewUser({
+        username: usernames[0],
+        email: emails[1],
+        password: passwords[0]
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The email must have a valid format.");
+    }
+  });
+
+  test("Returns a BadRequestError if the password is too short", async function() {
+    try {
+      await User.registerNewUser({
+        username: usernames[0],
+        email: emails[0],
+        password: passwords[1]
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The password must be at least 8 characters.");
+    }
+  });
 });
 
 /************************************** getAllUsers */
