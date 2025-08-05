@@ -29,7 +29,7 @@ class User {
     }
 
     //check for duplicate username.
-    const duplicate_username = await db.query(`SELECT username FROM users WHERE username = $1`, username);
+    const duplicate_username = await db.query(`SELECT username FROM users WHERE username = $1`, [username]);
     if (duplicate_username.rows[0]) {
       throw new BadRequestError(`The username ${username} is already taken. Please try another username.`);
     }
@@ -40,7 +40,7 @@ class User {
     const registerResult = await db.query(
       `INSERT INTO users (username, email, hashed_password)
        VALUES ($1, $2, $3)
-       RETURNING username, email`,
+       RETURNING username, email, hashed_password`,
       [username, email, hashedPassword]
     );
 
