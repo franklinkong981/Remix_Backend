@@ -5,6 +5,7 @@ const {NotFoundError, BadRequestError, UnauthorizedError} = require("../errors/e
 const db = require("../db.js");
 const User = require("./user.js");
 const {commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll} = require("./_testCommon.js");
+const { escapeLiteral } = require("pg");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -133,6 +134,28 @@ describe("authenticateUser function works as intended", function() {
       username: "user1",
       email: "u1@gmail.com"
     });
+  });
+
+  test("Throws UnauthorizedError if supplied username isn't found in the database", async function() {
+    try {
+      await User.authenticateUser("nonexistentuser", "password");
+      fail();
+    } catch (err) {
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+      expect(err.status).toEqual(401);
+      expect(err.message).toEqual("Your username/password is incorrect. Please try again");
+    }
+  });
+
+  test("Throws UnauthorizedError if username exists in database but supplied password doesn't match", async function() {
+    try {
+      await User.authenticateUser("user1", "wrong_password");
+      fail();
+    } catch (err) {
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+      expect(err.status).toEqual(401);
+      expect(err.message).toEqual("Your username/password is incorrect. Please try again");
+    }
   });
 });
 
