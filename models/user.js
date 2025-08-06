@@ -56,7 +56,7 @@ class User {
    * 
    * Throws an UnauthorizedError if username isn't found in the database or password doesn't match.
    */
-  static async authenticateUser({username, password}) {
+  static async authenticateUser(username, password) {
     //make sure the user with the username exists in the database first.
     const userInDatabase = await db.query(
       `SELECT username, email, hashed_password AS password FROM users WHERE username = $1`,
@@ -70,7 +70,7 @@ class User {
       const isPasswordValid = await bcrypt.compare(password, userToAuthenticate.password);
       if (isPasswordValid) {
         delete userToAuthenticate.password;
-        return userInDatabase;
+        return userToAuthenticate;
       }
     }
 

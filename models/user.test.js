@@ -11,13 +11,13 @@ beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
-/************************************** registerNewUser */
-
 function createNewUserObject(username, email, password) {
   return {
     username, email, password
   };
 }
+
+/************************************** registerNewUser */
 
 describe("registerNewUser works as intended", function() {
   const usernames = ["new_user", "new", "this username is way too long, it is over 30 characters"];
@@ -121,6 +121,18 @@ describe("registerNewUser works as intended", function() {
       expect(err.status).toEqual(400);
       expect(err.message).toEqual("The password must be at least 8 characters.");
     }
+  });
+});
+
+/************************************** authenticateUser */
+
+describe("authenticateUser function works as intended", function() {
+  test("Successfully authenticates a user if the correct username and password is supplied", async function() {
+    const user = await User.authenticateUser('user1', 'password1');
+    expect(user).toEqual({
+      username: "user1",
+      email: "u1@gmail.com"
+    });
   });
 });
 
