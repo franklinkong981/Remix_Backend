@@ -48,7 +48,14 @@ class User {
     return newRegisteredUser;
   }
 
-
+  /**
+   * Authenticate/login a user by first checking to see if the username supplied exists in the database,
+   * then comparing the password to the hashed password found in the database.
+   * 
+   * Upon successful authentication, returns the logged in user's username and email as an object.
+   * 
+   * Throws an UnauthorizedError if username isn't found in the database or password doesn't match.
+   */
   static async authenticateUser({username, password}) {
     //make sure the user with the username exists in the database first.
     const userInDatabase = await db.query(
