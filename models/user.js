@@ -47,6 +47,28 @@ class User {
     const newRegisteredUser = registerResult.rows[0];
     return newRegisteredUser;
   }
+
+
+  static async authenticateUser({username, password}) {
+    //make sure the user with the username exists in the database first.
+    const userInDatabase = await db.query(
+      `SELECT username, email, hashed_password AS password FROM users WHERE username = $1`,
+      [username]
+    );
+
+    const userToAuthenticate = userInDatabase.rows[0];
+
+    if (userToAuthenticate) {
+      //hash inputted password and compare it with hashed password in database.
+      const isPasswordValid = await bcrypt.compare(password, userToAuthenticate.password);
+      if (isPasswordValid) {
+        delete userToAuthenticate.password;
+        return userInDatabase;
+      }
+    }
+
+    throw new UnauthorizedError("Your username/password is incorrect. Please try again");
+  }
   
   /** Retrieves basic account information for all users.
    *
