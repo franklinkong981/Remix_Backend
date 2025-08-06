@@ -176,3 +176,26 @@ describe("getAllUsers works as intended", function () {
     ]);
   });
 });
+
+/************************************** getUserBasicInfo */
+
+describe("getAllUsers works as intended", function () {
+  test("Successfully fetches and returns correct username and email if supplied username exists", async function () {
+    const user = await User.getUserBasicInfo("user1");
+    expect(user).toEqual({
+        username: "user1",
+        email: "u1@gmail.com"
+    });
+  });
+
+  test("Throws NotFoundError if supplied username isn't found in the database", async function() {
+    try {
+      await User.getUserBasicInfo("random_username");
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username random_username was not found in the database.");
+    }
+  });
+});

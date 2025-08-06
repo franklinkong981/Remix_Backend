@@ -105,7 +105,7 @@ class User {
 
     const userInfo = user.rows[0];
     if (!userInfo) {
-      throw new NotFoundError(`The user with username ${username} was not found in the database`);
+      throw new NotFoundError(`The user with username ${username} was not found in the database.`);
     }
 
     return userInfo;
