@@ -130,6 +130,28 @@ class User {
     const searchResults = matchingUsers.rows;
     return searchResults;
   }
+
+  /** Updates the user with the correct username's username and/or email.
+   *  Users can not yet update the password, that may be a separate method in the future.
+   *  Upon successful update, returns the user's updated username and email.
+   * 
+   * Throws a NotFoundError if user cannot be found in the database.
+   */
+  static async updateUser(username, updateData) {
+    const {setCols, values} = sqlForPartialUpdate(updateData);
+    const usernameParameterIndex = "$" + (values.length + 1);
+
+    const sqlUpdateQuery = `UPDATE users
+                            SET ${setCols}
+                            WHERE username = ${usernameParameterIndex}
+                            RETURNING username, email`;
+    const updateResult = await db.query(sqlUpdateQuery, [...values, username]);
+    const updatedUser = updateResult.rows[0];
+
+    if (!updatedUser) throw new NotFoundError(`The user with username of ${username} was not found in the database`);
+
+    return updatedUser;
+  }
 }
 
 module.exports = User;
