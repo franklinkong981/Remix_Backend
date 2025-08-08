@@ -165,6 +165,27 @@ class User {
 
     return updatedUser;
   }
+
+  static async getRecipesFromUser(username, limit = 0) {
+    //make sure username supplied exists in the database.
+    const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
+    const userInfo = user.rows[0];
+
+    if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
+    const userId = userInfo.id;
+    //if limit > 0, include the limit at end of sql query.
+    const parametrizedQueryAddition = (limit > 0) ? ` LIMIT $2` : ``;
+    const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
+
+    const recipesFromUser = await db.query(
+      `SELECT id, name, description, image_url, created_at FROM recipes
+       WHERE user_id = $1 
+       ORDER BY created_at DESC` + parametrizedQueryAddition,
+      parametrizedQueryValues 
+    );
+
+    return recipesFromUser.rows;
+  }
 }
 
 module.exports = User;
