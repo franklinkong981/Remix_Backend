@@ -110,6 +110,26 @@ class User {
 
     return userInfo;
   }
+
+  /** Searches for users in the database whose usernames contain the search term and returns all matching usernames.
+   *  Returns all usernames if the search term is undefined or empty.
+   */
+  static async searchUsers(searchTerm) {
+    let matchingUsers;
+
+    if (searchTerm) {
+      matchingUsers = await db.query(
+      `SELECT username FROM users WHERE username ILIKE $1`,
+      [`%${searchTerm}%`]
+      );
+    } else {
+      matchingUsers = await db.query(`SELECT username FROM users`);
+    } 
+
+    //even if searchResults is empty, don't throw error, just return nothing.
+    const searchResults = matchingUsers.rows[0];
+    return searchResults;
+  }
 }
 
 module.exports = User;
