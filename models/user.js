@@ -141,14 +141,14 @@ class User {
   static async updateUser(username, updateData) {
     //check to make sure updateData only has the keys of username and/or email.
     for (let key of Object.keys(updateData)) {
-      if (key != "username" || key != "email") throw new BadRequestError("You can only update your username and/or email"); 
+      if (key != "username" && key != "email") throw new BadRequestError("You can only update your username and/or email."); 
     }
 
     //updated username and email must still meet the database requirements.
-    if (updateData.username.length < 5 || updateData.username.length > 30) {
+    if (updateData.username && (updateData.username.length < 5 || updateData.username.length > 30)) {
       throw new BadRequestError("The new username must be between 5-30 characters.");
-    } else if (!(updateData.email.includes("@"))) {
-      throw new BadRequestError("The new email must have a valid format.");
+    } else if (updateData.email && !(updateData["email"].includes("@"))) {
+      throw new BadRequestError("The new email must be valid.");
     }
 
     const {setCols, values} = sqlForPartialUpdate(updateData);
@@ -161,7 +161,7 @@ class User {
     const updateResult = await db.query(sqlUpdateQuery, [...values, username]);
     const updatedUser = updateResult.rows[0];
 
-    if (!updatedUser) throw new NotFoundError(`The user with username of ${username} was not found in the database`);
+    if (!updatedUser) throw new NotFoundError(`The user with username of ${username} was not found in the database.`);
 
     return updatedUser;
   }
