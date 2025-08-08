@@ -221,3 +221,22 @@ describe("searchUsers works as intended", function () {
     expect(searchResults.length).toEqual(0);
   });
 });
+
+/************************************** updateUser */
+
+describe("updateUser works as intended", function () {
+  test("Successfully updates user 1's username and email", async function () {
+    const updatedUser1 = User.updateUser("user1", {username: "new_user", email: "new_user1@gmail.com"});
+  });
+  test("Returns both user1 and user2 in alphabetical order if the search term is empty", async function () {
+    const searchResults = await User.searchUsers("");
+    expect(searchResults.length).toEqual(2);
+    expect(searchResults[0].username).toEqual("user1");
+    expect(searchResults[1].username).toEqual("user2");
+  });
+
+  test("Returns an empty array if no users match the search term", async function() {
+    const searchResults = await User.searchUsers("no users!");
+    expect(searchResults.length).toEqual(0);
+  });
+});

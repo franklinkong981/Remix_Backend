@@ -135,13 +135,20 @@ class User {
    *  Users can not yet update the password, that may be a separate method in the future.
    *  Upon successful update, returns the user's updated username and email.
    * 
-   * Throws a BadRequestError if data to update contains anything other than username and/or email.
+   * Throws a BadRequestError if data to update contains anything other than username and/or email, OR if new username and/or email doesn't match database requirements.
    * Throws a NotFoundError if user cannot be found in the database.
    */
   static async updateUser(username, updateData) {
     //check to make sure updateData only has the keys of username and/or email.
     for (let key of Object.keys(updateData)) {
       if (key != "username" || key != "email") throw new BadRequestError("You can only update your username and/or email"); 
+    }
+
+    //updated username and email must still meet the database requirements.
+    if (updateData.username.length < 5 || updateData.username.length > 30) {
+      throw new BadRequestError("The new username must be between 5-30 characters.");
+    } else if (!(updateData.email.includes("@"))) {
+      throw new BadRequestError("The new email must have a valid format.");
     }
 
     const {setCols, values} = sqlForPartialUpdate(updateData);
