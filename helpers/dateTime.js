@@ -31,10 +31,11 @@ function convertToReadableDateTime(sqlTimestamp) {
     hours = rawHours - 12;
   }
   
-  const minutes = dateObject.getMinutes();
+  const rawMinutes = dateObject.getMinutes();
+  const minutes = rawMinutes < 10 ? "0" + rawMinutes : rawMinutes
   const amOrPm = (rawHours < 12) ? "am" : "pm";
 
   return `${month}/${day}/${year} at ${hours}:${minutes}${amOrPm}`;
 }
 
-console.log(convertToReadableDateTime("2025-08-02 13:07:01.472785"));
+console.log(convertToReadableDateTime("2025-08-02 13:59:01.472785"));
