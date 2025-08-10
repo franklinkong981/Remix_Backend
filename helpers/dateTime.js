@@ -1,3 +1,5 @@
+/* This file contains helper functions related to date and time.
+*/
 
 const months = {
   0: "January",
@@ -14,6 +16,7 @@ const months = {
   11: "December"
 }
 
+/* Converts an SQL timestamp fetched from the Remix SQL database and converts it into a readable datetime string. */
 function convertToReadableDateTime(sqlTimestamp) {
   const dateObject = new Date(sqlTimestamp);
 
@@ -38,4 +41,6 @@ function convertToReadableDateTime(sqlTimestamp) {
   return `${month} ${day}, ${year} at ${hours}:${minutes}${amOrPm}`;
 }
 
-console.log(convertToReadableDateTime("2025-08-02 13:59:01.472785"));
+console.log(convertToReadableDateTime("2025-08-02 00:08:01.472785"));
+
+module.exports = {convertToReadableDateTime};

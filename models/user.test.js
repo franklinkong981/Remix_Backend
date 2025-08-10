@@ -5,7 +5,6 @@ const {NotFoundError, BadRequestError, UnauthorizedError} = require("../errors/e
 const db = require("../db.js");
 const User = require("./user.js");
 const {commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll} = require("./_testCommon.js");
-const { escapeLiteral } = require("pg");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
