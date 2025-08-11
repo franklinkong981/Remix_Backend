@@ -184,9 +184,9 @@ class User {
     const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
 
     const recipesFromUser = await db.query(
-      `SELECT id, name, description, image_url, created_at FROM recipes
+      `SELECT id, name, description, image_url AS "imageUrl", created_at AS "createdAt" FROM recipes
        WHERE user_id = $1 
-       ORDER BY created_at DESC` + parametrizedQueryAddition,
+       ORDER BY created_at DESC, name` + parametrizedQueryAddition,
       parametrizedQueryValues 
     );
 

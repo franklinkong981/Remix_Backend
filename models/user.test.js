@@ -280,3 +280,36 @@ describe("updateUser works as intended", function () {
     }
   });
 });
+
+/************************************** getRecipesFromUser */
+
+describe("getRecipesFromUser works as intended", function () {
+  test("Successfully fetches all of user1's recipes and returns the most recent recipe first, then by recipe name", async function () {
+    const user1AllRecipes = await User.getRecipesFromUser("user1");
+    console.log(user1AllRecipes);
+    expect(user1AllRecipes.length).toEqual(2);
+    expect(user1AllRecipes[0].name).toEqual("recipe 1.1");
+    expect(user1AllRecipes[0].description).toEqual("The first recipe by user 1");
+    expect(user1AllRecipes[0].imageUrl).toEqual(expect.any(String));
+    expect(user1AllRecipes[0].createdAt).toEqual(expect.any(Date));
+    expect(user1AllRecipes[1].name).toEqual("recipe 1.2");
+  });
+
+  test("Successfully fetches only user1's most recent recipe with limit 1", async function () {
+    const user1NewestRecipe = await User.getRecipesFromUser("user1", 1);
+    expect(user1NewestRecipe.length).toEqual(1);
+    const newestRecipe = user1NewestRecipe[0];
+    expect(newestRecipe.name).toEqual("recipe 1.1");
+  });
+
+  test("Throws NotFoundError if the username of user to be to fetch recipes from can't be found in the database", async function () {
+    try {
+      const user1NewestRecipe = await User.getRecipesFromUser("new_user");
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username new_user was not found in the database.");
+    }
+  });
+});
