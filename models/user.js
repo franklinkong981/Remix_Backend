@@ -192,6 +192,35 @@ class User {
 
     return recipesFromUser.rows;
   }
+
+  /** Fetches all remixes created by the user matching the inputted username.
+   *  If a limit n is supplied, fetches only the n most recently added remixes by that user, newest first.
+   *  Returns {id, name, description, original_recipe_name, image_url, created_at} for each remix.
+   * 
+   *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   */
+  static async getRemixesFromUser(username, limit = 0) {
+    //make sure username supplied exists in the database.
+    const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
+    const userInfo = user.rows[0];
+
+    if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
+    const userId = userInfo.id;
+    //if limit ? 0, include the limit at the end of the sql query.
+    const parametrizedQueryAddition = (limit > 0) ? ` LIMIT $2` : ``;
+    const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
+
+    const remixesFromUser = await db.query(
+      `SELECT rem.id, rem.name, rem.description, rec.name AS "originalRecipe", rem.image_url AS "imageUrl, rem.created_at AS "createdAt"
+       FROM remixes rem
+       JOIN recipes rec ON rem.recipe_id = rec.id
+       WHERE rem.user_id = $1
+       ORDER BY rem.created_at DESC, rem.name` + parametrizedQueryAddition,
+       parametrizedQueryValues
+    );
+
+    return remixesFromUser.rows;
+  }
 }
 
 module.exports = User;
