@@ -135,8 +135,8 @@ class User {
    *  Users can not yet update the password, that may be a separate method in the future.
    *  Upon successful update, returns the user's updated username and email.
    * 
-   * Throws a BadRequestError if data to update contains anything other than username and/or email, OR if new username and/or email doesn't match database requirements.
-   * Throws a NotFoundError if user cannot be found in the database.
+   *  Throws a BadRequestError if data to update contains anything other than username and/or email, OR if new username and/or email doesn't match database requirements.
+   *  Throws a NotFoundError if user cannot be found in the database.
    */
   static async updateUser(username, updateData) {
     //check to make sure updateData only has the keys of username and/or email.
@@ -166,6 +166,12 @@ class User {
     return updatedUser;
   }
 
+  /** Fetches all original recipes (not remixes) created by the user matching the inputted username.
+   *  If a limit n is supplied, fetches only the n most recently added recipes by that user, newest first.
+   *  Returns {id, name, description, image_url, created_at} for each recipe.
+   * 
+   *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   */
   static async getRecipesFromUser(username, limit = 0) {
     //make sure username supplied exists in the database.
     const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
