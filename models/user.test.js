@@ -286,7 +286,6 @@ describe("updateUser works as intended", function () {
 describe("getRecipesFromUser works as intended", function () {
   test("Successfully fetches all of user1's recipes and returns the most recent recipe first, then by recipe name", async function () {
     const user1AllRecipes = await User.getRecipesFromUser("user1");
-    console.log(user1AllRecipes);
     expect(user1AllRecipes.length).toEqual(2);
     expect(user1AllRecipes[0].name).toEqual("recipe 1.1");
     expect(user1AllRecipes[0].description).toEqual("The first recipe by user 1");
@@ -302,9 +301,42 @@ describe("getRecipesFromUser works as intended", function () {
     expect(newestRecipe.name).toEqual("recipe 1.1");
   });
 
-  test("Throws NotFoundError if the username of user to be to fetch recipes from can't be found in the database", async function () {
+  test("Throws NotFoundError if the username of user to fetch remixes from can't be found in the database", async function () {
     try {
       const user1NewestRecipe = await User.getRecipesFromUser("new_user");
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username new_user was not found in the database.");
+    }
+  });
+});
+
+/************************************** getRemixesFromUser */
+
+describe("getRemixesFromUser works as intended", function () {
+  test("Successfully fetches all of user2's remixes and returns the most recent remix first, then by remix name", async function () {
+    const user2AllRemixes = await User.getRemixesFromUser("user2");
+    console.log(user2AllRemixes);
+    expect(user2AllRemixes.length).toEqual(2);
+    expect(user2AllRemixes[0].name).toEqual("recipe 1.1 remix");
+    expect(user2AllRemixes[0].description).toEqual("The remixed first recipe by user 1");
+    expect(user2AllRemixes[0].imageUrl).toEqual(expect.any(String));
+    expect(user2AllRemixes[0].createdAt).toEqual(expect.any(Date));
+    expect(user2AllRemixes[1].name).toEqual("recipe 1.2 remix");
+  });
+
+  test("Successfully fetches only user2's most recent remix with limit 1", async function () {
+    const user2NewestRemix = await User.getRemixesFromUser("user2", 1);
+    expect(user2NewestRemix.length).toEqual(1);
+    const newestRemix = user2NewestRemix[0];
+    expect(newestRemix.name).toEqual("recipe 1.1 remix");
+  });
+
+  test("Throws NotFoundError if the username of user to fetch remixes from can't be found in the database", async function () {
+    try {
+      const user2NewestRemix = await User.getRemixesFromUser("new_user");
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();

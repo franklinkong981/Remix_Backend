@@ -211,7 +211,7 @@ class User {
     const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
 
     const remixesFromUser = await db.query(
-      `SELECT rem.id, rem.name, rem.description, rec.name AS "originalRecipe", rem.image_url AS "imageUrl, rem.created_at AS "createdAt"
+      `SELECT rem.id, rem.name, rem.description, rec.name AS "originalRecipe", rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
        FROM remixes rem
        JOIN recipes rec ON rem.recipe_id = rec.id
        WHERE rem.user_id = $1
