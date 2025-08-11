@@ -222,7 +222,8 @@ class User {
     return remixesFromUser.rows;
   }
 
-  /** Returns {id, name, description, imageUrl} of each recipe currently listed in a specific user's favorite recipes.
+  /** Returns {id, name, description, imageUrl} of each recipe currently listed in a specific user's favorite recipes,
+   *  sorts favorite recipes by recipe name alphabetical order.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
    */
