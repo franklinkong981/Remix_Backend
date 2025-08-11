@@ -52,9 +52,9 @@ async function commonBeforeAll() {
   await db.query(`INSERT INTO recipe_favorites (user_id, recipe_id)
         VALUES (1, 1), (1, 3), (2, 2)`);
 
-  //2 remix favorites: user1 likes the recipe 1.1 remix and user2 likes the recipe 2.1 remix.
+  //3 remix favorites: user1 likes the recipe 1.1 remix, user2 likes the recipe 2.1 and 1.1 remix.
   await db.query(`INSERT INTO remix_favorites (user_id, remix_id)
-        VALUES (1, 2), (2, 1)`);
+        VALUES (1, 2), (2, 1), (2,2)`);
 
   //2 recipe reviews: user1 reviews recipe 1.1, user2 reviews recipe 1.2.
   await db.query(`INSERT INTO recipe_reviews (user_id, recipe_id, title, content)

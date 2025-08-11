@@ -247,6 +247,11 @@ class User {
     return usersFavoriteRecipes.rows;
   }
 
+  /** Returns {id, name, description, originalRecipe, imageUrl} of each remix currently listed in a specific user's favorite remixes,
+   *  sorts by remix name in alphabetical order.
+   * 
+   *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   */
   static async getUsersFavoriteRemixes(username) {
     //make sure username supplied exists in the database.
     const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);

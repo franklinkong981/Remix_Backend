@@ -351,7 +351,6 @@ describe("getRemixesFromUser works as intended", function () {
 describe("getUsersFavoriteRecipes works as intended", function () {
   test("Successfully fetches all of user1's favorite recipes and sorts then in alphabetical order", async function () {
     const user1FavoriteRecipes = await User.getUsersFavoriteRecipes("user1");
-    console.log(user1FavoriteRecipes);
     expect(user1FavoriteRecipes.length).toEqual(2);
     expect(user1FavoriteRecipes[0].name).toEqual("recipe 1.1");
     expect(user1FavoriteRecipes[1].name).toEqual("recipe 2.1");
@@ -367,7 +366,38 @@ describe("getUsersFavoriteRecipes works as intended", function () {
 
   test("Throws NotFoundError if the username of user to fetch recipes from can't be found in the database", async function () {
     try {
-      await User.getRemixesFromUser("new_user");
+      await User.getUsersFavoriteRecipes("new_user");
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username new_user was not found in the database.");
+    }
+  });
+});
+
+/************************************** getUsersFavoriteRemixes */
+
+describe("getUsersFavoriteRemixes works as intended", function () {
+  test("Successfully fetches all of user2's favorite remixes and sorts then in alphabetical order", async function () {
+    const user2FavoriteRemixes = await User.getUsersFavoriteRemixes("user2");
+    expect(user2FavoriteRemixes.length).toEqual(2);
+    expect(user2FavoriteRemixes[0].name).toEqual("recipe 1.1 remix");
+    expect(user2FavoriteRemixes[1].name).toEqual("recipe 2.1 remix");
+    expect(user2FavoriteRemixes[0].originalRecipe).toEqual("recipe 1.1");
+    expect(user2FavoriteRemixes[0].description).toEqual("The remixed first recipe by user 1");
+    expect(user2FavoriteRemixes[0].imageUrl).toEqual(expect.any(String));
+  });
+
+  test("Successfully fetches user1's favorite remixes, there should only be 1", async function () {
+    const user1FavoriteRemixes = await User.getUsersFavoriteRemixes("user1");
+    expect(user1FavoriteRemixes.length).toEqual(1);
+    expect(user1FavoriteRemixes[0].name).toEqual("recipe 1.1 remix");
+  });
+
+  test("Throws NotFoundError if the username of user to fetch remixes from can't be found in the database", async function () {
+    try {
+      await User.getUsersFavoriteRemixes("new_user");
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
