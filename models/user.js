@@ -221,6 +221,30 @@ class User {
 
     return remixesFromUser.rows;
   }
+
+  /** Returns {id, name, description, imageUrl} of each recipe currently listed in a specific user's favorite recipes.
+   * 
+   *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   */
+  static async getUsersFavoriteRecipes(username) {
+    //make sure username supplied exists in the database.
+    const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
+    const userInfo = user.rows[0];
+
+    if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
+    const userId = userInfo.id;
+
+    const usersFavoriteRecipes = await db.query(
+      `SELECT rec.id, rec.name, rec.description, rec.image_url AS "imageUrl"
+       FROM recipe_favorites favs
+       JOIN recipes rec ON favs.recipe_id = rec.id
+       WHERE favs.user_id = $1
+       ORDER BY rec.name`,
+       [userId]
+    );
+
+    return usersFavoriteRecipes.rows;
+  }
 }
 
 module.exports = User;
