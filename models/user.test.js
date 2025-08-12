@@ -406,3 +406,34 @@ describe("getUsersFavoriteRemixes works as intended", function () {
     }
   });
 });
+
+/************************************** getUsersRecipeReviews */
+
+describe("getUsersRecipeReviews works as intended", function () {
+  test("Successfully fetches all of user1's recipe reviews", async function () {
+    const user1RecipeReviews = await User.getUsersRecipeReviews("user1");
+    expect(user1RecipeReviews.length).toEqual(2);
+    expect(user1RecipeReviews[0].recipeId).toEqual(expect.any(Number));
+    expect(user1RecipeReviews[0].title).toEqual("Another delicious recipe!");
+    expect(user1RecipeReviews[0].content).toEqual("I make this all the time!");
+    expect(user1RecipeReviews[0].createdAt).toEqual(expect.any(Date));
+    expect(user1RecipeReviews[1].title).toEqual("Yum!");
+  });
+
+  test("Successfully fetches user2's recipe reviews, there should only be 1", async function () {
+    const user2RecipeReviews = await User.getUsersRecipeReviews("user2");
+    expect(user2RecipeReviews.length).toEqual(1);
+    expect(user2RecipeReviews[0].title).toEqual("My favorite!");
+  });
+
+  test("Throws NotFoundError if the username of user to fetch recipe reviews from can't be found in the database", async function () {
+    try {
+      await User.getUsersRecipeReviews("new_user");
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username new_user was not found in the database.");
+    }
+  });
+});

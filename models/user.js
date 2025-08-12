@@ -273,6 +273,11 @@ class User {
     return usersFavoriteRemixes.rows;
   }
 
+  /** Fetches and returns all recipe reviews belonging to a specific user, newest ones first.
+   *  Returns {recipeId, title, content, createdAt } for each review.
+   * 
+   *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   */
   static async getUsersRecipeReviews(username) {
     //make sure username supplied exists in the database.
     const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
@@ -285,7 +290,7 @@ class User {
       `SELECT recipe_id AS "recipeId", title, content, created_at AS "createdAt"
        FROM recipe_reviews
        WHERE user_id = $1
-       ORDER BY createdAt DESC`,
+       ORDER BY created_at DESC, title`,
        [userId]
     );
 
