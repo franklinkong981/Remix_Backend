@@ -338,12 +338,35 @@ class User {
     //check to make sure recipeId isn't already in the user's favorites.
     const favoritesCheck = await db.query(
       `SELECT user_id, recipe_id FROM recipe_favorites 
-       WHERE user_id= $1 AND recipe_id = $2`,
+       WHERE user_id = $1 AND recipe_id = $2`,
       [userId, recipeId]
     );
     if (favoritesCheck.rows.length > 0) throw new BadRequestError(`Recipe id ${recipeId} is already a favorite of ${username}.`);
 
     await db.query(`INSERT INTO recipe_favorites (user_id, recipe_id) VALUES ($1, $2)`, [userId, recipeId]);
+  }
+
+  static async removeRecipeFromFavorites(username, recipeId) {
+    //make sure username supplied exists in the database.
+    const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
+    const userInfo = user.rows[0];
+
+    if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
+    const userId = userInfo.id;
+
+    //check to make sure recipeId is actually in the user's favorites.
+    const favoritesCheck = await db.query(
+      `SELECT user_id, recipe_id FROM recipe_favorites
+       WHERE user_id = $1 AND recipe_id = $2`,
+       [userId, recipeId]
+    );
+    if (favoritesCheck.rows.length == 0) throw new BadRequestError(`Recipe id ${recipeId} is already not a favorite of ${username}.`);
+
+    await db.query(
+      `DELETE FROM recipe_favorites
+       WHERE user_id = $1 AND recipe_id = $2`,
+       [userId, recipeId]
+    );
   }
 }
 
