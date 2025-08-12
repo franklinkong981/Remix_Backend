@@ -507,7 +507,7 @@ describe("addRecipeToFavorites works as intended", function () {
   });
 });
 
-/************************************** fromRecipeFromFavorites */
+/************************************** removeRecipeFromFavorites */
 
 describe("removeRecipeFromFavorites works as intended", function () {
   test("Successfully removes recipe 2.1 from user1's favorite recipes", async function () {
@@ -574,6 +574,44 @@ describe("addRemixToFavorites works as intended", function () {
   test("Throws NotFoundError if the username can't be found in the database", async function () {
     try {
       await User.addRemixToFavorites("new_user", 1);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username new_user was not found in the database.");
+    }
+  });
+});
+
+/************************************** removeRemixFromFavorites */
+
+describe("removeRemixFromFavorites works as intended", function () {
+  test("Successfully removes remix 1.1 from user2's favorite remixes", async function () {
+    let user2FavoriteRemixes = await User.getUsersFavoriteRemixes("user2");
+    expect(user2FavoriteRemixes.length).toEqual(2);
+    expect(user2FavoriteRemixes[0].name).toEqual("recipe 1.1 remix");
+    expect(user2FavoriteRemixes[1].name).toEqual("recipe 2.1 remix");
+
+    await User.removeRemixFromFavorites("user2", 2);
+    user2FavoriteRemixes = await User.getUsersFavoriteRemixes("user2");
+    expect(user2FavoriteRemixes.length).toEqual(1);
+    expect(user2FavoriteRemixes[0].name).toEqual("recipe 2.1 remix");
+  });
+
+  test("Throws BadRequestError if you attempt to remove recipe 2.1 remix from user1's favorite remixes since it already isn't in user1's favorites", async function () {
+     try {
+      await User.removeRemixFromFavorites("user1", 1);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("Remix id 1 is already not a favorite of user1.");
+    }
+  });
+
+  test("Throws NotFoundError if the username can't be found in the database", async function () {
+    try {
+      await User.removeRemixFromFavorites("new_user", 1);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
