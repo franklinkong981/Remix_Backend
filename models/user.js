@@ -339,9 +339,9 @@ class User {
     const favoritesCheck = await db.query(
       `SELECT user_id, recipe_id FROM recipe_favorites 
        WHERE user_id= $1 AND recipe_id = $2`,
-      [username, recipeId]
+      [userId, recipeId]
     );
-    if (favoritesCheck.rows.length > 0) throw new BadRequestError(`Recipe id ${recipeId} is already a favorite of ${username}`);
+    if (favoritesCheck.rows.length > 0) throw new BadRequestError(`Recipe id ${recipeId} is already a favorite of ${username}.`);
 
     await db.query(`INSERT INTO recipe_favorites (user_id, recipe_id) VALUES ($1, $2)`, [userId, recipeId]);
   }
