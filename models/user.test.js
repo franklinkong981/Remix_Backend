@@ -469,3 +469,8 @@ describe("getUsersRemixReviews works as intended", function () {
   });
 });
 
+/************************************** addRecipeToFavorites */
+
+describe("addRecipeToFavorites works as intended", function () {
+  
+});
