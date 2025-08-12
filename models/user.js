@@ -272,6 +272,25 @@ class User {
 
     return usersFavoriteRemixes.rows;
   }
+
+  static async getUsersRecipeReviews(username) {
+    //make sure username supplied exists in the database.
+    const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
+    const userInfo = user.rows[0];
+
+    if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
+    const userId = userInfo.id;
+
+    const usersRecipeReviews = await db.query(
+      `SELECT recipe_id AS "recipeId", title, content, created_at AS "createdAt"
+       FROM recipe_reviews
+       WHERE user_id = $1
+       ORDER BY createdAt DESC`,
+       [userId]
+    );
+
+    return usersRecipeReviews.rows;
+  }
 }
 
 module.exports = User;
