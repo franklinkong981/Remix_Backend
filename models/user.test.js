@@ -437,3 +437,34 @@ describe("getUsersRecipeReviews works as intended", function () {
     }
   });
 });
+
+/************************************** getUsersRemixReviews */
+
+describe("getUsersRemixReviews works as intended", function () {
+  test("Successfully fetches all of user1's remix reviews", async function () {
+    const user1RemixReviews = await User.getUsersRemixReviews("user1");
+    expect(user1RemixReviews.length).toEqual(2);
+    expect(user1RemixReviews[0].remixId).toEqual(expect.any(Number));
+    expect(user1RemixReviews[0].title).toEqual("I love vegetables!");
+    expect(user1RemixReviews[0].content).toEqual("I'm going to add more vegetables to this remix later.");
+    expect(user1RemixReviews[0].createdAt).toEqual(expect.any(Date));
+    expect(user1RemixReviews[1].title).toEqual("New meat is good");
+  });
+
+  test("Successfully fetches user2's remix reviews, there should only be 1", async function () {
+    const user2RemixReviews = await User.getUsersRemixReviews("user2");
+    expect(user2RemixReviews.length).toEqual(1);
+    expect(user2RemixReviews[0].title).toEqual("I love meat!");
+  });
+
+  test("Throws NotFoundError if the username of user to fetch recipe reviews from can't be found in the database", async function () {
+    try {
+      await User.getUsersRemixReviews("new_user");
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username new_user was not found in the database.");
+    }
+  });
+});
