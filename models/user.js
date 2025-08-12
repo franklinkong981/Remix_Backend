@@ -346,6 +346,12 @@ class User {
     await db.query(`INSERT INTO recipe_favorites (user_id, recipe_id) VALUES ($1, $2)`, [userId, recipeId]);
   }
 
+  /** Removes the recipe with id of recipeId from the favorite recipes list of a user.
+   *  Does not return anything upon successful deletion.
+   * 
+   *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   *  Throws a BadRequestError if the recipe with id recipeId is already not the username's favorites.
+   */
   static async removeRecipeFromFavorites(username, recipeId) {
     //make sure username supplied exists in the database.
     const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
@@ -393,6 +399,8 @@ class User {
 
     await db.query(`INSERT INTO remix_favorites (user_id, remix_id) VALUES ($1, $2)`, [userId, remixId]);
   }
+
+
 }
 
 module.exports = User;
