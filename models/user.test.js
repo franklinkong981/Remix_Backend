@@ -544,3 +544,41 @@ describe("removeRecipeFromFavorites works as intended", function () {
     }
   });
 });
+
+/************************************** addRemixToFavorites */
+
+describe("addRemixToFavorites works as intended", function () {
+  test("Successfully adds recipe 2.1 remix to user1's favorite remixes", async function () {
+    let user1FavoriteRemixes = await User.getUsersFavoriteRemixes("user1");
+    expect(user1FavoriteRemixes.length).toEqual(1);
+    expect(user1FavoriteRemixes[0].name).toEqual("recipe 1.1 remix");
+
+    await User.addRemixToFavorites("user1", 1);
+    user1FavoriteRemixes = await User.getUsersFavoriteRemixes("user1");
+    expect(user1FavoriteRemixes.length).toEqual(2);
+    expect(user1FavoriteRemixes[0].name).toEqual("recipe 1.1 remix");
+    expect(user1FavoriteRemixes[1].name).toEqual("recipe 2.1 remix");
+  });
+
+  test("Throws BadRequestError if you attempt to add recips 1.1 remix to user1's favorite remixes since it already is in user1's favorites", async function () {
+     try {
+      await User.addRemixToFavorites("user1", 2);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("Remix id 2 is already a favorite of user1.");
+    }
+  });
+
+  test("Throws NotFoundError if the username can't be found in the database", async function () {
+    try {
+      await User.addRemixToFavorites("new_user", 1);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username new_user was not found in the database.");
+    }
+  });
+});
