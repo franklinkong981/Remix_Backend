@@ -506,3 +506,41 @@ describe("addRecipeToFavorites works as intended", function () {
     }
   });
 });
+
+/************************************** fromRecipeFromFavorites */
+
+describe("removeRecipeFromFavorites works as intended", function () {
+  test("Successfully removes recipe 2.1 from user1's favorite recipes", async function () {
+    let user1FavoriteRecipes = await User.getUsersFavoriteRecipes("user1");
+    expect(user1FavoriteRecipes.length).toEqual(2);
+    expect(user1FavoriteRecipes[0].name).toEqual("recipe 1.1");
+    expect(user1FavoriteRecipes[1].name).toEqual("recipe 2.1");
+
+    await User.removeRecipeFromFavorites("user1", 3);
+    user1FavoriteRecipes = await User.getUsersFavoriteRecipes("user1");
+    expect(user1FavoriteRecipes.length).toEqual(1);
+    expect(user1FavoriteRecipes[0].name).toEqual("recipe 1.1");
+  });
+
+  test("Throws BadRequestError if you attempt to remove recipe 1.2 from user1's favorite recipes since it already isn't in user1's favorites", async function () {
+     try {
+      await User.removeRecipeFromFavorites("user1", 2);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("Recipe id 2 is already not a favorite of user1.");
+    }
+  });
+
+  test("Throws NotFoundError if the username can't be found in the database", async function () {
+    try {
+      await User.removeRecipeFromFavorites("new_user", 1);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username new_user was not found in the database.");
+    }
+  });
+});
