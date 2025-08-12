@@ -296,6 +296,30 @@ class User {
 
     return usersRecipeReviews.rows;
   }
+
+  /** Fetches and returns all remix reviews belonging to a specific user, newest ones first.
+   *  Returns {remixId, title, content, createdAt } for each review.
+   * 
+   *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   */
+  static async getUsersRemixReviews(username) {
+    //make sure username supplied exists in the database.
+    const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
+    const userInfo = user.rows[0];
+
+    if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
+    const userId = userInfo.id;
+
+    const usersRemixReviews = await db.query(
+      `SELECT remix_id AS "remixId", title, content, created_at AS "createdAt"
+       FROM remix_reviews
+       WHERE user_id = $1
+       ORDER BY created_at DESC, title`,
+       [userId]
+    );
+
+    return usersRemixReviews.rows;
+  }
 }
 
 module.exports = User;
