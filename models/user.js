@@ -400,7 +400,34 @@ class User {
     await db.query(`INSERT INTO remix_favorites (user_id, remix_id) VALUES ($1, $2)`, [userId, remixId]);
   }
 
+  /** Removes the remix with id of remixId from the favorite remixes list of a user.
+   *  Does not return anything upon successful deletion.
+   * 
+   *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   *  Throws a BadRequestError if the remix with id remixId is already not the username's favorites.
+   */
+  static async removeRemixFromFavorites(username, remixId) {
+    //make sure username supplied exists in the database.
+    const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
+    const userInfo = user.rows[0];
 
+    if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
+    const userId = userInfo.id;
+
+    //check to make sure recipeId is actually in the user's favorites.
+    const favoritesCheck = await db.query(
+      `SELECT user_id, remix_id FROM remix_favorites
+       WHERE user_id = $1 AND remix_id = $2`,
+       [userId, remixId]
+    );
+    if (favoritesCheck.rows.length == 0) throw new BadRequestError(`Remix id ${remixId} is already not a favorite of ${username}.`);
+
+    await db.query(
+      `DELETE FROM remix_favorites
+       WHERE user_id = $1 AND remix_id = $2`,
+       [userId, remixId]
+    );
+  }
 }
 
 module.exports = User;
