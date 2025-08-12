@@ -320,6 +320,17 @@ class User {
 
     return usersRemixReviews.rows;
   }
+
+  static async addRecipeToFavorites(username, recipeId) {
+    //make sure username supplied exists in the database.
+    const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
+    const userInfo = user.rows[0];
+
+    if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
+    const userId = userInfo.id;
+
+    await db.query(`INSERT INTO recipe_favorites (user_id, recipe_id) VALUES ($1, $2)`, [userId, recipeId]);
+  }
 }
 
 module.exports = User;
