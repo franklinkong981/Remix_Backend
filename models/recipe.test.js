@@ -11,3 +11,18 @@ beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
+/************************************** getAllRecipesBasicInfo */
+
+describe("getAllRecipesBasicInfo works as intended", function() {
+  test("Successfully fetches basic info of all recipes and returns them sorted by name in alphabetical order", async function() {
+    const allRecipes = await Recipe.getAllRecipesBasicInfo();
+    expect(allRecipes.length).toEqual(3);
+    expect(allRecipes[0].name).toEqual("recipe 1.1");
+    expect(allRecipes[1].name).toEqual("recipe 1.2");
+    expect(allRecipes[2].name).toEqual("recipe 2.1");
+    expect(allRecipes[0].description).toEqual("The first recipe by user 1");
+    expect(allRecipes[0].imageUrl).toEqual(expect.any(String));
+    expect(allRecipes[0].createdAt).toEqual(expect.any(Date));
+  });
+});
+
