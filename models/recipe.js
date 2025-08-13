@@ -22,6 +22,33 @@ class Recipe {
     
     return allRecipesBasicInfo.rows;
   }
+
+  /** Searches for users in the database whose usernames contain the search term and returns all matching usernames in alphabetical order.
+   *  Returns all usernames if the search term is undefined or empty.
+   */
+  static async searchRecipes(searchTerm) {
+    let matchingRecipes;
+
+    if (searchTerm) {
+      matchingRecipes = await db.query(
+      `SELECT name, description, image_url AS "imageUrl", created_at AS "createdAt"
+       FROM recipes
+       WHERE name ILIKE $1
+       ORDER BY name`,
+      [`%${searchTerm}%`]
+      );
+    } else {
+      matchingRecipes = await db.query(
+        `SELECT name, description, image_url AS "imageUrl", created_at AS "createdAt"
+         FROM recipes
+         ORDER BY name`
+      );
+    } 
+
+    //even if searchResults is empty, don't throw error, just return nothing.
+    const searchResults = matchingRecipes.rows;
+    return searchResults;
+  }
 }
 
 module.exports = Recipe;
