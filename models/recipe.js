@@ -23,8 +23,10 @@ class Recipe {
     return allRecipesBasicInfo.rows;
   }
 
-  /** Searches for users in the database whose usernames contain the search term and returns all matching usernames in alphabetical order.
-   *  Returns all usernames if the search term is undefined or empty.
+  /** Searches for recipes in the database whose recipe names contain the search term and returns all matching recipes in alphabetical order.
+   *  Returns all recipes if the search term is undefined or empty.
+   * 
+   *  Returns {name, description, imageUrl, createdAt} for each recipe.
    */
   static async searchRecipes(searchTerm) {
     let matchingRecipes;

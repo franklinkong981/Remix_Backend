@@ -26,3 +26,28 @@ describe("getAllRecipesBasicInfo works as intended", function() {
   });
 });
 
+/************************************** searchRecipes */
+
+describe("searchRecipes works as intended", function() {
+  test("Successfully fetches only the recipes that match the search term inputted", async function() {
+    const searchResults = await Recipe.searchRecipes("1.1");
+    expect(searchResults.length).toEqual(1);
+    expect(searchResults[0].name).toEqual("recipe 1.1");
+    expect(searchResults[0].description).toEqual("The first recipe by user 1");
+    expect(searchResults[0].imageUrl).toEqual(expect.any(String));
+    expect(searchResults[0].createdAt).toEqual(expect.any(Date));
+  });
+
+  test("Returns recipes in alphabetical order if there are multiple search results", async function() {
+    const searchResults = await Recipe.searchRecipes("recipe");
+    expect(searchResults.length).toEqual(3);
+    expect(searchResults[0].name).toEqual("recipe 1.1");
+    expect(searchResults[1].name).toEqual("recipe 1.2");
+    expect(searchResults[2].name).toEqual("recipe 2.1");
+  });
+
+  test("Returns no search results but does not throw error if no recipes match the search term", async function() {
+    const searchResults = await Recipe.searchRecipes("pork");
+    expect(searchResults.length).toEqual(0);
+  });
+});
