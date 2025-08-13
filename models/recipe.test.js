@@ -51,3 +51,28 @@ describe("searchRecipes works as intended", function() {
     expect(searchResults.length).toEqual(0);
   });
 });
+
+/************************************** getRemixes */
+
+describe("getRemixes works as intended", function() {
+  test("Successfully fetches all remixes of a given recipe id", async function() {
+    const recipe1AllRemixes = await Recipe.getRemixes(1);
+    expect(recipe1AllRemixes.length).toEqual(1);
+    expect(recipe1AllRemixes[0].name).toEqual("recipe 1.1 remix");
+    expect(recipe1AllRemixes[0].description).toEqual("The remixed first recipe by user 1");
+    expect(recipe1AllRemixes[0].originalRecipe).toEqual("recipe 1.1");
+    expect(recipe1AllRemixes[0].imageUrl).toEqual(expect.any(String));
+    expect(recipe1AllRemixes[0].createdAt).toEqual(expect.any(Date));
+  });
+
+  test("Throws NotFoundError if the recipe id isn't found in the database", async function() {
+    try {
+      await Recipe.getRemixes(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The recipe with id of 100 was not found in the database.");
+    }
+  });
+});
