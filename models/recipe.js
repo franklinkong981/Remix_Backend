@@ -100,6 +100,38 @@ class Recipe {
 
     return allReviews.rows;
   }
+
+  /** Returns detailed information of a recipe with the id of recipeId. 
+   *  Returns {id, recipeAuthor (username of user who created the recipe), name, description, ingredients, directiosn, cooking_time, servings, image_url, created_at} for each recipe.
+   * 
+   *  Throws a 404 NotFoundError if the recipe with id of recipeId was not found in the database.
+   */
+  static async getRecipeDetails(recipeId, limit = 0) {
+    //first check to make sure recipe is in database.
+    const recipe = await db.query(`SELECT name FROM recipes WHERE id = $1`, [recipeId]);
+    if (recipe.rows.length == 0) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
+
+    const recipeResult = await db.query(
+      `SELECT rec.id, users.username AS "recipeAuthor", rec.name, rec.description, rec.ingredients, rec.directions, 
+       rec.cooking_time AS "cookingTime", rec.servings, rec.image_url AS "imageUrl", rec.created_at AS "createdAt"
+       FROM recipes rec
+       JOIN users ON rec.user_id = users.id
+       WHERE rec.id = $1`,
+       [recipeId]
+    );
+
+    const recipeDetails = recipeResult.rows[0];
+
+    //add remixes
+    const recipeRemixes = await Recipe.getRemixes(recipeId);
+    recipeDetails.remixes = recipeRemixes;
+
+    //add reviews
+    const recipeReviews = await Recipe.getRecipeReviews(recipeId, limit);
+    recipeDetails.reviews = recipeReviews;
+
+    return recipeDetails;
+  }
 }
 
 module.exports = Recipe;
