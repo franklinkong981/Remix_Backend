@@ -63,7 +63,7 @@ class Recipe {
     if (recipe.rows.length == 0) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
 
     const allRemixes = await db.query(
-      `SELECT rem.id, rem.name, rem.description, rec.name AS "originalRecipe", rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
+      `SELECT rem.id, rem.name, rem.description, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
        FROM recipes rec
        JOIN remixes rem ON rem.recipe_id = rec.id
        WHERE rec.id = $1
@@ -72,6 +72,33 @@ class Recipe {
     );
 
     return allRemixes.rows;
+  }
+
+  /** Returns all the reviews for the recipe with id of recipeId, or the n most recent ones if a limit n is supplied.
+   *  Reviews will be sorted by newest first, if multiple reviews were created at the same time, they'll be sorted by review title in alphabetical order.
+   * 
+   *  Returns {id, reviewAuthor (username of user who created the review), title, content, createdAt} for each recipe review.
+   * 
+   *  Throws a 404 NotFoundError if the recipe with id of recipeId was not found in the database.
+   */
+  static async getRecipeReviews(recipeId, limit = 0) {
+    //first check to make sure recipe is in database.
+    const recipe = await db.query(`SELECT name FROM recipes WHERE id = $1`, [recipeId]);
+    if (recipe.rows.length == 0) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
+
+    const parametrizedQueryAddition = (limit > 0) ? ` LIMIT $2` : ``;
+    const parametrizedQueryValues = (limit > 0) ? [recipeId, limit] : [recipeId];
+
+    const allReviews = await db.query(
+      `SELECT rev.id, users.username AS "reviewAuthor", rev.title, rev.content, rev.created_at AS "createdAt"
+       FROM reviews rev
+       JOIN users ON rev.user_id = users.id
+       WHERE rev.recipe_id = $1
+       ORDER BY rev.created_at DESC, rev.title` + parametrizedQueryAddition,
+       parametrizedQueryValues
+    );
+
+    return allReviews.rows;
   }
 }
 

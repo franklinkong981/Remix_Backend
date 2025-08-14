@@ -60,7 +60,6 @@ describe("getRemixes works as intended", function() {
     expect(recipe1AllRemixes.length).toEqual(1);
     expect(recipe1AllRemixes[0].name).toEqual("recipe 1.1 remix");
     expect(recipe1AllRemixes[0].description).toEqual("The remixed first recipe by user 1");
-    expect(recipe1AllRemixes[0].originalRecipe).toEqual("recipe 1.1");
     expect(recipe1AllRemixes[0].imageUrl).toEqual(expect.any(String));
     expect(recipe1AllRemixes[0].createdAt).toEqual(expect.any(Date));
   });
