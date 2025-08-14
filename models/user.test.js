@@ -420,10 +420,11 @@ describe("getUsersRecipeReviews works as intended", function () {
     expect(user1RecipeReviews[1].title).toEqual("Yum!");
   });
 
-  test("Successfully fetches user2's recipe reviews, there should only be 1", async function () {
+  test("Successfully fetches user2's recipe reviews, there should be 2", async function () {
     const user2RecipeReviews = await User.getUsersRecipeReviews("user2");
-    expect(user2RecipeReviews.length).toEqual(1);
+    expect(user2RecipeReviews.length).toEqual(2);
     expect(user2RecipeReviews[0].title).toEqual("My favorite!");
+    expect(user2RecipeReviews[1].title).toEqual("My second favorite!");
   });
 
   test("Throws NotFoundError if the username of user to fetch recipe reviews from can't be found in the database", async function () {

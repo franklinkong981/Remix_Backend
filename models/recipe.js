@@ -91,7 +91,7 @@ class Recipe {
 
     const allReviews = await db.query(
       `SELECT rev.id, users.username AS "reviewAuthor", rev.title, rev.content, rev.created_at AS "createdAt"
-       FROM reviews rev
+       FROM recipe_reviews rev
        JOIN users ON rev.user_id = users.id
        WHERE rev.recipe_id = $1
        ORDER BY rev.created_at DESC, rev.title` + parametrizedQueryAddition,

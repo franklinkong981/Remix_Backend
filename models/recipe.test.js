@@ -75,3 +75,39 @@ describe("getRemixes works as intended", function() {
     }
   });
 });
+
+/************************************** getRecipeReviews */
+
+describe("getRecipeReviews works as intended", function() {
+  test("Successfully fetches both of recipe 2.1's reviews if no limit is supplied in alphabetical order of review title", async function() {
+    const recipe3AllReviews = await Recipe.getRecipeReviews(3);
+    expect(recipe3AllReviews.length).toEqual(2);
+    
+    expect(recipe3AllReviews[0].reviewAuthor).toEqual("user1");
+    expect(recipe3AllReviews[0].title).toEqual("Another delicious recipe!");
+    expect(recipe3AllReviews[0].content).toEqual("I make this all the time!");
+    expect(recipe3AllReviews[0].createdAt).toEqual(expect.any(Date));
+
+    expect(recipe3AllReviews[1].reviewAuthor).toEqual("user2");
+    expect(recipe3AllReviews[1].title).toEqual("My second favorite!");
+  });
+
+  test("Only fetches the first of recipe 2.1's reviews (by user 1) if a limit of 1 is supplied", async function() {
+    const recipe3LimitedReviews = await Recipe.getRecipeReviews(3, 1);
+    expect(recipe3LimitedReviews.length).toEqual(1);
+
+    const firstReview = recipe3LimitedReviews[0];
+    expect(firstReview.reviewAuthor).toEqual("user1");
+  });
+
+  test("Throws 404 NotFoundError if the recipeId supplied cannot be found in the database", async function() {
+    try {
+      await Recipe.getRecipeReviews(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The recipe with id of 100 was not found in the database.")
+    }
+  });
+});
