@@ -111,3 +111,47 @@ describe("getRecipeReviews works as intended", function() {
     }
   });
 });
+
+/************************************** getRecipeDetails */
+
+describe("getRecipeDetails works as intended", function() {
+  test("Successfully fetches all correct detailed information on recipe 2.1", async function() {
+    const recipe3Details = await Recipe.getRecipeDetails(3);
+    expect(recipe3Details.recipeAuthor).toEqual("user2");
+    expect(recipe3Details.name).toEqual("recipe 2.1");
+    expect(recipe3Details.description).toEqual("The first recipe by user 2");
+    expect(recipe3Details.ingredients).toContain("pork");
+    expect(recipe3Details.directions).toContain("oven");
+    expect(recipe3Details.cookingTime).toEqual(120);
+    expect(recipe3Details.servings).toEqual(3);
+    expect(recipe3Details.imageUrl).toEqual(expect.any(String));
+    expect(recipe3Details.createdAt).toEqual(expect.any(Date));
+
+    expect(recipe3Details.remixes.length).toEqual(1);
+    expect(recipe3Details.remixes[0].name).toEqual("recipe 2.1 remix");
+
+    expect(recipe3Details.reviews.length).toEqual(2);
+    expect(recipe3Details.reviews[0].reviewAuthor).toEqual("user1");
+    expect(recipe3Details.reviews[1].reviewAuthor).toEqual("user2");
+    expect(recipe3Details.reviews[0].title).toEqual("Another delicious recipe!");
+    expect(recipe3Details.reviews[1].title).toEqual("My second favorite!");
+  });
+
+  test("Only one review (the review by user 1) is fetched when a limit of 1 is supplied", async function() {
+    const recipe3Details = await Recipe.getRecipeDetails(3, 1);
+    expect(recipe3Details.reviews.length).toEqual(1);
+    expect(recipe3Details.reviews[0].reviewAuthor).toEqual("user1");
+    expect(recipe3Details.reviews[0].title).toEqual("Another delicious recipe!");
+  });
+
+  test("Throws 404 NotFoundError if the recipeId supplied cannot be found in the database", async function() {
+    try {
+      await Recipe.getRecipeDetails(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The recipe with id of 100 was not found in the database.")
+    }
+  });
+});

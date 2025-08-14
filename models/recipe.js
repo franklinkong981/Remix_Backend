@@ -102,7 +102,7 @@ class Recipe {
   }
 
   /** Returns detailed information of a recipe with the id of recipeId. 
-   *  Returns {id, recipeAuthor (username of user who created the recipe), name, description, ingredients, directiosn, cooking_time, servings, image_url, created_at} for each recipe.
+   *  Returns {id, recipeAuthor (username of user who created the recipe), name, description, ingredients, directions, cooking_time, servings, image_url, created_at} for each recipe.
    * 
    *  Throws a 404 NotFoundError if the recipe with id of recipeId was not found in the database.
    */
