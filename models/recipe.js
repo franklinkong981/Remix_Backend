@@ -166,6 +166,35 @@ class Recipe {
 
     return newRecipeDetails.rows[0];
   }
+
+  static async updateRecipe(recipeId, updateData) {
+    //check to make sure updateData only has the keys of the recipe attributes that are allowed to be updated.
+    const updateableProperties = ["name", "description", "ingredients", "directions", "cookingTime", "servings", "imageUrl"];
+    for (let key of Object.keys(updateData)) {
+      if (!(updateableProperties.includes(key))) throw new BadRequestError("You can only update the following properties of a recipe: Name, description, ingredients, directions, cookingTime, servings, and imageUrl."); 
+    }
+
+    //updated name and description must still meet the database requirements.
+    if (updateData.name && (updateData.name.length < 1 || updateData.name.length > 100)) {
+      throw new BadRequestError("The new name must be between 1-100 characters long.");
+    } else if (updateData.description && (updateData.description.length < 1 || updateData.description.length > 255)) {
+      throw new BadRequestError("The new description must be between 1-255 characters long.");
+    }
+
+    const {setCols, values} = sqlForPartialUpdate(updateData, {"cookingTime": "cooking_time", "imageUrl": "image_url"});
+    const recipeIdParameterIndex = "$" + (values.length + 1);
+
+    const sqlUpdateQuery = `UPDATE recipes
+                            SET ${setCols}
+                            WHERE id = ${recipeIdParameterIndex}
+                            RETURNING name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`;
+    const updateResult = await db.query(sqlUpdateQuery, [...values, recipeId]);
+    const updatedRecipe = updateResult.rows[0];
+
+    if (!updatedRecipe) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
+
+    return updatedRecipe;
+  }
 }
 
 module.exports = Recipe;

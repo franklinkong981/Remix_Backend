@@ -188,7 +188,8 @@ describe("addRecipe works as intended", function() {
       name: 'recipe 1.3',
       description: 'The third recipe by user 1',
       ingredients: 'Bananas, apples, oranges',
-      directions: 'Put all fruits into a pot and cook!'
+      directions: 'Put all fruits into a pot and cook!',
+      imageUrl: ''
     });
     expect(newRecipeDetails.name).toEqual('recipe 1.3');
     expect(newRecipeDetails.cookingTime).toBeNull();
