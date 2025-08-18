@@ -151,14 +151,36 @@ describe("getRecipeDetails works as intended", function() {
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
       expect(err.status).toEqual(404);
-      expect(err.message).toEqual("The recipe with id of 100 was not found in the database.")
+      expect(err.message).toEqual("The recipe with id of 100 was not found in the database.");
     }
   });
 });
 
 /************************************** addRecipe */
 describe("addRecipe works as intended", function() {
-  test("Fetches recipe", async function() {
+  test("Successfully adds the recipe with custom cookingTime, servings, and imageUrl", async function() {
+    let allRecipes = await Recipe.getAllRecipesBasicInfo();
+    expect(allRecipes.length).toEqual(3);
+
+    const newRecipeDetails = await Recipe.addRecipe(1, {
+      name: 'recipe 1.3',
+      description: 'The third recipe by user 1',
+      ingredients: 'Bananas, apples, oranges',
+      directions: 'Put all fruits into a pot and cook!',
+      cookingTime: 20,
+      servings: 4,
+      imageUrl: 'http://recipe4.img'
+    });
+    expect(newRecipeDetails.name).toEqual('recipe 1.3');
+    expect(newRecipeDetails.cookingTime).toEqual(20);
+    expect(newRecipeDetails.servings).toEqual(4);
+    expect(newRecipeDetails.imageUrl).toEqual('http://recipe4.img');
+
+    allRecipes = await Recipe.getAllRecipesBasicInfo();
+    expect(allRecipes.length).toEqual(4);
+  });
+
+  test("Successfully adds the recipe with no cookingTime, servings, nor imageUrl, they should all be null by default", async function() {
     let allRecipes = await Recipe.getAllRecipesBasicInfo();
     expect(allRecipes.length).toEqual(3);
 
@@ -168,9 +190,29 @@ describe("addRecipe works as intended", function() {
       ingredients: 'Bananas, apples, oranges',
       directions: 'Put all fruits into a pot and cook!'
     });
-    console.log(newRecipeDetails);
+    expect(newRecipeDetails.name).toEqual('recipe 1.3');
+    expect(newRecipeDetails.cookingTime).toBeNull();
+    expect(newRecipeDetails.servings).toBeNull();
+    //ensure by default the imageUrl is the default value.
+    expect(newRecipeDetails.imageUrl).toEqual('https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg');
 
     allRecipes = await Recipe.getAllRecipesBasicInfo();
     expect(allRecipes.length).toEqual(4);
+  });
+
+  test("Throws BadRequestError upon wrong recipe name length", async function() {
+    try {
+      await Recipe.addRecipe(1, {
+        name: 'This recipe name is over 100 characters long. It is too long to fit into the database, hopefully this results in an error.',
+        description: 'The third recipe by user 1',
+        ingredients: 'Bananas, apples, oranges',
+        directions: 'Put all fruits into a pot and cook!'
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The name of the recipe must be between 1 and 100 characters long.");
+    }
   });
 });
