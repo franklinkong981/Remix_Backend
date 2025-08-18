@@ -132,6 +132,40 @@ class Recipe {
 
     return recipeDetails;
   }
+
+  /** Adds a new recipe to the database and returns information about it.
+   *  Returns {name, description, ingredients, directions, cookingTime, imageUrl} for the newly created recipe.
+   * 
+   *  The name of the recipe must be between 1 and 100 characters long and the description must be between 1 and 255 characters long,
+   *  throws a BadRequestError otherwise.
+   */
+  static async addRecipe(userId, {name, description, ingredients, directions, cookingTime = null, servings = null, imageUrl = null}) {
+    // first make sure the inputs all follow the proper format. name and description must be of a certain length, cookingTime and servings should already
+    // be integers by default.
+    if (name.length > 100 || name.length < 1) throw new BadRequestError("The name of the recipe must be between 1 and 100 characters long.");
+    if (description.length > 255 || description.length < 1) throw new BadRequestError("The recipe description must be between 1 and 255 characters long.");
+
+    //Inconvenience about node-pg: DEFAULT keyword can't be passed as a parameter in the parametrized query, it must be part of the string itself,
+    //which means I'll need to type out the query twice.
+    let newRecipeDetails;
+    if (imageUrl) {
+      newRecipeDetails = await db.query(
+        `INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        [userId, name, description, ingredients, directions, cookingTime, servings, imageUrl]
+      );
+    } else {
+      newRecipeDetails = await db.query(
+        `INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, DEFAULT)
+        RETURNING name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        [userId, name, description, ingredients, directions, cookingTime, servings]
+      );
+    }
+
+    return newRecipeDetails.rows[0];
+  }
 }
 
 module.exports = Recipe;

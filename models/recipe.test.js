@@ -155,3 +155,22 @@ describe("getRecipeDetails works as intended", function() {
     }
   });
 });
+
+/************************************** addRecipe */
+describe("addRecipe works as intended", function() {
+  test("Fetches recipe", async function() {
+    let allRecipes = await Recipe.getAllRecipesBasicInfo();
+    expect(allRecipes.length).toEqual(3);
+
+    const newRecipeDetails = await Recipe.addRecipe(1, {
+      name: 'recipe 1.3',
+      description: 'The third recipe by user 1',
+      ingredients: 'Bananas, apples, oranges',
+      directions: 'Put all fruits into a pot and cook!'
+    });
+    console.log(newRecipeDetails);
+
+    allRecipes = await Recipe.getAllRecipesBasicInfo();
+    expect(allRecipes.length).toEqual(4);
+  });
+});
