@@ -31,21 +31,14 @@ Then sqlForPartialUpdate(dataToUpdate, jsToSql) -->
 }
 */
 
-function sqlForPartialUpdate(dataToUpdate, jsToSql = {}) {
+function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   const keys = Object.keys(dataToUpdate);
   if (keys.length === 0) throw new BadRequestError("Please provide data to update.");
 
-  let currentIndex = 0;
-
   // {firstName, age} => ['"first_name"=$1', '"age"=$2']
-  const cols = keys.map((colName, idx) => {
-    if (dataToUpdate[colName]) {
-      currentIndex++;
-      return `"${jsToSql[colName] || colName}"=$${idx}`;
-    } else {
-      return `"${jsToSql[colName] || colName}"=DEFAULT`;
-    }
-  });
+  const cols = keys.map((colName, idx) =>
+      `"${jsToSql[colName] || colName}"=$${idx + 1}`,
+  );
 
   return {
     setCols: cols.join(", "),
