@@ -28,7 +28,7 @@ VALUES
   During the last minute of cooking, toast the buns on the grill. 
   Slice the tuna into four sections along score lines. 
   Serve on the buns with sliced tomato, arugula, and your favorite condiment.',
-NULL, 4, 'https://assets.epicurious.com/photos/5aeb6e8ecd4694640994c6c1/1:1/w_1920,c_limit/tuna-sliders-recipe-050318.jpg'),
+DEFAULT, 4, 'https://assets.epicurious.com/photos/5aeb6e8ecd4694640994c6c1/1:1/w_1920,c_limit/tuna-sliders-recipe-050318.jpg'),
 (1, 'Crunchy Chili Onion Rings', 'These are great with salsa.',
 '3 cups all purpose flour,
   2 tablespoons chili powder,
@@ -64,7 +64,7 @@ NULL, 4, 'https://assets.epicurious.com/photos/5aeb6e8ecd4694640994c6c1/1:1/w_19
   Stir in 0.5 cup (1 stick) unsalted butter, melted, 0.5 cup heavy cream or half-and-half, warmed, 2 Tbsp. pure maple syrup, 1 tsp. Diamond Crystal or 0.5 tsp. plus 1/8 tsp. Morton kosher salt, and 0.5 tsp. freshly ground black pepper. 
   Keep warm.
   ALSO: Mashed sweet potatoes can be made 2 days ahead and chilled in an airtight container. Reheat in a 350 degree oven or a microwave.',
-NULL, 10, 'https://assets.epicurious.com/photos/64e67cc1709a7ec6701c4b38/1:1/w_1920,c_limit/Mashed-Sweet-Potatoes_Recipe_2056.jpg'),
+DEFAULT, 10, 'https://assets.epicurious.com/photos/64e67cc1709a7ec6701c4b38/1:1/w_1920,c_limit/Mashed-Sweet-Potatoes_Recipe_2056.jpg'),
 (1, 'Fried Oysters with Bacon, Garlic, and Sage', 
 'If you like seafood, you''ll love this!',
 '2 cups rice flour
@@ -92,7 +92,7 @@ NULL, 10, 'https://assets.epicurious.com/photos/64e67cc1709a7ec6701c4b38/1:1/w_1
   Cook sage in same skillet just until crisp, about 30 seconds. Transfer to paper towels.
   Arrange oysters and garlic on a platter and top with fried sage and bacon. Serve with mustard.
   Oysters can be dredged 4 hours ahead. Keep chilled.',
-NULL, 8, 'https://assets.epicurious.com/photos/59233d7bbb553a5f5751b90e/1:1/w_1920,c_limit/fried-oysters-with-bacon-garlic-and-sage-BA-052217.jpg'),
+DEFAULT, 8, 'https://assets.epicurious.com/photos/59233d7bbb553a5f5751b90e/1:1/w_1920,c_limit/fried-oysters-with-bacon-garlic-and-sage-BA-052217.jpg'),
 (2, 'Lamb Bulgogi with Asian Pear Dipping Sauce', 
 'Bulgogi (grilled marinated beef) is a traditional Korean dish. Here, lamb stands in for the steak. The meat is served with lettuce leaves and other veggies.',
 '4 green onions, coarsely chopped,
@@ -144,7 +144,7 @@ NULL, 8, 'https://assets.epicurious.com/photos/59233d7bbb553a5f5751b90e/1:1/w_19
   Sprinkle remaining 2 tablespoons toasted sesame seeds over lamb. 
   Serve grilled lamb and vegetables with hot pepper paste. 
   Allow guests to spread very small amounts of kochujang over lettuce leaves, arrange lamb and vegetables in lettuce leaves, then wrap filling with lettuce leaves and dip into sauce.',
-NULL, 8, 'https://assets.bonappetit.com/photos/57afeff353e63daf11a4e825/master/w_1280,c_limit/mare_lamb_bulgogi_with_asian_pear_dipping_sauce_v.jpg'),
+DEFAULT, 8, 'https://assets.bonappetit.com/photos/57afeff353e63daf11a4e825/master/w_1280,c_limit/mare_lamb_bulgogi_with_asian_pear_dipping_sauce_v.jpg'),
 (2, 'One-pan Chicken Drumsticks with Rice and Beans', 
 'Clean out your pantry with this customizable one-pan dinner that can be seasoned with whatever spices you happen to have on hand.',
 '8 chicken drumsticks,
@@ -195,7 +195,7 @@ VALUES
   During the last minute of cooking, toast the buns on the grill. 
   Slice the tuna into four sections along score lines. 
   Serve on the buns with sliced tomato, arugula, and your favorite condiment.',
-NULL, 4, 'https://assets.epicurious.com/photos/5aeb6e8ecd4694640994c6c1/1:1/w_1920,c_limit/tuna-sliders-recipe-050318.jpg'),
+DEFAULT, 4, 'https://assets.epicurious.com/photos/5aeb6e8ecd4694640994c6c1/1:1/w_1920,c_limit/tuna-sliders-recipe-050318.jpg'),
 (1, 6, 'Replace white rice with basmati rice for a stronger fragrant flavor',
 'One-pan Chicken Drumsticks with Basmati Rice and Beans', 
 'Clean out your pantry with this customizable one-pan dinner that can be seasoned with whatever spices you happen to have on hand.',
