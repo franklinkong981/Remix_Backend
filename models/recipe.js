@@ -180,6 +180,14 @@ class Recipe {
     return newRecipeDetails.rows[0];
   }
 
+  /** Partially updates a recipe with a specific recipeId in the database according to the attributes found in the updateData object.
+   *  Values in updateData are checked to ensure the same constraints in addRecipe method above are met, throws
+   *  BadRequestError if any constraints are violated.
+   * 
+   *  Returns {name, description, ingredients, directions, cookingTime, imageUrl} for the updated recipe.
+   *  
+   *  Throws a BadRequestError if the recipe with id of recipeId isn't found in the database.
+   */
   static async updateRecipe(recipeId, updateData) {
     //check to make sure updateData only has the keys of the recipe attributes that are allowed to be updated.
     const updateableProperties = ["name", "description", "ingredients", "directions", "cookingTime", "servings", "imageUrl"];
@@ -187,12 +195,15 @@ class Recipe {
       if (!(updateableProperties.includes(key))) throw new BadRequestError("You can only update the following properties of a recipe: Name, description, ingredients, directions, cookingTime, servings, and imageUrl."); 
     }
 
-    //updated name and description must still meet the database requirements.
-    if (updateData.name && (updateData.name.length < 1 || updateData.name.length > 100)) {
-      throw new BadRequestError("The new name must be between 1-100 characters long.");
-    } else if (updateData.description && (updateData.description.length < 1 || updateData.description.length > 255)) {
-      throw new BadRequestError("The new description must be between 1-255 characters long.");
-    }
+    //make sure all values in updateData still meet the database requirements.
+    if (updateData.name && (updateData.name.length > 100 || updateData.name.length < 1)) throw new BadRequestError("The updated name of the recipe must be between 1 and 100 characters long.");
+    if (updateData.description && (updateData.description.length > 255 || updateData.description.length < 1)) throw new BadRequestError("The updated recipe description must be between 1 and 255 characters long.");
+    if (updateData.ingredients && updateData.ingredients.length < 1) throw new BadRequestError("The updated ingredients for the recipe cannot be blank.");
+    if (updateData.directions && updateData.directions.length < 1) throw new BadRequestError("The updated directions for the recipe cannot be blank.");
+    if (updateData.cookingTime && updateData.cookingTime < 0) throw new BadRequestError("The updated cooking time cannot be negative.");
+    if (updateData && updateData.servings < 0) throw new BadRequestError("The updated servings cannot be negative.");
+    //if image_url is left blank, automatically assign to it the default value.
+    if (updateData.imageUrl && updateData.imageUrl.length < 1) updateData.imageUrl = IMAGE_URL_DEFAULT;
 
     const {setCols, values} = sqlForPartialUpdate(updateData, {"cookingTime": "cooking_time", "imageUrl": "image_url"});
     const recipeIdParameterIndex = "$" + (values.length + 1);
