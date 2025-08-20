@@ -180,7 +180,7 @@ describe("addRecipe works as intended", function() {
     expect(allRecipes.length).toEqual(4);
   });
 
-  test("Successfully adds the recipe with no cookingTime, servings, nor imageUrl, they should all be null by default", async function() {
+  test("Successfully adds the recipe with no cookingTime, servings, nor imageUrl, they should all have default values", async function() {
     let allRecipes = await Recipe.getAllRecipesBasicInfo();
     expect(allRecipes.length).toEqual(3);
 
@@ -192,8 +192,8 @@ describe("addRecipe works as intended", function() {
       imageUrl: ''
     });
     expect(newRecipeDetails.name).toEqual('recipe 1.3');
-    expect(newRecipeDetails.cookingTime).toBeNull();
-    expect(newRecipeDetails.servings).toBeNull();
+    expect(newRecipeDetails.cookingTime).toEqual(0);
+    expect(newRecipeDetails.servings).toEqual(0);
     //ensure by default the imageUrl is the default value.
     expect(newRecipeDetails.imageUrl).toEqual('https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg');
 

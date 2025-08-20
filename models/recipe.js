@@ -155,6 +155,8 @@ class Recipe {
     if (directions.length < 1) throw new BadRequestError("The directions for the recipe cannot be blank.");
     if (cookingTime < 0) throw new BadRequestError("The cooking time cannot be negative.");
     if (servings < 0) throw new BadRequestError("The servings cannot be negative.");
+    //if image_url is left blank, automatically assign to it the default value.
+    if (imageUrl.length < 1) imageUrl = IMAGE_URL_DEFAULT;
 
     //Inconvenience about node-pg: DEFAULT keyword can't be passed as a parameter in the parametrized query, it must be part of the string itself,
     //which means I'll need to type out the query twice.
