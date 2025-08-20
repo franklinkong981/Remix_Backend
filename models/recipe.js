@@ -9,6 +9,10 @@ const db = require("../db.js");
 const { sqlForPartialUpdate } = require("../helpers/sql.js");
 const { NotFoundError, BadRequestError, UnauthorizedError } = require("../errors/errors.js");
 
+const COOKING_TIME_DEFAULT = 0;
+const SERVINGS_DEFAULT = 0;
+const IMAGE_URL_DEFAULT = "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
+
 class Recipe {
   /** Fetches basic information of all recipes (NOT remixes) in the database and returns them by recipe name in alphabetical order.
    *  Returns {id, name, description, imageUrl, createdAt } for each recipe.
@@ -136,14 +140,21 @@ class Recipe {
   /** Adds a new recipe to the database and returns information about it.
    *  Returns {name, description, ingredients, directions, cookingTime, imageUrl} for the newly created recipe.
    * 
-   *  The name of the recipe must be between 1 and 100 characters long and the description must be between 1 and 255 characters long,
-   *  throws a BadRequestError otherwise.
+   *  Name of the recipe must be between 1-100 characters long.
+   *  Description of the recipe must be between 1-255 characters long.
+   *  Ingredients and directions cannot be blank.
+   *  Cooking time and servings must be >- 0.
+   *  Throws a BadRequestError if any of the above constraints are violated.
    */
-  static async addRecipe(userId, {name, description, ingredients, directions, cookingTime = null, servings = null, imageUrl = null}) {
+  static async addRecipe(userId, {name, description, ingredients, directions, cookingTime = COOKING_TIME_DEFAULT, servings = SERVINGS_DEFAULT, imageUrl = IMAGE_URL_DEFAULT}) {
     // first make sure the inputs all follow the proper format. name and description must be of a certain length, cookingTime and servings should already
-    // be integers by default.
+    // be integers that are both >= 0. Ingredients and directions cannot be blank.
     if (name.length > 100 || name.length < 1) throw new BadRequestError("The name of the recipe must be between 1 and 100 characters long.");
     if (description.length > 255 || description.length < 1) throw new BadRequestError("The recipe description must be between 1 and 255 characters long.");
+    if (ingredients.length < 1) throw new BadRequestError("The ingredients for the recipe cannot be blank.");
+    if (directions.length < 1) throw new BadRequestError("The directions for the recipe cannot be blank.");
+    if (cookingTime < 0) throw new BadRequestError("The cooking time cannot be negative.");
+    if (servings < 0) throw new BadRequestError("The servings cannot be negative.");
 
     //Inconvenience about node-pg: DEFAULT keyword can't be passed as a parameter in the parametrized query, it must be part of the string itself,
     //which means I'll need to type out the query twice.
