@@ -274,7 +274,7 @@ class User {
   }
 
   /** Fetches and returns all recipe reviews belonging to a specific user, newest ones first.
-   *  Returns {recipeId, title, content, createdAt } for each review.
+   *  Returns {recipeId, recipeName, title, content, createdAt } for each review.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
    */
@@ -287,10 +287,11 @@ class User {
     const userId = userInfo.id;
 
     const usersRecipeReviews = await db.query(
-      `SELECT recipe_id AS "recipeId", title, content, created_at AS "createdAt"
-       FROM recipe_reviews
-       WHERE user_id = $1
-       ORDER BY created_at DESC, title`,
+      `SELECT rev.recipe_id AS "recipeId", rec.name AS "recipeName", rev.title, rev.content, rev.created_at AS "createdAt"
+       FROM recipe_reviews rev
+       JOIN recipes rec ON rev.recipe_id = rec.id
+       WHERE rev.user_id = $1
+       ORDER BY rev.created_at DESC, rev.title`,
        [userId]
     );
 

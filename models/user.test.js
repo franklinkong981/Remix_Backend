@@ -414,6 +414,7 @@ describe("getUsersRecipeReviews works as intended", function () {
     const user1RecipeReviews = await User.getUsersRecipeReviews("user1");
     expect(user1RecipeReviews.length).toEqual(2);
     expect(user1RecipeReviews[0].recipeId).toEqual(expect.any(Number));
+    expect(user1RecipeReviews[0].recipeName).toEqual("recipe 2.1");
     expect(user1RecipeReviews[0].title).toEqual("Another delicious recipe!");
     expect(user1RecipeReviews[0].content).toEqual("I make this all the time!");
     expect(user1RecipeReviews[0].createdAt).toEqual(expect.any(Date));
