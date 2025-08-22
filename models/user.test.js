@@ -447,6 +447,7 @@ describe("getUsersRemixReviews works as intended", function () {
     const user1RemixReviews = await User.getUsersRemixReviews("user1");
     expect(user1RemixReviews.length).toEqual(2);
     expect(user1RemixReviews[0].remixId).toEqual(expect.any(Number));
+    expect(user1RemixReviews[0].remixName).toEqual("recipe 1.1 remix");
     expect(user1RemixReviews[0].title).toEqual("I love vegetables!");
     expect(user1RemixReviews[0].content).toEqual("I'm going to add more vegetables to this remix later.");
     expect(user1RemixReviews[0].createdAt).toEqual(expect.any(Date));

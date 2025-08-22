@@ -312,10 +312,11 @@ class User {
     const userId = userInfo.id;
 
     const usersRemixReviews = await db.query(
-      `SELECT remix_id AS "remixId", title, content, created_at AS "createdAt"
-       FROM remix_reviews
-       WHERE user_id = $1
-       ORDER BY created_at DESC, title`,
+      `SELECT rev.remix_id AS "remixId", rem.name AS "remixName", rev.title, rev.content, rev.created_at AS "createdAt"
+       FROM remix_reviews rev
+       JOIN remixes rem ON rev.remix_id = rem.id
+       WHERE rev.user_id = $1
+       ORDER BY rev.created_at DESC, rev.title`,
        [userId]
     );
 
