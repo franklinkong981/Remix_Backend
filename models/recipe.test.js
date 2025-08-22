@@ -5,6 +5,7 @@ const {NotFoundError, BadRequestError, UnauthorizedError} = require("../errors/e
 const db = require("../db.js");
 const Recipe = require("./recipe.js");
 const {commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll} = require("./_testCommon.js");
+const { removeRecipeFromFavorites } = require("./user.js");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -328,6 +329,54 @@ describe("addReview works as intended", function() {
       expect(err instanceof NotFoundError).toBeTruthy();
       expect(err.status).toEqual(404);
       expect(err.message).toEqual("The recipe with id of 200 was not found in the database.");
+    }
+  });
+});
+
+/************************************** updateReview */
+describe("updateReview works as intended", function() {
+  test("Partially updates the review of recipe 1.1 by user1 without issue", async function() {
+    const updatedReview = await Recipe.updateReview(1, {title: "Updated review of recipe 1.1"});
+    expect(updatedReview.title).toEqual("Updated review of recipe 1.1");
+    expect(updatedReview.userId).toEqual(1);
+    expect(updatedReview.recipeId).toEqual(1);
+    expect(updatedReview.createdAt).toEqual(expect.any(Date));
+
+    //make sure recipe 1 still has only 1 review.
+    const allRecipe1Reviews = await Recipe.getRecipeReviews(1);
+    expect(allRecipe1Reviews.length).toEqual(1);
+  });
+
+  test("Throws a BadRequestError if you try to update anything other than review title and content", async function() {
+    try {
+      await Recipe.updateReview(1, {name: "Does not exist", title: "Updated review of recipe 1.1"});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("You can only update the following properties of a review: Title, content.");
+    }
+  });
+
+  test("Throws a BadRequestError if the title and/or content is an empty string", async function() {
+    try {
+      await Recipe.updateReview(1, {title: "", content: "Updated content of review"});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The updated title of the review cannot be blank.");
+    }
+  });
+
+  test("Throws a NotFoundError if the recipe review with id of reviewId can't be found in the database", async function() {
+    try {
+      await Recipe.updateReview(100, {title: "Updated review of recipe 1.1"});
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The recipe review of id 100 was not found in the database.");
     }
   });
 });
