@@ -217,3 +217,52 @@ describe("addRecipe works as intended", function() {
     }
   });
 });
+
+/************************************** updateRecipe */
+describe("updateRecipe works as intended", function() {
+  test("Partially updates recipe 1.1 without issue", async function() {
+    const updatedRecipe = await Recipe.updateRecipe(1, {name: "New recipe 1.1", description: "The updated first recipe by user 1", cookingTime: 60});
+    expect(updatedRecipe.name).toEqual("New recipe 1.1");
+    expect(updatedRecipe.description).toEqual("The updated first recipe by user 1");
+    expect(updatedRecipe.cookingTime).toEqual(60);
+    expect(updatedRecipe.servings).toEqual(4);
+  });
+
+  test("Throws a BadRequestError if the name is an empty string", async function() {
+    try {
+      await Recipe.updateRecipe(1, {name: "", description: "The new updated reicpe by user 1"});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The updated name of the recipe must be between 1 and 100 characters long.");
+    }
+  });
+
+  test("Throws a BadRequestError if the cooking time or any other number input is negative", async function() {
+    try {
+      await Recipe.updateRecipe(1, {cookingTime: -100});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The updated cooking time cannot be negative.");
+    }
+  });
+
+  test("Changes imageUrl to default value if it's an empty string", async function() {
+    const updatedRecipe = await Recipe.updateRecipe(1, {imageUrl: ""});
+    expect(updatedRecipe.imageUrl).toEqual("https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg");
+  });
+
+  test("Throws a 404 NotFoundError if the recipe with id of recipeId cannot be found in the database", async function() {
+    try {
+      await Recipe.updateRecipe(100, {name: "The updated recipe that does not exist."});
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The recipe with id of 100 was not found in the database.");
+    }
+  });
+});

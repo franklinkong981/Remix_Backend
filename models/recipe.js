@@ -196,14 +196,14 @@ class Recipe {
     }
 
     //make sure all values in updateData still meet the database requirements.
-    if (updateData.name && (updateData.name.length > 100 || updateData.name.length < 1)) throw new BadRequestError("The updated name of the recipe must be between 1 and 100 characters long.");
-    if (updateData.description && (updateData.description.length > 255 || updateData.description.length < 1)) throw new BadRequestError("The updated recipe description must be between 1 and 255 characters long.");
-    if (updateData.ingredients && updateData.ingredients.length < 1) throw new BadRequestError("The updated ingredients for the recipe cannot be blank.");
-    if (updateData.directions && updateData.directions.length < 1) throw new BadRequestError("The updated directions for the recipe cannot be blank.");
-    if (updateData.cookingTime && updateData.cookingTime < 0) throw new BadRequestError("The updated cooking time cannot be negative.");
-    if (updateData && updateData.servings < 0) throw new BadRequestError("The updated servings cannot be negative.");
+    if (updateData.hasOwnProperty("name") && (updateData.name.length > 100 || updateData.name.length < 1)) throw new BadRequestError("The updated name of the recipe must be between 1 and 100 characters long.");
+    if (updateData.hasOwnProperty("description") && (updateData.description.length > 255 || updateData.description.length < 1)) throw new BadRequestError("The updated recipe description must be between 1 and 255 characters long.");
+    if (updateData.hasOwnProperty("ingredients") && updateData.ingredients.length < 1) throw new BadRequestError("The updated ingredients for the recipe cannot be blank.");
+    if (updateData.hasOwnProperty("directions") && updateData.directions.length < 1) throw new BadRequestError("The updated directions for the recipe cannot be blank.");
+    if (updateData.hasOwnProperty("cookingTime") && updateData.cookingTime < 0) throw new BadRequestError("The updated cooking time cannot be negative.");
+    if (updateData.hasOwnProperty("servings") && updateData.servings < 0) throw new BadRequestError("The updated servings cannot be negative.");
     //if image_url is left blank, automatically assign to it the default value.
-    if (updateData.imageUrl && updateData.imageUrl.length < 1) updateData.imageUrl = IMAGE_URL_DEFAULT;
+    if (updateData.hasOwnProperty("imageUrl") && updateData.imageUrl.length < 1) updateData.imageUrl = IMAGE_URL_DEFAULT;
 
     const {setCols, values} = sqlForPartialUpdate(updateData, {"cookingTime": "cooking_time", "imageUrl": "image_url"});
     const recipeIdParameterIndex = "$" + (values.length + 1);
