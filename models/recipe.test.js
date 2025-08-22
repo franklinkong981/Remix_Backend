@@ -278,6 +278,7 @@ describe("addReview works as intended", function() {
       content: "Everyone has really liked my special blender recipe"
     });
     expect(newReviewDetails.title).toEqual("My special blender recipe");
+    expect(newReviewDetails.reviewId).toEqual(expect.any(Number));
     expect(newReviewDetails.recipeName).toEqual("recipe 1.2");
     expect(newReviewDetails.recipeId).toEqual(2);
     expect(newReviewDetails.reviewAuthor).toEqual("user1");

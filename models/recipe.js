@@ -220,6 +220,13 @@ class Recipe {
     return updatedRecipe;
   }
 
+  /** Adds a review for the recipe with id of recipeId made by user with id of userId.
+   *  Review must have title and content, both of which must be non-empty strings, otherwise a BadRequestError is thrown.
+   * 
+   *  If successful, returns new information about the review: {userId, reviewAuthor, recipeId, recipeName, title, content, created_at}
+   * 
+   *  Throws a NotFoundError if the user with id of userId or recipe with id of recipeId are not found in the database.
+   */
   static async addReview(userId, recipeId, {title, content}) {
     if (title.length < 1 || title.length > 100) throw new BadRequestError("The title of the review must be between 1-100 characters long.");
     if (content.length < 1) throw new BadRequestError("The content of the review cannot be blank.");
@@ -238,13 +245,47 @@ class Recipe {
     const addReviewResult = await db.query(
       `INSERT INTO recipe_reviews (user_id, recipe_id, title, content)
        VALUES ($1, $2, $3, $4)
-       RETURNING user_id AS "userId", recipe_id AS "recipeId", title, content, created_at AS "createdAt"`,
+       RETURNING id AS "reviewId", user_id AS "userId", recipe_id AS "recipeId", title, content, created_at AS "createdAt"`,
        [userId, recipeId, title, content]
     );
 
     let newReviewDetails = addReviewResult.rows[0];
     newReviewDetails = {...newReviewDetails, reviewAuthor, recipeName};
     return newReviewDetails;
+  }
+
+  /** Partially updates a review with the id of reviewId in the database according to the attributes found in the updateData object.
+   *  Values in updateData are checked to ensure the same constraints in addReview method above are met, throws
+   *  BadRequestError if any constraints are violated.
+   * 
+   *  Returns {reviewId, userId, recipeId, title, content, createdat} for the updated recipe review.
+   *  
+   *  Throws a BadRequestError if the review of reviewId isn't found in the database.
+   */
+  static async updateReview(reviewId, updateData) {
+    //check to make sure updateData only has the keys of title and/or content, the attributes of the review that are allowed to be updated.
+    const updateableProperties = ["title", "content"];
+    for (let key of Object.keys(updateData)) {
+      if (!(updateableProperties.includes(key))) throw new BadRequestError("You can only update the following properties of a review: Title, content."); 
+    }
+
+    //make sure all values in updateData still meet the database requirements.
+    if (updateData.hasOwnProperty("title") && (updateData.title.length < 1)) throw new BadRequestError("The updated title of the review cannot be blank.");
+    if (updateData.hasOwnProperty("content") && (updateData.content.length < 1)) throw new BadRequestError("The updated content of the review cannot be blank.");
+
+    const {setCols, values} = sqlForPartialUpdate(updateData);
+    const reviewIdParameterIndex = "$" + (values.length + 1);
+
+    const sqlUpdateQuery = `UPDATE recipe_reviews
+                            SET ${setCols}
+                            WHERE id = ${reviewIdParameterIndex}
+                            RETURNING id AS "reviewId", user_id AS "userId", recipe_id AS "recipeId", title, content, created_at AS "createdAt"`;
+    const updateResult = await db.query(sqlUpdateQuery, [...values, reviewId]);
+    const updatedReview = updateResult.rows[0];
+
+    if (!updatedReview) throw new NotFoundError(`The recipe review of id ${reviewId} was not found in the database.`);
+
+    return updatedReview;
   }
 }
 
