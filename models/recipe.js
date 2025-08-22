@@ -219,6 +219,33 @@ class Recipe {
 
     return updatedRecipe;
   }
+
+  static async addReview(userId, recipeId, {title, content}) {
+    if (title.length < 1 || title.length > 100) throw new BadRequestError("The title of the review must be between 1-100 characters long.");
+    if (content.length < 1) throw new BadRequestError("The content of the review cannot be blank.");
+
+    //check to make sure user exists.
+    const fetchUser = await db.query(`SELECT username FROM users WHERE id = $1`, [userId]);
+    if (fetchUser.rows.length == 0) throw new NotFoundError(`The user with id of ${userId} was not found in the database.`);
+    const reviewAuthor = fetchUser.rows[0].username;
+
+    //now check to make sure recipe exists.
+    const fetchRecipe = await db.query(`SELECT name FROM recipe WHERE id = $1`, [recipeId]);
+    if (fetchRecipe.rows.length == 0) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
+    const recipeName = fetchRecipe.rows[0].name;
+
+    //now that inputs are valid and user/recipe exists, review can be added.
+    const addReviewResult = await db.query(
+      `INSERT INTO recipe_reviews (user_id, recipe_id, title, content)
+       VALUES ($1, $2, $3, $4)
+       RETURNING user_id AS "userId", recipe_id AS "recipeId", title, content, created_at AS "createdAt"`,
+       [userId, recipeId, title, content]
+    );
+
+    const newReviewDetails = addReviewResult.rows[0];
+    newReviewDetails = {...newReviewDetails, reviewAuthor, recipeName};
+    return newReviewDetails;
+  }
 }
 
 module.exports = Recipe;
