@@ -266,3 +266,67 @@ describe("updateRecipe works as intended", function() {
     }
   });
 });
+
+/************************************** addReview */
+describe("addReview works as intended", function() {
+  test("Successfully adds a review of recipe 2 by user 1, now recipe 2 should have 2 reviews", async function() {
+    let allRecipe2Reviews = await Recipe.getRecipeReviews(2);
+    expect(allRecipe2Reviews.length).toEqual(1);
+
+    const newReviewDetails = await Recipe.addReview(1, 2, {
+      title: "My special blender recipe",
+      content: "Everyone has really liked my special blender recipe"
+    });
+    expect(newReviewDetails.title).toEqual("My special blender recipe");
+    expect(newReviewDetails.recipeName).toEqual("recipe 1.2");
+    expect(newReviewDetails.recipeId).toEqual(2);
+    expect(newReviewDetails.reviewAuthor).toEqual("user1");
+    expect(newReviewDetails.userId).toEqual(1);
+    expect(newReviewDetails.createdAt).toEqual(expect.any(Date));
+
+    allRecipe2Reviews = await Recipe.getRecipeReviews(2);
+    expect(allRecipe2Reviews.length).toEqual(2);
+  });
+
+  test("Throws BadRequestError upon title and/or content being empty", async function() {
+    try {
+      await Recipe.addReview(1, 2, {
+        title: "",
+        content: "My special blender recipe"
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The title of the review must be between 1-100 characters long.");
+    }
+  });
+
+  test("Throws NotFoundError if user with user_id can't be found.", async function() {
+    try {
+      await Recipe.addReview(100, 2, {
+        title: "I really like this recipe",
+        content: "My special blender recipe"
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with id of 100 was not found in the database.");
+    }
+  });
+
+  test("Throws NotFoundError if recipe with recipe_id can't be found.", async function() {
+    try {
+      await Recipe.addReview(1, 200, {
+        title: "I really like this recipe",
+        content: "My special blender recipe"
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The recipe with id of 200 was not found in the database.");
+    }
+  });
+});

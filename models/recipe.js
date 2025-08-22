@@ -230,7 +230,7 @@ class Recipe {
     const reviewAuthor = fetchUser.rows[0].username;
 
     //now check to make sure recipe exists.
-    const fetchRecipe = await db.query(`SELECT name FROM recipe WHERE id = $1`, [recipeId]);
+    const fetchRecipe = await db.query(`SELECT name FROM recipes WHERE id = $1`, [recipeId]);
     if (fetchRecipe.rows.length == 0) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
     const recipeName = fetchRecipe.rows[0].name;
 
@@ -242,7 +242,7 @@ class Recipe {
        [userId, recipeId, title, content]
     );
 
-    const newReviewDetails = addReviewResult.rows[0];
+    let newReviewDetails = addReviewResult.rows[0];
     newReviewDetails = {...newReviewDetails, reviewAuthor, recipeName};
     return newReviewDetails;
   }
