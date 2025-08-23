@@ -5,7 +5,6 @@ const {NotFoundError, BadRequestError, UnauthorizedError} = require("../errors/e
 const db = require("../db.js");
 const Recipe = require("./recipe.js");
 const {commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll} = require("./_testCommon.js");
-const { removeRecipeFromFavorites } = require("./user.js");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
