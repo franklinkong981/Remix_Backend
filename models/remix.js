@@ -40,6 +40,35 @@ class Remix {
 
     return allReviews.rows;
   }
+
+  /**   Returns detailed information of the remix with id of remixId in the database.
+     *  Returns {id, remixAuthor (username of user who created the recipe), purpose, name, description, originalRecipe (name of original recipe), ingredients, directions, cookingTime, servings, imageUrl, createdAt, reviews (array of review detail objects)} for each remix.
+     * 
+     *  Throws a 404 NotFoundError if the remix with id of remixId was not found in the database.
+     */
+    static async getRemixDetails(remixId, limit = 0) {
+      //first check to make sure the remix exists in database.
+      const remix = await db.query(`SELECT name FROM remixes WHERE id = $1`, [remixId]);
+      if (remix.rows.length == 0) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
+  
+      const remixResult = await db.query(
+        `SELECT rem.id, users.username AS "remixAuthor", rem.purpose, rem.name, rem.description, rec.name AS "originalRecipe", 
+         rem.ingredients, rem.directions, rem.cooking_time AS "cookingTime", rem.servings, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
+         FROM users
+         JOIN remixes rem ON users.id = remixes.user_id 
+         JOIN recipes rec ON rem.recipe_id = rec.id
+         WHERE rem.id = $1`,
+         [remixId]
+      );
+  
+      const remixDetails = remixResult.rows[0];
+  
+      //add remix reviews
+      const remixReviews = await Remix.getRemixviews(remixId, limit);
+      remixDetails.reviews = remixReviews;
+  
+      return remixDetails;
+    }
 }
 
 module.exports = Remix;
