@@ -155,6 +155,40 @@ class Remix {
 
     return updatedRemix;
   }
+
+  /** Adds a review for the remix with id of remixId made by user with id of userId.
+   *  Review must have title and content, both of which must be non-empty strings, otherwise a BadRequestError is thrown.
+   * 
+   *  If successful, returns new information about the review: {userId, reviewAuthor, remixId, remixName, title, content, createdAt}
+   * 
+   *  Throws a NotFoundError if the user with id of userId or remix with id of remixId are not found in the database.
+   */
+  static async addReview(userId, remixId, {title, content}) {
+    if (title.length < 1 || title.length > 100) throw new BadRequestError("The title of the review must be between 1-100 characters long.");
+    if (content.length < 1) throw new BadRequestError("The content of the review cannot be blank.");
+
+    //check to make sure user exists.
+    const fetchUser = await db.query(`SELECT username FROM users WHERE id = $1`, [userId]);
+    if (fetchUser.rows.length == 0) throw new NotFoundError(`The user with id of ${userId} was not found in the database.`);
+    const reviewAuthor = fetchUser.rows[0].username;
+
+    //now check to make sure remix exists.
+    const fetchRemix = await db.query(`SELECT name FROM remixes WHERE id = $1`, [remixId]);
+    if (fetchRemix.rows.length == 0) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
+    const remixName = fetchRemix.rows[0].name;
+
+    //now that inputs are valid and user/remix exists, review can be added.
+    const addReviewResult = await db.query(
+      `INSERT INTO remix_reviews (user_id, remix_id, title, content)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id AS "reviewId", user_id AS "userId", remix_id AS "remixId", title, content, created_at AS "createdAt"`,
+       [userId, remixId, title, content]
+    );
+
+    let newReviewDetails = addReviewResult.rows[0];
+    newReviewDetails = {...newReviewDetails, reviewAuthor, remixName};
+    return newReviewDetails;
+  }
 }
 
 module.exports = Remix;
