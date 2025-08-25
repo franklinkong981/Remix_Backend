@@ -46,3 +46,46 @@ describe("getRemixReviews works as intended", function() {
     }
   });
 });
+
+/************************************** getRemixDetails */
+
+describe("getRemixDetails works as intended", function() {
+  test("Successfully fetches all correct detailed information on remix 1, aka the recipe 2.1 remix", async function() {
+    const remix1Details = await Remix.getRemixDetails(1);
+    expect(remix1Details.remixAuthor).toEqual("user1");
+    expect(remix1Details.purpose).toContain("meat");
+    expect(remix1Details.name).toEqual("recipe 2.1 remix");
+    expect(remix1Details.description).toEqual("The remixed first recipe by user 2");
+    expect(remix1Details.originalRecipe).toEqual("recipe 2.1");
+    expect(remix1Details.ingredients).toContain("mutton");
+    expect(remix1Details.directions).toContain("all the meats");
+    expect(remix1Details.cookingTime).toEqual(expect.any(Number));
+    expect(remix1Details.servings).toEqual(expect.any(Number));
+    expect(remix1Details.imageUrl).toEqual(expect.any(String));
+    expect(remix1Details.createdAt).toEqual(expect.any(Date));
+
+    expect(remix1Details.reviews.length).toEqual(2);
+    expect(remix1Details.reviews[0].reviewAuthor).toEqual("user2");
+    expect(remix1Details.reviews[1].reviewAuthor).toEqual("user1");
+    expect(remix1Details.reviews[0].title).toEqual("I love meat!");
+    expect(remix1Details.reviews[1].title).toEqual("New meat is good");
+  });
+
+  test("Only one review of the recipe 2.1 remix (the review by user 2) is fetched when a limit of 1 is supplied", async function() {
+    const remix1Details = await Remix.getRemixDetails(1, 1);
+    expect(remix1Details.reviews.length).toEqual(1);
+    expect(remix1Details.reviews[0].reviewAuthor).toEqual("user2");
+    expect(remix1Details.reviews[0].title).toEqual("I love meat!");
+  });
+
+  test("Throws 404 NotFoundError if the remixId supplied cannot be found in the database", async function() {
+    try {
+      await Remix.getRemixDetails(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The remix with id of 100 was not found in the database.");
+    }
+  });
+});

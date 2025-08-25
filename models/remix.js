@@ -54,8 +54,8 @@ class Remix {
       const remixResult = await db.query(
         `SELECT rem.id, users.username AS "remixAuthor", rem.purpose, rem.name, rem.description, rec.name AS "originalRecipe", 
          rem.ingredients, rem.directions, rem.cooking_time AS "cookingTime", rem.servings, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
-         FROM users
-         JOIN remixes rem ON users.id = remixes.user_id 
+         FROM remixes rem
+         JOIN users ON rem.user_id = users.id
          JOIN recipes rec ON rem.recipe_id = rec.id
          WHERE rem.id = $1`,
          [remixId]
@@ -64,7 +64,7 @@ class Remix {
       const remixDetails = remixResult.rows[0];
   
       //add remix reviews
-      const remixReviews = await Remix.getRemixviews(remixId, limit);
+      const remixReviews = await Remix.getRemixReviews(remixId, limit);
       remixDetails.reviews = remixReviews;
   
       return remixDetails;
