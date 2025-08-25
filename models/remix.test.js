@@ -176,3 +176,56 @@ describe("addRemix works as intended", function() {
     }
   });
 });
+
+/************************************** updateRemix */
+describe("updateRemix works as intended", function() {
+  test("Partially updates the recipe 1.1 remix (id 2) without issue", async function() {
+    let remix1Details = await Remix.getRemixDetails(2);
+    expect(remix1Details.ingredients).toContain("garlix");
+    expect(remix1Details.servings).toEqual(4);
+    const updatedRemix = await Remix.updateRemix(2, {ingredients: "Onions, celery, garlic, tomatoes", servings: 6});
+    expect(updatedRemix.name).toEqual("recipe 1.1 remix");
+    expect(updatedRemix.ingredients).toContain("garlic");
+    expect(updatedRemix.servings).toEqual(6);
+    remix1Details = await Remix.getRemixDetails(2);
+    expect(remix1Details.ingredients).toContain("garlic");
+  });
+
+  test("Throws a BadRequestError if the updated name is an empty string", async function() {
+    try {
+      await Remix.updateRemix(2, {name: "", servings: 6});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The updated name of the remix must be between 1 and 100 characters long.");
+    }
+  });
+
+  test("Throws a BadRequestError if the cooking time or any other number input is negative", async function() {
+    try {
+      await Remix.updateRemix(2, {cookingTime: -100});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The updated cooking time cannot be negative.");
+    }
+  });
+
+  test("Changes imageUrl to default value if it's an empty string", async function() {
+    const updatedRemix = await Remix.updateRemix(2, {imageUrl: ""});
+    expect(updatedRemix.imageUrl).toEqual("https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg");
+  });
+
+  test("Throws a 404 NotFoundError if the remix with id of remixId cannot be found in the database", async function() {
+    try {
+      await Remix.updateRemix(100, {name: "The updated remix that does not exist."});
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The remix with id of 100 was not found in the database.");
+    }
+  });
+});
