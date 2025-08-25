@@ -81,7 +81,7 @@ class Remix {
    *  Cooking time and servings must be >= 0.
    *  Throws a BadRequestError if any of the above constraints are violated.
    */
-  static async addRemix(userId, originalRecipeId, {name, description, ingredients, directions, cookingTime = COOKING_TIME_DEFAULT, servings = SERVINGS_DEFAULT, imageUrl = IMAGE_URL_DEFAULT}) {
+  static async addRemix(userId, originalRecipeId, {name, description, purpose, ingredients, directions, cookingTime = COOKING_TIME_DEFAULT, servings = SERVINGS_DEFAULT, imageUrl = IMAGE_URL_DEFAULT}) {
     // first make sure the inputs all follow the proper format. name and description must be of a certain length, cookingTime and servings should already
     // be integers that are both >= 0. Ingredients and directions cannot be blank.
     if (name.length > 100 || name.length < 1) throw new BadRequestError("The name of the remix must be between 1 and 100 characters long.");

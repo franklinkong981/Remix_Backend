@@ -3,6 +3,7 @@ like returning detailed information on a remix, adding a remix, updating remix d
 
 const {NotFoundError, BadRequestError, UnauthorizedError} = require("../errors/errors.js");
 const db = require("../db.js");
+const Recipe = require("./recipe.js");
 const Remix = require("./remix.js");
 const {commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll} = require("./_testCommon.js");
 
@@ -86,6 +87,92 @@ describe("getRemixDetails works as intended", function() {
       expect(err instanceof NotFoundError).toBeTruthy();
       expect(err.status).toEqual(404);
       expect(err.message).toEqual("The remix with id of 100 was not found in the database.");
+    }
+  });
+});
+
+/************************************** addRemix */
+describe("addRemix works as intended", function() {
+  test("Successfully adds a new remix of recipe 1.1 by user 1 with custom cookingTime, servings, and imageUrl", async function() {
+    let recipe1AllRemixes = await Recipe.getRemixes(1);
+    expect(recipe1AllRemixes.length).toEqual(1);
+
+    const newRemixDetails = await Remix.addRemix(1, 1, {
+      name: 'recipe 1.1 with meat',
+      description: 'Remix of recipe 1.1 by user 1',
+      purpose: 'Just some vegetables is not enough, add some meat!',
+      ingredients: 'Onions, celery, garlic, chicken',
+      directions: 'Put everything in a pot and let it cook',
+      cookingTime: 45,
+      servings: 4,
+      imageUrl: 'http://remix-meat.img'
+    });
+    expect(newRemixDetails.name).toEqual('recipe 1.1 with meat');
+    expect(newRemixDetails.purpose).toContain('add some meat!');
+    expect(newRemixDetails.ingredients).toContain("chicken");
+    expect(newRemixDetails.cookingTime).toEqual(45);
+    expect(newRemixDetails.imageUrl).toEqual('http://remix-meat.img');
+
+    recipe1AllRemixes = await Recipe.getRemixes(1)
+    expect(recipe1AllRemixes.length).toEqual(2);
+  });
+
+  test("Successfully adds the remix with no cookingTime, servings, nor imageUrl, they should all have default values", async function() {
+    let recipe1AllRemixes = await Recipe.getRemixes(1);
+    expect(recipe1AllRemixes.length).toEqual(1);
+
+    const newRemixDetails = await Remix.addRemix(1, 1, {
+      name: 'recipe 1.1 with meat',
+      description: 'Remix of recipe 1.1 by user 1',
+      purpose: 'Just some vegetables is not enough, add some meat!',
+      ingredients: 'Onions, celery, garlic, chicken',
+      directions: 'Put everything in a pot and let it cook',
+      imageUrl: ''
+    });
+    expect(newRemixDetails.name).toEqual('recipe 1.1 with meat');
+    expect(newRemixDetails.cookingTime).toEqual(0);
+    expect(newRemixDetails.servings).toEqual(0);
+    //ensure by default the imageUrl is the default value.
+    expect(newRemixDetails.imageUrl).toEqual('https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg');
+
+    recipe1AllRemixes = await Recipe.getRemixes(1);
+    expect(recipe1AllRemixes.length).toEqual(2);
+  });
+
+  test("Throws BadRequestError upon wrong remix name length", async function() {
+    try {
+      await Remix.addRemix(1, 1, {
+        name: 'This remix name is over 100 characters long. It is too long to fit into the database, hopefully this results in an error.',
+        description: 'Remix of recipe 1.1 by user 1',
+        purpose: 'Just some vegetables is not enough, add some meat!',
+        ingredients: 'Onions, celery, garlic, chicken',
+        directions: 'Put everything in a pot and let it cook',
+        imageUrl: ''
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The name of the remix must be between 1 and 100 characters long.");
+    }
+  });
+
+  test("Throws BadRequestError upon wrong negative cooking time and/or servings", async function() {
+    try {
+      await Remix.addRemix(1, 1, {
+        name: 'Recipe 1.1 with meat',
+        description: 'Remix of recipe 1.1 by user 1',
+        purpose: 'Just some vegetables is not enough, add some meat!',
+        ingredients: 'Onions, celery, garlic, chicken',
+        directions: 'Put everything in a pot and let it cook',
+        cookingTime: -25,
+        imageUrl: ''
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The cooking time cannot be negative.");
     }
   });
 });
