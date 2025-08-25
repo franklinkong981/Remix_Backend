@@ -115,6 +115,47 @@ class Remix {
 
     return newRemixDetails.rows[0];
   }
+
+  /** Partially updates a remix with a specific remixId in the database according to the attributes found in the updateData object.
+   *  Values in updateData are checked to ensure the same constraints in addRemix method above are met, throws
+   *  BadRequestError if any constraints are violated.
+   * 
+   *  Returns {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
+   *  
+   *  Throws a BadRequestError if the remix with id of remixId isn't found in the database.
+   */
+  static async updateRemix(remixId, updateData) {
+    //check to make sure updateData only has the keys of the remix attributes that are allowed to be updated.
+    const updateableProperties = ["name", "description", "purpose", "ingredients", "directions", "cookingTime", "servings", "imageUrl"];
+    for (let key of Object.keys(updateData)) {
+      if (!(updateableProperties.includes(key))) throw new BadRequestError("You can only update the following properties of a remix: Name, description, purpose, ingredients, directions, cookingTime, servings, and imageUrl."); 
+    }
+
+    //make sure all values in updateData still meet the database requirements.
+    if (updateData.hasOwnProperty("name") && (updateData.name.length > 100 || updateData.name.length < 1)) throw new BadRequestError("The updated name of the remix must be between 1 and 100 characters long.");
+    if (updateData.hasOwnProperty("description") && (updateData.description.length > 255 || updateData.description.length < 1)) throw new BadRequestError("The updated remix description must be between 1 and 255 characters long.");
+    if (updateData.hasOwnProperty("purpose") && (updateData.purpose.length < 10)) throw new BadRequestError("The updated purpose of the remix must be at least 10 characters long.");
+    if (updateData.hasOwnProperty("ingredients") && updateData.ingredients.length < 1) throw new BadRequestError("The updated ingredients for the remix cannot be blank.");
+    if (updateData.hasOwnProperty("directions") && updateData.directions.length < 1) throw new BadRequestError("The updated directions for the remix cannot be blank.");
+    if (updateData.hasOwnProperty("cookingTime") && updateData.cookingTime < 0) throw new BadRequestError("The updated cooking time cannot be negative.");
+    if (updateData.hasOwnProperty("servings") && updateData.servings < 0) throw new BadRequestError("The updated servings cannot be negative.");
+    //if image_url is left blank, automatically assign to it the default value.
+    if (updateData.hasOwnProperty("imageUrl") && updateData.imageUrl.length < 1) updateData.imageUrl = IMAGE_URL_DEFAULT;
+
+    const {setCols, values} = sqlForPartialUpdate(updateData, {"cookingTime": "cooking_time", "imageUrl": "image_url"});
+    const remixIdParameterIndex = "$" + (values.length + 1);
+
+    const sqlUpdateQuery = `UPDATE remixes
+                            SET ${setCols}
+                            WHERE id = ${remixIdParameterIndex}
+                            RETURNING name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`;
+    const updateResult = await db.query(sqlUpdateQuery, [...values, remixId]);
+    const updatedRemix = updateResult.rows[0];
+
+    if (!updatedRemix) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
+
+    return updatedRemix;
+  }
 }
 
 module.exports = Remix;
