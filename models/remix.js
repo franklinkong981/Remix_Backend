@@ -42,33 +42,79 @@ class Remix {
   }
 
   /**   Returns detailed information of the remix with id of remixId in the database.
-     *  Returns {id, remixAuthor (username of user who created the recipe), purpose, name, description, originalRecipe (name of original recipe), ingredients, directions, cookingTime, servings, imageUrl, createdAt, reviews (array of review detail objects)} for each remix.
-     * 
-     *  Throws a 404 NotFoundError if the remix with id of remixId was not found in the database.
-     */
-    static async getRemixDetails(remixId, limit = 0) {
-      //first check to make sure the remix exists in database.
-      const remix = await db.query(`SELECT name FROM remixes WHERE id = $1`, [remixId]);
-      if (remix.rows.length == 0) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
-  
-      const remixResult = await db.query(
-        `SELECT rem.id, users.username AS "remixAuthor", rem.purpose, rem.name, rem.description, rec.name AS "originalRecipe", 
-         rem.ingredients, rem.directions, rem.cooking_time AS "cookingTime", rem.servings, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
-         FROM remixes rem
-         JOIN users ON rem.user_id = users.id
-         JOIN recipes rec ON rem.recipe_id = rec.id
-         WHERE rem.id = $1`,
-         [remixId]
+   *  Returns {id, remixAuthor (username of user who created the recipe), purpose, name, description, originalRecipe (name of original recipe), ingredients, directions, cookingTime, servings, imageUrl, createdAt, reviews (array of review detail objects)} for each remix.
+   * 
+   *  Throws a 404 NotFoundError if the remix with id of remixId was not found in the database.
+   */
+  static async getRemixDetails(remixId, limit = 0) {
+    //first check to make sure the remix exists in database.
+    const remix = await db.query(`SELECT name FROM remixes WHERE id = $1`, [remixId]);
+    if (remix.rows.length == 0) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
+
+    const remixResult = await db.query(
+      `SELECT rem.id, users.username AS "remixAuthor", rem.purpose, rem.name, rem.description, rec.name AS "originalRecipe", 
+        rem.ingredients, rem.directions, rem.cooking_time AS "cookingTime", rem.servings, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
+        FROM remixes rem
+        JOIN users ON rem.user_id = users.id
+        JOIN recipes rec ON rem.recipe_id = rec.id
+        WHERE rem.id = $1`,
+        [remixId]
+    );
+
+    const remixDetails = remixResult.rows[0];
+
+    //add remix reviews
+    const remixReviews = await Remix.getRemixReviews(remixId, limit);
+    remixDetails.reviews = remixReviews;
+
+    return remixDetails;
+  }
+
+  /** Adds a new remix for the recipe with id of recipeId by user with id of userId to the database and returns information about it.
+   *  Returns {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the newly created remix.
+   * 
+   *  CONSTRAINTS:
+   *  Name of the remix must be between 1-100 characters long.
+   *  Description of the remix must be between 1-255 characters long.
+   *  Purpose of creating the remix must be at least 10 characters long.
+   *  Ingredients and directions cannot be blank.
+   *  Cooking time and servings must be >= 0.
+   *  Throws a BadRequestError if any of the above constraints are violated.
+   */
+  static async addRemix(userId, originalRecipeId, {name, description, ingredients, directions, cookingTime = COOKING_TIME_DEFAULT, servings = SERVINGS_DEFAULT, imageUrl = IMAGE_URL_DEFAULT}) {
+    // first make sure the inputs all follow the proper format. name and description must be of a certain length, cookingTime and servings should already
+    // be integers that are both >= 0. Ingredients and directions cannot be blank.
+    if (name.length > 100 || name.length < 1) throw new BadRequestError("The name of the remix must be between 1 and 100 characters long.");
+    if (description.length > 255 || description.length < 1) throw new BadRequestError("The remix description must be between 1 and 255 characters long.");
+    if (purpose.length < 1) throw new BadRequestError("The remix purpose must be at least 10 characters long.");
+    if (ingredients.length < 1) throw new BadRequestError("The ingredients for the remix cannot be blank.");
+    if (directions.length < 1) throw new BadRequestError("The directions for the remix cannot be blank.");
+    if (cookingTime < 0) throw new BadRequestError("The cooking time cannot be negative.");
+    if (servings < 0) throw new BadRequestError("The servings cannot be negative.");
+    //if image_url is left blank, automatically assign to it the default value.
+    if (imageUrl.length < 1) imageUrl = IMAGE_URL_DEFAULT;
+
+    //Inconvenience about node-pg: DEFAULT keyword can't be passed as a parameter in the parametrized query, it must be part of the string itself,
+    //which means I'll need to type out the query twice.
+    let newRemixDetails;
+    if (imageUrl) {
+      newRemixDetails = await db.query(
+        `INSERT INTO remixes (user_id, recipe_id, name, description, purpose, ingredients, directions, cooking_time, servings, image_url)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        [userId, originalRecipeId, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl]
       );
-  
-      const remixDetails = remixResult.rows[0];
-  
-      //add remix reviews
-      const remixReviews = await Remix.getRemixReviews(remixId, limit);
-      remixDetails.reviews = remixReviews;
-  
-      return remixDetails;
+    } else {
+      newRemixDetails = await db.query(
+        `INSERT INTO remixes (user_id, recipe_id, name, description, purpose, ingredients, directions, cooking_time, servings, image_url)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, DEFAULT)
+        RETURNING name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        [userId, originalRecipeId, name, description, purpose, ingredients, directions, cookingTime, servings]
+      );
     }
+
+    return newRemixDetails.rows[0];
+  }
 }
 
 module.exports = Remix;

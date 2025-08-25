@@ -138,12 +138,13 @@ class Recipe {
   }
 
   /** Adds a new recipe to the database and returns information about it.
-   *  Returns {name, description, ingredients, directions, cookingTime, imageUrl} for the newly created recipe.
-   * 
+   *  Returns {name, description, ingredients, directions, cookingTime, servings, imageUrl} for the newly created recipe.
+   *  
+   *  CONSTRAINTS:
    *  Name of the recipe must be between 1-100 characters long.
    *  Description of the recipe must be between 1-255 characters long.
    *  Ingredients and directions cannot be blank.
-   *  Cooking time and servings must be >- 0.
+   *  Cooking time and servings must be >= 0.
    *  Throws a BadRequestError if any of the above constraints are violated.
    */
   static async addRecipe(userId, {name, description, ingredients, directions, cookingTime = COOKING_TIME_DEFAULT, servings = SERVINGS_DEFAULT, imageUrl = IMAGE_URL_DEFAULT}) {
