@@ -294,3 +294,52 @@ describe("addReview works as intended", function() {
     }
   });
 });
+
+/************************************** updateReview */
+describe("updateReview works as intended", function() {
+  test("Partially updates the review of the recipe 1.1 remix by user1 without issue", async function() {
+    const updatedReview = await Remix.updateReview(1, {content: "I will add salsa next time."});
+    expect(updatedReview.title).toEqual("I love vegetables!");
+    expect(updatedReview.content).toContain("salsa");
+    expect(updatedReview.userId).toEqual(1);
+    expect(updatedReview.remixId).toEqual(2);
+    expect(updatedReview.createdAt).toEqual(expect.any(Date));
+
+    //make sure remix 2 still has only 1 review.
+    const allRemix2Reviews = await Remix.getRemixReviews(2);
+    expect(allRemix2Reviews.length).toEqual(1);
+  });
+
+  test("Throws a BadRequestError if you try to update anything other than review title and content", async function() {
+    try {
+      await Remix.updateReview(2, {name: "Does not exist", title: "Updated review of the recipe 1.1 remix"});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("You can only update the following properties of a review: Title, content.");
+    }
+  });
+
+  test("Throws a BadRequestError if the title and/or content is an empty string", async function() {
+    try {
+      await Remix.updateReview(2, {title: "", content: "Updated content of review"});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The updated title of the review cannot be blank.");
+    }
+  });
+
+  test("Throws a NotFoundError if the remix review with id of reviewId can't be found in the database", async function() {
+    try {
+      await Remix.updateReview(100, {title: "Doesn't matter what this says"});
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The remix review of id 100 was not found in the database.");
+    }
+  });
+});
