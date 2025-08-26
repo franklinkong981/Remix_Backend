@@ -189,6 +189,40 @@ class Remix {
     newReviewDetails = {...newReviewDetails, reviewAuthor, remixName};
     return newReviewDetails;
   }
+
+  /** Partially updates a remix review with the id of reviewId in the database according to the attributes found in the updateData object.
+   *  Values in updateData are checked to ensure the same constraints in addReview method above are met, throws
+   *  BadRequestError if any constraints are violated.
+   * 
+   *  Returns {reviewId, userId, remixId, title, content, createdAt} for the updated remix review.
+   *  
+   *  Throws a BadRequestError if the review of reviewId isn't found in the database.
+   */
+  static async updateReview(reviewId, updateData) {
+    //check to make sure updateData only has the keys of title and/or content, the attributes of the review that are allowed to be updated.
+    const updateableProperties = ["title", "content"];
+    for (let key of Object.keys(updateData)) {
+      if (!(updateableProperties.includes(key))) throw new BadRequestError("You can only update the following properties of a review: Title, content."); 
+    }
+
+    //make sure all values in updateData still meet the database requirements.
+    if (updateData.hasOwnProperty("title") && (updateData.title.length < 1)) throw new BadRequestError("The updated title of the review cannot be blank.");
+    if (updateData.hasOwnProperty("content") && (updateData.content.length < 1)) throw new BadRequestError("The updated content of the review cannot be blank.");
+
+    const {setCols, values} = sqlForPartialUpdate(updateData);
+    const reviewIdParameterIndex = "$" + (values.length + 1);
+
+    const sqlUpdateQuery = `UPDATE remix_reviews
+                            SET ${setCols}
+                            WHERE id = ${reviewIdParameterIndex}
+                            RETURNING id AS "reviewId", user_id AS "userId", remix_id AS "remixId", title, content, created_at AS "createdAt"`;
+    const updateResult = await db.query(sqlUpdateQuery, [...values, reviewId]);
+    const updatedReview = updateResult.rows[0];
+
+    if (!updatedReview) throw new NotFoundError(`The remix review of id ${reviewId} was not found in the database.`);
+
+    return updatedReview;
+  }
 }
 
 module.exports = Remix;
