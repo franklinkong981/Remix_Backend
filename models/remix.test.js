@@ -229,3 +229,68 @@ describe("updateRemix works as intended", function() {
     }
   });
 });
+
+/************************************** addReview */
+describe("addReview works as intended", function() {
+  test("Successfully adds a review of recipe 1.1 remix (id of 2) by user 2, now the recipe 1.1 remix should have 2 reviews", async function() {
+    let allRemix2Reviews = await Remix.getRemixReviews(2);
+    expect(allRemix2Reviews.length).toEqual(1);
+
+    const newReviewDetails = await Remix.addReview(2, 2, {
+      title: "My favorite vegetable recipe",
+      content: "I really enjoy making this recipe, next time I'll try it with salsa!"
+    });
+    expect(newReviewDetails.title).toEqual("My favorite vegetable recipe");
+    expect(newReviewDetails.reviewId).toEqual(expect.any(Number));
+    expect(newReviewDetails.remixName).toEqual("recipe 1.1 remix");
+    expect(newReviewDetails.remixId).toEqual(2);
+    expect(newReviewDetails.reviewAuthor).toEqual("user2");
+    expect(newReviewDetails.userId).toEqual(2);
+    expect(newReviewDetails.createdAt).toEqual(expect.any(Date));
+
+    allRemix2Reviews = await Remix.getRemixReviews(2);
+    expect(allRemix2Reviews.length).toEqual(2);
+  });
+
+  test("Throws BadRequestError upon title and/or content being empty", async function() {
+    try {
+      await Remix.addReview(2, 2, {
+        title: "",
+        content: "I'll try it with salsa next time."
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("The title of the review must be between 1-100 characters long.");
+    }
+  });
+
+  test("Throws NotFoundError if user with user_id can't be found.", async function() {
+    try {
+      await Remix.addReview(100, 2, {
+        title: "My favorite vegetable recipe",
+        content: "Next time I'll try it with salsa."
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with id of 100 was not found in the database.");
+    }
+  });
+
+  test("Throws NotFoundError if remix with id of remix_id can't be found.", async function() {
+    try {
+      await Remix.addReview(2, 200, {
+        title: "My favorite vegetable recipe",
+        content: "Next time I'll try it with salsa."
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The remix with id of 200 was not found in the database.");
+    }
+  });
+});
