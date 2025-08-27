@@ -17,4 +17,4 @@ function createToken({username, email}) {
   return jwt.sign(tokenPayload, SECRET_KEY)
 }
 
-module.export = {createToken};
+module.exports = {createToken};
