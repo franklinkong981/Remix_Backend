@@ -40,3 +40,21 @@ function ensureLoggedIn(req, res, next) {
     return next(err);
   }
 }
+
+/** Some actions in the Remix app such as editing or deleting your own remixes/reviews can only be performed by their author.
+ *  This middleware function ensures that the user attempting to perform this action (the current username supplied in the res.locals.user decrypted payload of the user's jwt)
+ *  matches the username supplied in request parameters (the username that the remix/review belongs to).
+ * 
+ *  If it doens't match, returns an UnauthorizedError.
+ */
+function ensureIsCorrectUser(req, res, next) {
+  try {
+    const userPayload = res.locals.user;
+    if (!userPayload) throw new UnauthorizedError("You must be logged in to perform this action!");
+    if (userPayload.username != req.params.username) {
+      throw new UnauthorizedError("You can only edit/delete your own recipes/remixes/reviews!");
+    }
+  } catch (err) {
+    return next(err);
+  }
+}
