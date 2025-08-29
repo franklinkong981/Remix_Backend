@@ -9,61 +9,60 @@ const testJwt = jwt.sign({ username: "user1", email: "user1@gmail.com" }, SECRET
 const badJwt = jwt.sign({ username: "user2", email: "user2@gmail.com" }, "wrong_key");
 
 describe("authenticateJWT", function () {
-  test("works: via header", function () {
+  test("It works as intended with a properly encrypted jwt in the request header", function () {
     expect.assertions(2);
-     //there are multiple ways to pass an authorization token, this is how you pass it in the header.
-    //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
-    const req = { headers: { authorization: `Bearer ${testJwt}` } };
+    //there are multiple ways to pass an authorization token, this is how we'll pass it in the header for purposes of testing.
+    const req = { headers: { authorization: `${testJwt}` } };
     const res = { locals: {} };
     const next = function (err) {
-      expect(err).toBeFalsy();
+      expect(err).toBeFalsy(); //we expect err to be undefined here because next() runs instead of next(err).
     };
-    authenticateJWT(req, res, next);
+    authenticateJwt(req, res, next);
     expect(res.locals).toEqual({
       user: {
         iat: expect.any(Number),
-        username: "test",
-        isAdmin: false,
+        username: "user1",
+        email: "user1@gmail.com"
       },
     });
   });
 
-  test("works: no header", function () {
+  test("Works as intended even with no header", function () {
     expect.assertions(2);
     const req = {};
     const res = { locals: {} };
     const next = function (err) {
-      expect(err).toBeFalsy();
+      expect(err).toBeFalsy(); //next() should still run instead of next(err).
     };
-    authenticateJWT(req, res, next);
+    authenticateJwt(req, res, next);
     expect(res.locals).toEqual({});
   });
 
   test("works: invalid token", function () {
     expect.assertions(2);
-    const req = { headers: { authorization: `Bearer ${badJwt}` } };
+    const req = { headers: { authorization: `${badJwt}` } };
     const res = { locals: {} };
     const next = function (err) {
       expect(err).toBeFalsy();
     };
-    authenticateJWT(req, res, next);
+    authenticateJwt(req, res, next);
     expect(res.locals).toEqual({});
   });
 });
 
 
-describe("ensureLoggedIn", function () {
-  test("works", function () {
+describe("ensureLoggedIn works as intended", function () {
+  test("works normally if res.locals payload is supplied", function () {
     expect.assertions(1);
     const req = {};
-    const res = { locals: { user: { username: "test", is_admin: false } } };
+    const res = { locals: { user: { username: "user1", email: "user1@gmail.com" } } };
     const next = function (err) {
-      expect(err).toBeFalsy();
+      expect(err).toBeFalsy(); //no error should be thrown, so next() should be run instead of next(err).
     };
     ensureLoggedIn(req, res, next);
   });
 
-  test("unauth if no login", function () {
+  test("Throws UnauthorizedError if there is no payload in res.locals", function () {
     expect.assertions(1);
     const req = {};
     const res = { locals: {} };
@@ -73,3 +72,33 @@ describe("ensureLoggedIn", function () {
     ensureLoggedIn(req, res, next);
   });
 });
+
+describe("ensureIsCorrectUser works as intended", function() {
+  test("works normally if res.locals payload is supplied and it matches the username in req.params.", function() {
+    const req = { params: {username: "user1"} };
+    const res = { locals: { user: { username: "user1", email: "user1@gmail.com" } } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    }
+    ensureIsCorrectUser(req, res, next);
+  }); 
+  
+  test("Throws UnauthorizedError if username in res.locals payload doesn't match the username in req.params.", function() {
+    const req = { params: {username: "user2"} };
+    const res = { locals: { user: { username: "user1", email: "user1@gmail.com" } } };
+    const next = function (err) {
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+    }
+    ensureIsCorrectUser(req, res, next);
+  });
+
+  test("Throws UnauthorizedError if payload isn't supplied in res.locals", function() {
+    const req = { params: {username: "user1"} };
+    const res = { locals: {} };
+    const next = function (err) {
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+    }
+    ensureIsCorrectUser(req, res, next);
+  });
+});
+

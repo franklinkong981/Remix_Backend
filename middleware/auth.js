@@ -12,6 +12,8 @@ const {UnauthorizedError} = require("../errors/errors.js");
  *  jwt. This jwt will be only be supplied if a user is currently logged in. If it's not there, no error is thrown and the function returns.
  *  If it is, the token is decrypted with a secret key and the decrypted payload (username, email) is stored in the user attribute in res.locals.
  * 
+ *  NOTE: Won't be an error if the token is invalid either.
+ * 
  *  NOTE: This middleware function will be run before almost every route since res.locals is not shared between different request/response cycles.
  */
 function authenticateJwt(req, res, next) {
@@ -24,6 +26,7 @@ function authenticateJwt(req, res, next) {
     }
     return next();
   } catch (err) {
+    if (err instanceof jwt.JsonWebTokenError) return next();
     return next(err);
   }
 }
@@ -57,4 +60,10 @@ function ensureIsCorrectUser(req, res, next) {
   } catch (err) {
     return next(err);
   }
+}
+
+module.exports = {
+  authenticateJwt,
+  ensureLoggedIn,
+  ensureIsCorrectUser
 }
