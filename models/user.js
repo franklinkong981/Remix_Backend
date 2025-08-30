@@ -280,9 +280,9 @@ class User {
    *  Returns {username, email, recipes: [ {id, name, description, imageUrl}... ], remixes: [ {id, name, description, originalRecipe, imageUrl}... ]}
    */
   static async getUsersDetailedInfo(username) {
-    let userInfo = User.getUserBasicInfo();
-    let userRecipes = User.getRecipesFromUser(username, 3);
-    let userRemixes = User.getRemixesFromUser(username, 3);
+    let userInfo = await User.getUserBasicInfo(username);
+    let userRecipes = await User.getRecipesFromUser(username, 3);
+    let userRemixes = await User.getRemixesFromUser(username, 3);
 
     userInfo = {...userInfo, recipes: userRecipes, remixes: userRemixes};
     return userInfo;

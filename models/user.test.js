@@ -407,6 +407,32 @@ describe("getUsersFavoriteRemixes works as intended", function () {
   });
 });
 
+/************************************** getUsersDetailedInfo */
+describe("getUsersDetailedInfo works as intended", function() {
+  test("Successfully fetches user1's information including their recipes and remixes", async function() {
+    const user1DetailedInfo = await User.getUsersDetailedInfo("user1");
+    expect(user1DetailedInfo.username).toEqual("user1");
+    expect(user1DetailedInfo.email).toEqual("u1@gmail.com");
+
+    //user1 should have 2 recipes and 1 remix.
+    expect(user1DetailedInfo.recipes.length).toEqual(2);
+    expect(user1DetailedInfo.recipes[0].name).toEqual("recipe 1.1");
+    expect(user1DetailedInfo.remixes.length).toEqual(1);
+    expect(user1DetailedInfo.remixes[0].name).toEqual("recipe 2.1 remix");
+  });
+
+  test("Throws a 404 NotFoundError if the username isn't found in the database", async function() {
+    try {
+      await User.getUsersDetailedInfo("doesnotexist");
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The user with username doesnotexist was not found in the database.")
+    }
+  });
+});
+
 /************************************** getUsersRecipeReviews */
 
 describe("getUsersRecipeReviews works as intended", function () {
