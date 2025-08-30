@@ -273,6 +273,21 @@ class User {
     return usersFavoriteRemixes.rows;
   }
 
+  /** Fetches and returns detailed information about the user that will be displayed on the user's main profile page.
+   *  This includes user account information like their username and email, as well as up to 3 of their most recently
+   *  created recipes and remixes.
+   * 
+   *  Returns {username, email, recipes: [ {id, name, description, imageUrl}... ], remixes: [ {id, name, description, originalRecipe, imageUrl}... ]}
+   */
+  static async getUsersDetailedInfo(username) {
+    let userInfo = User.getUserBasicInfo();
+    let userRecipes = User.getRecipesFromUser(username, 3);
+    let userRemixes = User.getRemixesFromUser(username, 3);
+
+    userInfo = {...userInfo, recipes: userRecipes, remixes: userRemixes};
+    return userInfo;
+  }
+
   /** Fetches and returns all recipe reviews belonging to a specific user, newest ones first.
    *  Returns {recipeId, recipeName, title, content, createdAt } for each review.
    * 
