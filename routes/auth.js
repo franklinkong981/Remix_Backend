@@ -20,7 +20,13 @@ const userRegisterSchema = require("../schemas/userRegister.json");
  * User registration endpoint aka Route to add a new user to the database. user object in request body MUST contain username, email, password subject
  * to certain constraints.
  * 
- * Returns success message if successful, throws error if unsuccessful.
+ * CONSTRAINTS
+ * - Required req.body attributes: username, email, password.
+ * - username: string, 5-30 characters
+ * - email: string, not empty, email format.
+ * - password: string, >= 8 characters.
+ * 
+ * Returns {newUserInfo: {username, email}, message: "Successfully registered new user"} throws error if unsuccessful.
  * 
  * Authorization required: None.
  */
@@ -31,6 +37,9 @@ router.post("/register", async function(req, res, next) {
       const inputErrors = inputValidator.errors.map(err => err.stack);
       throw new BadRequestError(inputErrors);
     }
+
+    const newUserInfo = await User.registerNewUser(req.body);
+    return res.status(201).json({newUserInfo, message: "Successfully registered new user"});
   } catch (err) {
     return next(err);
   }
