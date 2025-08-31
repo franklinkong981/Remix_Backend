@@ -136,23 +136,23 @@ async function commonBeforeAll() {
     content: "I like this recipe the best!"
   });
 
-  await Recipe.addRecipe(2, 3, {
+  await Recipe.addReview(2, 3, {
     title: "My second favorite!",
     content: "I like this recipe the second best!"
   });
 
   //3 remix reviews: user1 reviews the recipe 1.1 remix (that adds tomatoes) and recipe 2.1 remix 1 (adds mutton), user2 reviews recipe 2.1 remix 1 (adds mutton) 
-  await Remix.addRemix(1, 3, {
+  await Remix.addReview(1, 3, {
     title: "I love vegetables!",
     content: "I'm going to add more vegetables to this remix later."
   });
 
-  await Remix.addRemix(1, 1, {
+  await Remix.addReview(1, 1, {
     title: "New meat is good",
     content: "I really enjoy this new recipe that adds a meat"
   });
 
-  await Remix.addRemix(2, 1, {
+  await Remix.addReview(2, 1, {
     title: "I love meat!",
     content: "I'm going to add another meat to this remix later."
   });

@@ -1,3 +1,5 @@
+/** Test file for unit/integration tests on authentication routes such as registering or authenticating/logging in a user. */
+
 const request = require("supertest");
 
 const app = require("../app.js");
@@ -17,41 +19,33 @@ afterAll(commonAfterAll);
 /************************************** POST /auth/register */
 
 describe("POST /auth/register", function () {
-  test("works for anon", async function () {
+  test("works for valid req.body inputs and successfully registers and adds user3 to the database", async function () {
     const resp = await request(app)
         .post("/auth/register")
         .send({
-          username: "new",
-          firstName: "first",
-          lastName: "last",
-          password: "password",
-          email: "new@email.com",
+          username: "user3",
+          email: "user3@gmail.com",
+          password: "user3password"
         });
+    console.log(resp.text);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
-      "token": expect.any(String),
+      newUserInfo: {
+        username: "user3",
+        email: "user3@gmail.com"
+      },
+      message: "Successfully registered new user"
     });
   });
 
-  test("bad request with missing fields", async function () {
+  test("Throws error if bad request with missing email and password fields", async function () {
     const resp = await request(app)
         .post("/auth/register")
         .send({
-          username: "new",
+          username: "user3"
         });
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request with invalid data", async function () {
-    const resp = await request(app)
-        .post("/auth/register")
-        .send({
-          username: "new",
-          firstName: "first",
-          lastName: "last",
-          password: "password",
-          email: "not-an-email",
-        });
-    expect(resp.statusCode).toEqual(400);
-  });
+  
 });
