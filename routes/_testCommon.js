@@ -40,70 +40,122 @@ async function commonBeforeAll() {
     password: "user2password"
   });
 
-  /* await Company.create(
-      {
-        handle: "c1",
-        name: "C1",
-        numEmployees: 1,
-        description: "Desc1",
-        logoUrl: "http://c1.img",
-      });
-  await Company.create(
-      {
-        handle: "c2",
-        name: "C2",
-        numEmployees: 2,
-        description: "Desc2",
-        logoUrl: "http://c2.img",
-      });
-  await Company.create(
-      {
-        handle: "c3",
-        name: "C3",
-        numEmployees: 3,
-        description: "Desc3",
-        logoUrl: "http://c3.img",
-      });
-  await Company.create(
-    {
-      handle: "c4",
-      name: "C4",
-      numEmployees: 4,
-      description: "Desc4",
-      logoUrl: "http://c4.img",
-    });
-  
-  await Job.create({title: 'j1', salary: 100, equity: 0.6, companyHandle: 'c1'});
-  await Job.create({title: 'j2', salary: 150, equity: 0.5, companyHandle: 'c2'});
-  await Job.create({title: 'j3', salary: 200, equity: 0.0, companyHandle: 'c3'});
-  await Job.create({title: 'j4', salary: 50, equity: 0.0, companyHandle: 'c1'});
-
-  await User.register({
-    username: "u1",
-    firstName: "U1F",
-    lastName: "U1L",
-    email: "user1@user.com",
-    password: "password1",
-    isAdmin: true,
-  });
-  await User.register({
-    username: "u2",
-    firstName: "U2F",
-    lastName: "U2L",
-    email: "user2@user.com",
-    password: "password2",
-    isAdmin: false,
-  });
-  await User.register({
-    username: "u3",
-    firstName: "U3F",
-    lastName: "U3L",
-    email: "user3@user.com",
-    password: "password3",
-    isAdmin: false,
+  //3 recipes: Recipe 1.1 by user 1 is a vegetable recipe, recipe 1.2 by user 1 is a fruit blender recipe, recipe 2.1 by user 2 is a meat recipe.
+  await Recipe.addRecipe(1, {
+    name: "recipe 1.1",
+    description: "The first recipe by user 1",
+    ingredients: "Onions, celery, garlic",
+    directions: "Put everything in a pot and let it cook",
+    servings: 4,
+    imageUrl: "http://recipe1.img"
   });
 
-  await User.applyToJob("u2", 1); */
+  await Recipe.addRecipe(1, {
+    name: "recipe 1.2",
+    description: "The second recipe by user 1",
+    ingredients: "Cherries, apple, water",
+    directions: "Put everything into blender",
+    cookingTime: 10,
+    imageUrl: "http://recipe2.img"
+  });
+
+  await Recipe.addRecipe(2, {
+    name: "recipe 2.1",
+    description: "The first recipe by user 2",
+    ingredients: "beef, chicken, pork",
+    directions: "Let it cook in the oven",
+    cookingTime: 120,
+    servings: 3
+  });
+
+  //4 remixes: Recipe 2.1 (meat recipe) remix 1 by user 1 adds mutton, recipe 2.1 (meat recipe) remix 2 by user 2 adds mutton and rabbit.
+  // Recipe 1.1 remix by user 2 adds a new vegetable: Tomatoes. Recipe 1.2 remix by user 2 adds more ice.
+  await Remix.addRemix(1, 3, {
+    name: "recipe 2.1 remix 1",
+    description: "The first remix of recipe 2.1 by user 1",
+    purpose: "Add a new meat",
+    ingredients: "beef, chicken, pork, mutton",
+    directions: "Let all the meats cook in the oven",
+    servings: 5,
+    imageUrl: "http://remix1.img"
+  });
+
+  await Remix.addRemix(2, 3, {
+    name: "recipe 2.1 remix 2",
+    description: "The second remix of recipe 2.1 by user 2",
+    purpose: "Add 2 new meats",
+    ingredients: "beef, chicken, pork, mutton, rabbit",
+    directions: "Let all the meats including rabbit meat cook in the oven",
+    servings: 6,
+    imageUrl: "http://remix2.img"
+  });
+
+  await Remix.addRemix(2, 1, {
+    name: "recipe 1.1 remix",
+    description: "The remix of recipe 1.1 by user 2",
+    purpose: "Add a new vegetable",
+    ingredients: "Onions, celery, garlic, tomatoes",
+    directions: "Put everything in a pot and let it cook",
+    cookingTime: 40,
+    imageUrl: "http://remix3.img"
+  });
+
+  await Remix.addRemix(2, 2, {
+    name: "recipe 1.2 remix",
+    description: "The remix of recipe 1.2 by user 2",
+    purpose: "Add more ice",
+    ingredients: "Cherries, apple, water, ice",
+    directions: "Put everything into a blender and let ice melt",
+    cookingTime: 12,
+    servings: 2
+  });
+
+  //user1 likes recipe 1.1 (vegetable recipe) and recipe 2.1 (meat recipe). user2 likes recipe 1.2 (fruit blender recipe).
+  //user1 likes recipe 2.1 remix 2 (meats + mutton + rabbit). user2 likes recipe 2.1 remix 1 (+ mutton) and recipe 2.1 remix 2 (+ mutton and rabbit).
+  await User.addRecipeToFavorites("user1", 1);
+  await User.addRecipeToFavorites("user1", 3);
+  await User.addRecipeToFavorites("user2", 2);
+
+  await User.addRemixToFavorites("user1", 2);
+  await User.addRemixToFavorites("user2", 1);
+  await User.addRemixToFavorites("user2", 2);
+
+  //4 recipe reviews: user1 reviews recipe 1.1 and recipe 2.1, user2 reviews recipe 1.2 and recipe 2.1
+  await Recipe.addReview(1, 1, {
+    title: "Yum!",
+    content: "I really like this recipe!"
+  });
+
+  await Recipe.addReview(1, 3, {
+    title: "Another delicious recipe!",
+    content: "I make this all the time!"
+  });
+
+  await Recipe.addReview(2, 2, {
+    title: "My favorite!",
+    content: "I like this recipe the best!"
+  });
+
+  await Recipe.addRecipe(2, 3, {
+    title: "My second favorite!",
+    content: "I like this recipe the second best!"
+  });
+
+  //3 remix reviews: user1 reviews the recipe 1.1 remix (that adds tomatoes) and recipe 2.1 remix 1 (adds mutton), user2 reviews recipe 2.1 remix 1 (adds mutton) 
+  await Remix.addRemix(1, 3, {
+    title: "I love vegetables!",
+    content: "I'm going to add more vegetables to this remix later."
+  });
+
+  await Remix.addRemix(1, 1, {
+    title: "New meat is good",
+    content: "I really enjoy this new recipe that adds a meat"
+  });
+
+  await Remix.addRemix(2, 1, {
+    title: "I love meat!",
+    content: "I'm going to add another meat to this remix later."
+  });
 }
 
 async function commonBeforeEach() {
@@ -119,8 +171,8 @@ async function commonAfterAll() {
 }
 
 
-const u1Token = createToken({ username: "u1", isAdmin: true });
-const u2Token = createToken({ username: "u2", isAdmin: false});
+const user1Token = createToken({ username: "user1", email: "user1@gmail.com" });
+const user2Token = createToken({ username: "user2", email: "user2@gmail.com"});
 
 
 module.exports = {
@@ -128,6 +180,6 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  u1Token,
-  u2Token
+  user1Token,
+  user2Token
 };
