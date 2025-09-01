@@ -13,6 +13,7 @@ const User = require("../models/user.js");
 
 const jsonschema = require("jsonschema");
 const userRegisterSchema = require("../schemas/userRegister.json");
+const userLoginSchema = require("../schemas/userLogin.json");
 
 /**
  * POST /auth/register: Req.body {user: {username, email, password}} => success message is successful.
@@ -21,7 +22,7 @@ const userRegisterSchema = require("../schemas/userRegister.json");
  * to certain constraints.
  * 
  * CONSTRAINTS
- * - Required req.body attributes: username, email, password.
+ * - Required req.body attributes: username, email, password. NOTHING ELSE.
  * - username: string, 5-30 characters
  * - email: string, not empty, email format.
  * - password: string, >= 8 characters.
@@ -49,6 +50,8 @@ router.post("/register", async function(req, res, next) {
  *
  * User login endpoint. If successful (username and password match info in database), returns user information and an encrypted JWT token
  * which can be used to authenticate further requests.
+ * 
+ * Only constraint in req.body is that both username and password must be present, NOTHING ELSE.
  *
  * Authorization required: none
  */
