@@ -45,4 +45,29 @@ router.post("/register", async function(req, res, next) {
   }
 });
 
+/** POST /auth/login:  { username, password } => { user: {username, email}, token }
+ *
+ * User login endpoint. If successful (username and password match info in database), returns user information and an encrypted JWT token
+ * which can be used to authenticate further requests.
+ *
+ * Authorization required: none
+ */
+
+router.post("/login", async function (req, res, next) {
+  try {
+    const inputValidator = jsonschema.validate(req.body, userLoginSchema);
+    if (!inputValidator.valid) {
+      const inputErrors = inputValidator.errors.map(e => e.stack);
+      throw new BadRequestError(inputErrors);
+    }
+
+    const { username, password } = req.body;
+    const user = await User.authenticateUser(username, password);
+    const token = createToken(user);
+    return res.json({ user, token });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
