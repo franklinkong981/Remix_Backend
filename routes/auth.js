@@ -65,9 +65,9 @@ router.post("/login", async function (req, res, next) {
     }
 
     const { username, password } = req.body;
-    const user = await User.authenticateUser(username, password);
-    const token = createToken(user);
-    return res.json({ user, token });
+    const userInfo = await User.authenticateUser(username, password);
+    const token = createToken(userInfo);
+    return res.status(200).json({ userInfo, token });
   } catch (err) {
     return next(err);
   }
