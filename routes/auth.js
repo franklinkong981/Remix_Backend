@@ -53,7 +53,7 @@ router.post("/register", async function(req, res, next) {
  * 
  * Only constraint in req.body is that both username and password must be present, NOTHING ELSE.
  *
- * Authorization required: none
+ * Authorization required: None
  */
 
 router.post("/login", async function (req, res, next) {
