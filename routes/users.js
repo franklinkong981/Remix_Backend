@@ -10,14 +10,11 @@ const {ensureLoggedIn, ensureIsCorrectUser} = require("../middleware/auth.js");
 
 const jsonschema = require("jsonschema");
 
+/** Helper function that validates the user search query in the request query string for GET /users. There should only be one attribute: Username. Throws BadRequestError otherwise. */
 function validateUserSearchQuery(query) {
   for (const key of Object.keys(query)) {
     if (key !== "username") {
-      throw new BadRequestError("The query string must only contain the non-empty property 'username'");
-    }
-
-    if (!(Object.hasOwn(query, "username"))) {
-      throw new BadRequestError("The query string must contain the non-empty property 'username'");
+      throw new BadRequestError("The query string must only contain the non-empty property 'username'.");
     }
   }
 }
@@ -25,6 +22,7 @@ function validateUserSearchQuery(query) {
 /**
  * GET /users => {users: [{username, email}, ...]}
  * 
+ * Endpoint that allows retrieval of basic user information and/or searching for users by username.
  * If request object contains a query string with property "username", returns username and email for all users (sorted by username alphabetical order)
  * whose usernames contain the "username" query search term.
  * 
