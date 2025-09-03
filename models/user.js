@@ -113,6 +113,8 @@ class User {
 
   /** Searches for users in the database whose usernames contain the search term and returns all matching usernames in alphabetical order.
    *  Returns all usernames if the search term is undefined or empty.
+   * 
+   *  Returns {username, email} for all matching users or for all users if searchTerm is empty.
    */
   static async searchUsers(searchTerm) {
     let searchResults;
