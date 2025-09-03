@@ -115,19 +115,19 @@ class User {
    *  Returns all usernames if the search term is undefined or empty.
    */
   static async searchUsers(searchTerm) {
-    let matchingUsers;
+    let searchResults;
 
     if (searchTerm) {
-      matchingUsers = await db.query(
-      `SELECT username FROM users WHERE username ILIKE $1 ORDER BY username`,
+      let matchingUsers = await db.query(
+      `SELECT username, email FROM users WHERE username ILIKE $1 ORDER BY username`,
       [`%${searchTerm}%`]
       );
+      searchResults = matchingUsers.rows;
     } else {
-      matchingUsers = await db.query(`SELECT username FROM users`);
+      searchResults = await User.getAllUsers();
     } 
 
     //even if searchResults is empty, don't throw error, just return nothing.
-    const searchResults = matchingUsers.rows;
     return searchResults;
   }
 
