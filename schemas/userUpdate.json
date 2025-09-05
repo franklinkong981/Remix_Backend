@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 30
+    },
+    "email": {
+      "type": "string",
+      "minLength": 1,
+      "format": "email"
+    }
+  },
+  "additionalProperties": false,
+  "minProperties": 1
+}

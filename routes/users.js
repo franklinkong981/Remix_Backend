@@ -9,6 +9,7 @@ const User = require("../models/user.js");
 const {ensureLoggedIn, ensureIsCorrectUser} = require("../middleware/auth.js");
 
 const jsonschema = require("jsonschema");
+const userUpdateSchema = require("../schemas/userUpdate.json");
 
 /** Helper function that validates the user search query in the request query string for GET /users. There should only be one attribute: Username. Throws BadRequestError otherwise. */
 function validateUserSearchQuery(query) {
