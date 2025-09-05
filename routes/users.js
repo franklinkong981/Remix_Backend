@@ -20,7 +20,7 @@ function validateUserSearchQuery(query) {
 }
 
 /**
- * GET /users => {users: [{username, email}, ...]}
+ * GET /users => {allUsers: [{username, email}, ...]}
  * 
  * Endpoint that allows retrieval of basic user information and/or searching for users by username.
  * If request object contains a query string with property "username", returns username and email for all users (sorted by username alphabetical order)
@@ -50,6 +50,34 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
   }
 });
 
+/** PATCH /users/[username] { username, email } => { updatedUser: {username, email} }
+ * 
+ *  Endpoint where a logged in user can update their information. 
+ * 
+ *  CONSTRAINTS:
+ *  - req.body must include AT LEAST one attribute: Username or email.
+ *  - Can't have attributes other than username and email.
+ *  - Updated username must be between 5-30 characters.
+ *  - Updated email has to be proper email format.
+ * 
+ *  Returns newly updated username and email in updatedUser object.
+ *
+ * Authorization required: logged in and username must match.
+ **/
 
+router.patch("/:username", ensureLoggedIn, ensureIsCorrectUser, async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, userUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const user = await User.update(req.params.username, req.body);
+    return res.json({ updatedUser: user });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 module.exports = router;
