@@ -68,14 +68,14 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
 
 router.patch("/:username", ensureLoggedIn, ensureIsCorrectUser, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, userUpdateSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
+    const inputValidator = jsonschema.validate(req.body, userUpdateSchema);
+    if (!inputValidator.valid) {
+      const inputErrors = inputValidator.errors.map(e => e.stack);
+      throw new BadRequestError(inputErrors);
     }
 
-    const user = await User.update(req.params.username, req.body);
-    return res.json({ updatedUser: user });
+    const user = await User.updateUser(req.params.username, req.body);
+    return res.status(200).json({ updatedUser: user });
   } catch (err) {
     return next(err);
   }

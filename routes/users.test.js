@@ -68,3 +68,31 @@ describe("GET /users works for intended", function () {
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** PATCH /users/:username */
+
+describe("PATCH /users/:username works as expected", function () {
+  test("user1, logged in, is able to successfully update their email without issue", async function () {
+    const resp = await request(app)
+        .patch("/users/user1")
+        .send({
+          email: "user1update@gmail.com"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.updatedUser.username).toEqual("user1");
+    expect(resp.body.updatedUser.email).toEqual("user1update@gmail.com");
+  });
+
+  test("Can't update user1's profile information if user sending request isn't logged in", async function () {
+    const resp = await request(app)
+        .patch("/users/user1")
+        .send({
+          email: "user1update@gmail.com"
+        });
+    
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});

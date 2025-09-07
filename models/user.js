@@ -149,7 +149,8 @@ class User {
     //updated username and email must still meet the database requirements.
     if (updateData.username && (updateData.username.length < 5 || updateData.username.length > 30)) {
       throw new BadRequestError("The new username must be between 5-30 characters.");
-    } else if (updateData.email && !(updateData["email"].includes("@"))) {
+    }
+    if (updateData.email && !(updateData["email"].includes("@"))) {
       throw new BadRequestError("The new email must be valid.");
     }
 

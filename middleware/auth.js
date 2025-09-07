@@ -57,6 +57,7 @@ function ensureIsCorrectUser(req, res, next) {
     if (userPayload.username != req.params.username) {
       throw new UnauthorizedError("You can only edit/delete your own recipes/remixes/reviews!");
     }
+    return next();
   } catch (err) {
     return next(err);
   }
