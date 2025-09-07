@@ -95,4 +95,52 @@ describe("PATCH /users/:username works as expected", function () {
     expect(resp.statusCode).toEqual(401);
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
+
+  test("user2 can't update user1's profile information", async function() {
+    const resp = await request(app)
+        .patch("/users/user1")
+        .send({
+          email: "user1update@gmail.com"
+        })
+        .set("authorization", `${user2Token}`);
+
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You can only edit/delete your own");
+  });
+
+  test("Throws BadRequestError if body is empty, req.body must contain at least one attribute", async function () {
+    const resp = await request(app)
+        .patch("/users/user1")
+        .send({})
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("does not meet minimum property length of 1");
+  });
+
+  test("Throws BadRequestError if body contains attributes to update other than username and email", async function() {
+    const resp = await request(app)
+        .patch("/users/user1")
+        .send({
+          email: "user1update@gmail.com",
+          title: "The new user 1"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("not allowed to have the additional property");
+    expect(resp.error.text).toContain("title");
+  });
+
+  test("Throws BadRequestError if username and/or email to update isn't validated/has the wrong length/format", async function() {
+    const resp = await request(app)
+        .patch("/users/user1")
+        .send({
+          username: ""
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance.username does not meet minimum length of 5");
+  });
 });

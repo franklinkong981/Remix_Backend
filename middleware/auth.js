@@ -55,7 +55,7 @@ function ensureIsCorrectUser(req, res, next) {
     const userPayload = res.locals.user;
     if (!userPayload) throw new UnauthorizedError("You must be logged in to perform this action!");
     if (userPayload.username != req.params.username) {
-      throw new UnauthorizedError("You can only edit/delete your own recipes/remixes/reviews!");
+      throw new UnauthorizedError("You can only edit/delete your own recipes/remixes/reviews or information from your own account!");
     }
     return next();
   } catch (err) {
