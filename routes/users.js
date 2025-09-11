@@ -81,4 +81,20 @@ router.patch("/:username", ensureLoggedIn, ensureIsCorrectUser, async function (
   }
 });
 
+/**
+ * GET /users/:username/recipes => {allUerRecipes: [{id, name, description, image_url, created_at}, ...]}
+ * 
+ * Endpoint that allows retrieval of basic detais such as name and description of all recipes created by a specific user.
+ * 
+ * Authorization required: Logged in.
+ */
+router.get("/:username/recipes", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const allUserRecipes = await User.getRecipesFromUser(req.params.username);
+    return res.status(200).json({allUserRecipes});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
