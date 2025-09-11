@@ -14,6 +14,7 @@ const {
   user1Token,
   user2Token,
 } = require("./_testCommon");
+const { getAllRecipesBasicInfo } = require("../models/recipe.js");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -142,5 +143,34 @@ describe("PATCH /users/:username works as expected", function () {
     
     expect(resp.statusCode).toEqual(400);
     expect(resp.error.text).toContain("instance.username does not meet minimum length of 5");
+  });
+});
+
+/************************************** GET /users */
+
+describe("GET /users/:username/recipes works for intended, returning recipe 1.2 first since it was created more recently", function () {
+  test("returns correct information for both recipes created by user1 with user2 logged in", async function() {
+    const resp = await request(app).get("/users/user1/recipes").set("authorization", `${user2Token}`);
+    expect(resp.statusCode).toEqual(200);
+    console.log(resp.body.allUserRecipes);
+    expect(resp.body.allUserRecipes.length).toEqual(2);
+    expect(resp.body.allUserRecipes[1].name).toEqual("recipe 1.1");
+    expect(resp.body.allUserRecipes[1].description).toContain("first recipe by user 1");
+    expect(resp.body.allUserRecipes[1].imageUrl).toEqual(expect.any(String));
+    //expect createdAt to become String, becuase JSON doesn't have a native Date data type.
+    expect(resp.body.allUserRecipes[1].createdAt).toEqual(expect.any(String));
+    expect(resp.body.allUserRecipes[0].name).toEqual("recipe 1.2");
+  });
+
+  test("Throws NotFoundError if query string contains properties other than username", async function() {
+    const resp = await request(app).get("/users/user100/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("username user100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if user sending request is not logged in", async function () {
+    const resp = await request(app).get("/users/user1/recipes");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
