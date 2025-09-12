@@ -82,7 +82,7 @@ router.patch("/:username", ensureLoggedIn, ensureIsCorrectUser, async function (
 });
 
 /**
- * GET /users/:username/recipes => {allUserRecipes: [{id, name, description, image_url, created_at}, ...]}
+ * GET /users/:username/recipes => {allUserRecipes: [{id, name, description, imageUrl, createdAt}, ...]}
  * 
  * Endpoint that allows retrieval of basic detais such as name and description of all recipes created by a specific user.
  * 
@@ -98,7 +98,7 @@ router.get("/:username/recipes", ensureLoggedIn, async function (req, res, next)
 });
 
 /**
- * GET /users/:username/remixes => {allUserRemixes: [{id, name, description, originalRecipe, image_url, created_at}, ...]}
+ * GET /users/:username/remixes => {allUserRemixes: [{id, name, description, originalRecipe, imageUrl, createdAt}, ...]}
  * 
  * Endpoint that allows retrieval of basic detais such as name and description, and original recipe name of all remixes created by a specific user.
  * 
@@ -114,7 +114,7 @@ router.get("/:username/remixes", ensureLoggedIn, async function (req, res, next)
 });
 
 /**
- * GET /users/:username/favorites/recipes => {allUserFavoriteRecipes: [{id, name, description, image_url}, ...] }
+ * GET /users/:username/favorites/recipes => {allUserFavoriteRecipes: [{id, name, description, imageUrl}, ...] }
  * 
  * Endpoint that allows retrieval of a specific user's favorite recipes. Gives basic info such as recipe id, name, description, and image.
  * 
@@ -124,6 +124,22 @@ router.get("/:username/favorites/recipes", ensureLoggedIn, async function (req, 
   try {
     const allUserFavoriteRecipes = await User.getUsersFavoriteRecipes(req.params.username);
     return res.status(200).json({allUserFavoriteRecipes});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * GET /users/:username/favorites/remixes => {allUserFavoriteRemixes: [{id, name, description, originalRecipe, imageUrl}, ...] }
+ * 
+ * Endpoint that allows retrieval of a specific user's favorite remixes. Gives basic info.
+ * 
+ * Authorization required: Logged in. NOTE that other logged in users are allowed to see a specific user's favorite remixes.
+ */
+router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const allUserFavoriteRemixes = await User.getUsersFavoriteRemixes(req.params.username);
+    return res.status(200).json({allUserFavoriteRemixes});
   } catch (err) {
     return next(err);
   }
