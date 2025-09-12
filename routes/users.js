@@ -113,4 +113,20 @@ router.get("/:username/remixes", ensureLoggedIn, async function (req, res, next)
   }
 });
 
+/**
+ * GET /users/:username/favorites/recipes => {allUserFavoriteRecipes: [{id, name, description, image_url}, ...] }
+ * 
+ * Endpoint that allows retrieval of a specific user's favorite recipes. Gives basic info such as recipe id, name, description, and image.
+ * 
+ * Authorization required: Logged in. NOTE that other logged in users are allowed to see a specific user's favorite recipes.
+ */
+router.get("/:username/favorites/recipes", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const allUserFavoriteRecipes = await User.getUsersFavoriteRecipes(req.params.username);
+    return res.status(200).json({allUserFavoriteRecipes});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
