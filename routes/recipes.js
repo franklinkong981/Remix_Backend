@@ -51,6 +51,20 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
   }
 });
 
-
+/**
+ * GET /recipes/:recipeId/remixes => { remixes: [ {id, name, description, imageUrl, createdAt}, ...] }
+ * 
+ * Endpoint for fetching basic information on all remixes of a recipe with a specific id.
+ * 
+ * Authorization requried: Logged in.
+ */
+router.get("/:recipeId/remixes", ensureLoggedIn, async function(req, res, next) {
+  try {
+    const remixes = Recipe.getRemixes(req.params.recipeId);
+    return res.status(200).json({remixes});
+  } catch (err) {
+    return next(err);
+  }
+});
 
 module.exports = router;
