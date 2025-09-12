@@ -374,5 +374,21 @@ describe("POST /users/favorites/recipes/:recipeId works as expected", function (
     expect(resp.body.allUserFavoriteRecipes[1].name).toEqual("recipe 1.2");
   });
 
-  
+  test("Throws BadRequestError if the recipe with id supplied is aleady in user1's favorites", async function() {
+    const resp = await request(app).post("/users/favorites/recipes/1").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("Recipe id 1 is already a favorite of user1.")
+  });
+
+  test("Throws NotFoundError if recipe id supplied isn't found in the database", async function() {
+    const resp = await request(app).post("/users/favorites/recipes/100").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("recipe with id of 100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if user sending request is not logged in", async function () {
+    const resp = await request(app).post("/users/favorites/recipes/2");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
 });
