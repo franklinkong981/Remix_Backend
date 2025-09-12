@@ -21,16 +21,16 @@ function validateRecipeSearchQuery(query) {
 }
 
 /**
- * GET /users => {allUsers: [{username, email}, ...]}
+ * GET /recipes => {recipeSearchResults: [{id, name, description, imageUrl, createdAt}, ...]}
  * 
- * Endpoint that allows retrieval of basic user information and/or searching for users by username.
- * If request object contains a query string with property "username", returns username and email for all users (sorted by username alphabetical order)
- * whose usernames contain the "username" query search term.
+ * Endpoint for recipe searchbar search results in the app. Returns basic information for all recipes whose names match the search term.
+ * If request object contains a query string with property "recipeName", returns recipe information for all recipes whose names match the search term,
+ * sorted by name in alphabetical order.
  * 
- * Otherwise, returns username and email of all users in the database sorted by username alphabetical order.
+ * Otherwise, returns basic information on all recipes in the database sorted by name in alphabetical order.
  * 
  * CONSTRAINTS:
- * If query string is present, it must only contain one attribute: username. BadRequestError will be thrown otherwise.
+ * If query string is present, it must only contain one attribute: recipeName. BadRequestError will be thrown otherwise.
  * 
  * Authorization required: Logged in.
  */
@@ -42,7 +42,7 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
     } else {
       validateRecipeSearchQuery(req.query);
 
-      allRecipes = await Recipe.searchRecipes(req.query.username);
+      allRecipes = await Recipe.searchRecipes(req.query.recipeName);
     }
 
     return res.status(200).json({recipeSearchResults: allRecipes});

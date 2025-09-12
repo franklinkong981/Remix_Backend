@@ -21,7 +21,7 @@ function validateUserSearchQuery(query) {
 }
 
 /**
- * GET /users => {allUsers: [{username, email}, ...]}
+ * GET /users => {userSearchResults: [{username, email}, ...]}
  * 
  * Endpoint that allows retrieval of basic user information and/or searching for users by username.
  * If request object contains a query string with property "username", returns username and email for all users (sorted by username alphabetical order)
