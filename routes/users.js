@@ -161,4 +161,20 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
+/**
+ * GET /users/:username/reviews/recipes => { userRecipeReviews: [ {recipeId, recipeName, title, content, createdAt}, ... ] }
+ * 
+ * Endpoint for fetching information on all original recipe reviews by a specific user, as well as the name and id of the recipe of each review is on.
+ * 
+ * Authorization required: Logged in. NOTE that other logged in users are allowed to see any user's list of recipe reviews.
+ */
+router.get("/:username/reviews/recipes", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const userRecipeReviews = await User.getUsersRecipeReviews(req.params.username);
+    return res.status(200).json({userRecipeReviews});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
