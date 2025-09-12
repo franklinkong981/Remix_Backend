@@ -228,3 +228,30 @@ describe("GET /users/:username/favorites/recipes works for intended", function (
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** GET /users/:username/favorites/remixes */
+
+describe("GET /users/:username/favorites/remixes works for intended", function () {
+  test("returns correct information for both remixes favorited by user2 with user1 logged in, returning results in alphabetical order", async function() {
+    const resp = await request(app).get("/users/user2/favorites/remixes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserFavoriteRemixes.length).toEqual(2);
+    expect(resp.body.allUserFavoriteRemixes[0].name).toEqual("recipe 2.1 remix 1");
+    expect(resp.body.allUserFavoriteRemixes[1].name).toEqual("recipe 2.1 remix 2");
+    expect(resp.body.allUserFavoriteRemixes[0].description).toEqual(expect.any(String));
+    expect(resp.body.allUserFavoriteRemixes[0].originalRecipe).toEqual("recipe 2.1");
+    expect(resp.body.allUserFavoriteRemixes[0].imageUrl).toEqual(expect.any(String));
+  });
+
+  test("Throws NotFoundError if username supplied isn't found in the database", async function() {
+    const resp = await request(app).get("/users/user100/favorites/remixes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("username user100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if user sending request is not logged in", async function () {
+    const resp = await request(app).get("/users/user1/favorites/remixes");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
