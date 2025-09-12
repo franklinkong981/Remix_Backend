@@ -148,11 +148,10 @@ describe("PATCH /users/:username works as expected", function () {
 
 /************************************** GET /users/:username/recipes */
 
-describe("GET /users/:username/recipes works for intended, returning recipe 1.2 first since it was created more recently", function () {
-  test("returns correct information for both recipes created by user1 with user2 logged in", async function() {
+describe("GET /users/:username/recipes works for intended", function () {
+  test("returns correct information for both recipes created by user1 with user2 logged in, returning recipe 1.2 first since it was created more recently", async function() {
     const resp = await request(app).get("/users/user1/recipes").set("authorization", `${user2Token}`);
     expect(resp.statusCode).toEqual(200);
-    console.log(resp.body.allUserRecipes);
     expect(resp.body.allUserRecipes.length).toEqual(2);
     expect(resp.body.allUserRecipes[1].name).toEqual("recipe 1.1");
     expect(resp.body.allUserRecipes[1].description).toContain("first recipe by user 1");
@@ -170,6 +169,35 @@ describe("GET /users/:username/recipes works for intended, returning recipe 1.2 
 
   test("Throws UnauthorizedError if user sending request is not logged in", async function () {
     const resp = await request(app).get("/users/user1/recipes");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
+
+/************************************** GET /users/:username/remixes */
+
+describe("GET /users/:username/remixes works for intended, returning recipe 1.2 first since it was created more recently", function () {
+  test("returns correct information for both recipes created by user2 with user1 logged in and returns remixes in chronological order", async function() {
+    const resp = await request(app).get("/users/user2/remixes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserRemixes.length).toEqual(3);
+    expect(resp.body.allUserRemixes[0].name).toEqual("recipe 1.2 remix");
+    expect(resp.body.allUserRemixes[0].description).toEqual("The remix of recipe 1.2 by user 2");
+    expect(resp.body.allUserRemixes[0].originalRecipe).toEqual("recipe 1.2");
+    //expect createdAt to become String, becuase JSON doesn't have a native Date data type.
+    expect(resp.body.allUserRemixes[0].createdAt).toEqual(expect.any(String));
+    expect(resp.body.allUserRemixes[1].name).toEqual("recipe 1.1 remix");
+    expect(resp.body.allUserRemixes[2].name).toEqual("recipe 2.1 remix 2");
+  });
+
+  test("Throws NotFoundError if query string contains properties other than username", async function() {
+    const resp = await request(app).get("/users/user100/remixes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("username user100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if user sending request is not logged in", async function () {
+    const resp = await request(app).get("/users/user1/remixes");
     expect(resp.statusCode).toEqual(401);
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
