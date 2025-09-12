@@ -466,3 +466,39 @@ describe("POST /users/favorites/remixes/:remixId works as expected", function ()
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** DELETE /users/favorites/remixes/:remixId */
+
+describe("DELETE /users/favorites/remixes/:remixId works as expected", function () {
+  test("Successfully removes recipe 2.1 remix 2 (id of 2) from user1's list of favorite recipes, list should now be empty", async function() {
+    let resp = await request(app).get("/users/user1/favorites/remixes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserFavoriteRemixes.length).toEqual(1);
+
+    resp = await request(app).delete("/users/favorites/remixes/2").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.result).toEqual("Successfully deleted remix with id of 2 from user1's favorite remixes.");
+
+    resp = await request(app).get("/users/user1/favorites/remixes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserFavoriteRemixes.length).toEqual(0);
+  });
+
+  test("Throws BadRequestError if the remix with id supplied is already not in user1's favorites", async function() {
+    const resp = await request(app).delete("/users/favorites/remixes/1").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("Remix id 1 is already not a favorite of user1.")
+  });
+
+  test("Throws NotFoundError if remix id supplied isn't found in the database", async function() {
+    const resp = await request(app).delete("/users/favorites/remixes/100").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("remix with id of 100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if user sending request is not logged in", async function () {
+    const resp = await request(app).delete("/users/favorites/remixes/2");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
