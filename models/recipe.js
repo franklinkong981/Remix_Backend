@@ -33,26 +33,22 @@ class Recipe {
    *  Returns {id, name, description, imageUrl, createdAt} for each recipe.
    */
   static async searchRecipes(searchTerm) {
-    let matchingRecipes;
+    let searchResults;
 
     if (searchTerm) {
-      matchingRecipes = await db.query(
+      let matchingRecipes = await db.query(
       `SELECT id, name, description, image_url AS "imageUrl", created_at AS "createdAt"
        FROM recipes
        WHERE name ILIKE $1
        ORDER BY name`,
       [`%${searchTerm}%`]
       );
+      searchResults = matchingRecipes.rows;
     } else {
-      matchingRecipes = await db.query(
-        `SELECT id, name, description, image_url AS "imageUrl", created_at AS "createdAt"
-         FROM recipes
-         ORDER BY name`
-      );
+      searchResults = await Recipe.getAllRecipesBasicInfo();
     } 
 
     //even if searchResults is empty, don't throw error, just return nothing.
-    const searchResults = matchingRecipes.rows;
     return searchResults;
   }
 
