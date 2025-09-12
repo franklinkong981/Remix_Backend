@@ -227,4 +227,21 @@ router.delete("/favorites/recipes/:recipeId", ensureLoggedIn, async function (re
   }
 });
 
+/** 
+ * POST /users/favorites/remixes/:remixId => { Success message if successful. }
+ * 
+ * Adds the remix with id of remixId to the currently logged in user's list of favorite remixes.
+ * 
+ * Authorization required: Logged in.
+ */
+router.post("/favorites/remixes/:remixId", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const loggedInUsername = res.locals.user.username;
+    await User.addRemixToFavorites(loggedInUsername, req.params.remixId);
+    return res.status(201).json({result: `Successfully added recipe with id of ${req.params.remixId} to ${loggedInUsername}'s favorite remixes.`});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
