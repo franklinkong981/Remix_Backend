@@ -238,7 +238,7 @@ router.post("/favorites/remixes/:remixId", ensureLoggedIn, async function (req, 
   try {
     const loggedInUsername = res.locals.user.username;
     await User.addRemixToFavorites(loggedInUsername, req.params.remixId);
-    return res.status(201).json({result: `Successfully added recipe with id of ${req.params.remixId} to ${loggedInUsername}'s favorite remixes.`});
+    return res.status(201).json({result: `Successfully added remix with id of ${req.params.remixId} to ${loggedInUsername}'s favorite remixes.`});
   } catch (err) {
     return next(err);
   }
