@@ -356,6 +356,23 @@ describe("GET /users/:username/reviews/remixes works as expected", function () {
   });
 });
 
+/************************************** POST /users/favorites/recipes/:recipeId */
 
+describe("POST /users/favorites/recipes/:recipeId works as expected", function () {
+  test("Successfully adds recipe 1.2 to user1's list of favorite recipes", async function() {
+    let resp = await request(app).get("/users/user1/favorites/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserFavoriteRecipes.length).toEqual(2);
 
+    resp = await request(app).post("/users/favorites/recipes/2").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(201);
+    expect(resp.body.result).toEqual("Successfully added recipe with id of 2 to user1's favorite recipes.");
 
+    resp = await request(app).get("/users/user1/favorites/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserFavoriteRecipes.length).toEqual(3);
+    expect(resp.body.allUserFavoriteRecipes[1].name).toEqual("recipe 1.2");
+  });
+
+  
+});
