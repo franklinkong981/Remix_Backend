@@ -317,7 +317,7 @@ class User {
   }
 
   /** Fetches and returns all remix reviews belonging to a specific user, newest ones first.
-   *  Returns {remixId, title, content, createdAt } for each review.
+   *  Returns {remixId, remixName, title, content, createdAt } for each review.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
    */

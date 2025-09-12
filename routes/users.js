@@ -177,4 +177,20 @@ router.get("/:username/reviews/recipes", ensureLoggedIn, async function (req, re
   }
 });
 
+/**
+ * GET /users/:username/reviews/remixes => { userRemixReviews: [ {remixId, remixName, title, content, createdAt}, ... ] }
+ * 
+ * Endpoint for fetching information on all remix reviews by a specific user, as well as the name and id of the remix of each review is on.
+ * 
+ * Authorization required: Logged in. NOTE that other logged in users are allowed to see any user's list of remix reviews.
+ */
+router.get("/:username/reviews/remixes", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const userRemixReviews = await User.getUsersRemixReviews(req.params.username);
+    return res.status(200).json({userRemixReviews});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
