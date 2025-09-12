@@ -193,4 +193,14 @@ router.get("/:username/reviews/remixes", ensureLoggedIn, async function (req, re
   }
 });
 
+router.post("/favorites/recipes/:recipeId", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const loggedInUsername = res.locals.user.username;
+    await User.addRecipeToFavorites(loggedInUsername, req.params.recipeId);
+    return res.status(201).json({result: `Successfully added recipe with id of ${req.params.recipeId} to ${loggedInUsername}'s favorite recipes`});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
