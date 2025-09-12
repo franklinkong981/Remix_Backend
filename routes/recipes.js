@@ -45,7 +45,7 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
       allRecipes = await Recipe.searchRecipes(req.query.username);
     }
 
-    return res.status(200).json({allRecipes});
+    return res.status(200).json({recipeSearchResults: allRecipes});
   } catch (err) {
     return next(err);
   }
