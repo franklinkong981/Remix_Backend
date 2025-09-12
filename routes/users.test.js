@@ -392,3 +392,40 @@ describe("POST /users/favorites/recipes/:recipeId works as expected", function (
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** DELETE /users/favorites/recipes/:recipeId */
+
+describe("DELETE /users/favorites/recipes/:recipeId works as expected", function () {
+  test("Successfully removes recipe 1.1 from user1's list of favorite recipes", async function() {
+    let resp = await request(app).get("/users/user1/favorites/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserFavoriteRecipes.length).toEqual(2);
+
+    resp = await request(app).delete("/users/favorites/recipes/1").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.result).toEqual("Successfully deleted recipe with id of 1 from user1's favorite recipes.");
+
+    resp = await request(app).get("/users/user1/favorites/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserFavoriteRecipes.length).toEqual(1);
+    expect(resp.body.allUserFavoriteRecipes[0].name).toEqual("recipe 2.1");
+  });
+
+  test("Throws BadRequestError if the recipe with id supplied is already not in user1's favorites", async function() {
+    const resp = await request(app).delete("/users/favorites/recipes/2").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("Recipe id 2 is already not a favorite of user1.")
+  });
+
+  test("Throws NotFoundError if recipe id supplied isn't found in the database", async function() {
+    const resp = await request(app).delete("/users/favorites/recipes/100").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("recipe with id of 100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if user sending request is not logged in", async function () {
+    const resp = await request(app).delete("/users/favorites/recipes/1");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
