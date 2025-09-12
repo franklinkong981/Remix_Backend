@@ -13,8 +13,8 @@ const { authenticateJwt } = require("./middleware/auth");
 //routes imports here
 const authRoutes = require("./routes/auth.js");
 const userRoutes = require("./routes/users.js");
-/*const recipeRoutes = require("./routes/recipes.js");
-const remixRoutes = require("./routes/remixes.js");*/
+const recipeRoutes = require("./routes/recipes.js");
+//const remixRoutes = require("./routes/remixes.js");
 
 const app = express();
 
@@ -34,8 +34,8 @@ app.get('/favicon.ico', (req, res) => res.sendStatus(204));
 //app.use route files here
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
-/*app.use("/recipes", recipeRoutes);
-app.use("/remixes", remixRoutes);*/
+app.use("/recipes", recipeRoutes);
+//app.use("/remixes", remixRoutes);
 
 //Handle 404 errors passed from Express here.
 app.use(function(req, res, next) {

@@ -45,7 +45,7 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
       allUsers = await User.searchUsers(req.query.username);
     }
 
-    return res.status(200).json({allUsers});
+    return res.status(200).json({userSearchResults: allUsers});
   } catch (err) {
     return next(err);
   }
