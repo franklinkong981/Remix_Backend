@@ -210,4 +210,21 @@ router.post("/favorites/recipes/:recipeId", ensureLoggedIn, async function (req,
   }
 });
 
+/** 
+ * DELETE /users/favorites/recipes/:recipeId => { Success message if successful. }
+ * 
+ * Removes the recipe with id of recipeId from currently logged in user's list of favorite recipes.
+ * 
+ * Authorization required: Logged in.
+ */
+router.delete("/favorites/recipes/:recipeId", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const loggedInUsername = res.locals.user.username;
+    await User.removeRecipeFrom(loggedInUsername, req.params.recipeId);
+    return res.status(204).json({result: `Successfully deleted recipe with id of ${req.params.recipeId} from ${loggedInUsername}'s favorite recipes.`});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
