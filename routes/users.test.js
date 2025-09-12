@@ -146,7 +146,7 @@ describe("PATCH /users/:username works as expected", function () {
   });
 });
 
-/************************************** GET /users */
+/************************************** GET /users/:username/recipes */
 
 describe("GET /users/:username/recipes works for intended, returning recipe 1.2 first since it was created more recently", function () {
   test("returns correct information for both recipes created by user1 with user2 logged in", async function() {

@@ -82,7 +82,7 @@ router.patch("/:username", ensureLoggedIn, ensureIsCorrectUser, async function (
 });
 
 /**
- * GET /users/:username/recipes => {allUerRecipes: [{id, name, description, image_url, created_at}, ...]}
+ * GET /users/:username/recipes => {allUserRecipes: [{id, name, description, image_url, created_at}, ...]}
  * 
  * Endpoint that allows retrieval of basic detais such as name and description of all recipes created by a specific user.
  * 
@@ -92,6 +92,22 @@ router.get("/:username/recipes", ensureLoggedIn, async function (req, res, next)
   try {
     const allUserRecipes = await User.getRecipesFromUser(req.params.username);
     return res.status(200).json({allUserRecipes});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * GET /users/:username/remixes => {allUserRemixes: [{id, name, description, originalRecipe, image_url, created_at}, ...]}
+ * 
+ * Endpoint that allows retrieval of basic detais such as name and description, and original recipe name of all remixes created by a specific user.
+ * 
+ * Authorization required: Logged in.
+ */
+router.get("/:username/remixes", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const allUserRemixes = await User.getRemixesFromUser(req.params.username);
+    return res.status(200).json({allUserRemixes});
   } catch (err) {
     return next(err);
   }
