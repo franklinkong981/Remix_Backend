@@ -345,6 +345,7 @@ class User {
    *  Does not return anything upon successful addition.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   *  Throws a NotFoundError if the recipeId supplied doesn't belong to any recipe in the database.
    *  Throws a BadRequestError if the recipe with id recipeId is already in the username's favorites.
    */
   static async addRecipeToFavorites(username, recipeId) {
@@ -354,6 +355,11 @@ class User {
 
     if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
     const userId = userInfo.id;
+
+    const recipe = await db.query(`SELECT name FROM recipes where id = $1`, [recipeId]);
+    const recipeInfo = recipe.rows[0];
+
+    if (!recipeInfo) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
 
     //check to make sure recipeId isn't already in the user's favorites.
     const favoritesCheck = await db.query(
@@ -370,6 +376,7 @@ class User {
    *  Does not return anything upon successful deletion.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   *  Throws a NotFoundError if the recipeId supplied doesn't belong to any recipe in the database.
    *  Throws a BadRequestError if the recipe with id recipeId is already not the username's favorites.
    */
   static async removeRecipeFromFavorites(username, recipeId) {
@@ -379,6 +386,11 @@ class User {
 
     if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
     const userId = userInfo.id;
+
+    const recipe = await db.query(`SELECT name FROM recipes where id = $1`, [recipeId]);
+    const recipeInfo = recipe.rows[0];
+
+    if (!recipeInfo) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
 
     //check to make sure recipeId is actually in the user's favorites.
     const favoritesCheck = await db.query(
@@ -399,6 +411,7 @@ class User {
    *  Does not return anything upon successful addition.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   *  Throws a NotFoundError if the remixId supplied doesn't belong to any remix in the database.
    *  Throws a BadRequestError if the remix with id remixId is already in the username's favorites.
    */
   static async addRemixToFavorites(username, remixId) {
@@ -408,6 +421,11 @@ class User {
 
     if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
     const userId = userInfo.id;
+
+    const remix = await db.query(`SELECT name FROM remixes where id = $1`, [remixId]);
+    const remixInfo = remix.rows[0];
+
+    if (!remixInfo) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
 
     //check to make sure remixId isn't already in the user's favorites.
     const favoritesCheck = await db.query(
@@ -424,6 +442,7 @@ class User {
    *  Does not return anything upon successful deletion.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
+   *  Throws a NotFoundError if the remixId supplied doesn't belong to any remix in the database.
    *  Throws a BadRequestError if the remix with id remixId is already not the username's favorites.
    */
   static async removeRemixFromFavorites(username, remixId) {
@@ -433,6 +452,11 @@ class User {
 
     if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
     const userId = userInfo.id;
+
+    const remix = await db.query(`SELECT name FROM remixes where id = $1`, [remixId]);
+    const remixInfo = remix.rows[0];
+
+    if (!remixInfo) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
 
     //check to make sure recipeId is actually in the user's favorites.
     const favoritesCheck = await db.query(

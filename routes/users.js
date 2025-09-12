@@ -193,6 +193,11 @@ router.get("/:username/reviews/remixes", ensureLoggedIn, async function (req, re
   }
 });
 
+/** 
+ * POST /users/favorites/recipes/:recipeId => { Success message if successful. }
+ * 
+ * Adds the recipe with id of 
+ */
 router.post("/favorites/recipes/:recipeId", ensureLoggedIn, async function (req, res, next) {
   try {
     const loggedInUsername = res.locals.user.username;
