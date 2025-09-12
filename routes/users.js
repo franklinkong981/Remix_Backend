@@ -145,4 +145,20 @@ router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, 
   }
 });
 
+/**
+ * GET /users/:username => { userDetails: {username, email, recipes: [ {id, name, description, imageUrl}, ... ], remixes: [ {id, name, description, originalRecipe, imageUrl}, ... ] } }
+ * 
+ * Endpoint for fetching detailed information about a specific user, fetches all information that will be displayed on the user's profile page.
+ * 
+ * Authorization required: Logged in. NOTE that other logged in users are allowed to see any user's profile page.
+ */
+router.get("/:username", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const userDetails = await User.getUsersDetailedInfo(req.params.username);
+    return res.status(200).json({userDetails});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
