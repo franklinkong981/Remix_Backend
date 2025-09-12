@@ -244,4 +244,21 @@ router.post("/favorites/remixes/:remixId", ensureLoggedIn, async function (req, 
   }
 });
 
+/** 
+ * DELETE /users/favorites/remixes/:remixId => { Success message if successful. }
+ * 
+ * Removes the remix with id of remixId from currently logged in user's list of favorite remixes.
+ * 
+ * Authorization required: Logged in.
+ */
+router.delete("/favorites/remixes/:remixId", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const loggedInUsername = res.locals.user.username;
+    await User.removeRemixFromFavorites(loggedInUsername, req.params.remixId);
+    return res.json({result: `Successfully deleted remix with id of ${req.params.remixId} from ${loggedInUsername}'s favorite remixes.`});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
