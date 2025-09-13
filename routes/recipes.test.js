@@ -93,3 +93,30 @@ describe("GET /recipes/:recipeId/remixes works as intended", function() {
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** GET /recipes/:recipeId/reviews */
+describe("GET /recipes/:recipeId/reviews works as intended", function() {
+  test("Successfully fetches both reviews of recipe 2.1, with user1 logged in, most recently added review should be returned first", async function() {
+    const resp = await request(app).get("/recipes/3/reviews").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.recipeReviews.length).toEqual(2);
+    expect(resp.body.recipeReviews[0].title).toEqual("My second favorite!");
+    expect(resp.body.recipeReviews[0].content).toEqual("I like this recipe the second best!");
+    expect(resp.body.recipeReviews[0].reviewAuthor).toEqual("user2");
+    expect(resp.body.recipeReviews[0].id).toEqual(expect.any(Number));
+    expect(resp.body.recipeReviews[0].createdAt).toEqual(expect.any(String));
+    expect(resp.body.recipeReviews[1].title).toEqual("Another delicious recipe!");
+  });
+
+  test("Throws NotFoundError if recipe with id of recipeId isn't found in the database", async function() {
+    const resp = await request(app).get("/recipes/100/reviews").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("The recipe with id of 100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
+    const resp = await request(app).get("/recipes/3/reviews");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
