@@ -120,7 +120,8 @@ describe("getRecipeDetails works as intended", function() {
     expect(recipe3Details.recipeAuthor).toEqual("user2");
     expect(recipe3Details.name).toEqual("recipe 2.1");
     expect(recipe3Details.description).toEqual("The first recipe by user 2");
-    expect(recipe3Details.ingredients).toContain("pork");
+    expect(recipe3Details.ingredients).t
+    oContain("pork");
     expect(recipe3Details.directions).toContain("oven");
     expect(recipe3Details.cookingTime).toEqual(120);
     expect(recipe3Details.servings).toEqual(3);

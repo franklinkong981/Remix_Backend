@@ -67,3 +67,29 @@ describe("GET /recipes works for intended", function () {
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** GET /recipes/:recipeId/remixes */
+describe("GET /recipes/:recipeId/remixes works as intended", function() {
+  test("Successfully fetches both remixes of recipe 2.1, with user1 logged in, most recently added remix should be returned first", async function() {
+    const resp = await request(app).get("/recipes/3/remixes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.remixes.length).toEqual(2);
+    expect(resp.body.remixes[0].name).toEqual("recipe 2.1 remix 2");
+    expect(resp.body.remixes[0].description).toContain("second remix");
+    expect(resp.body.remixes[0].imageUrl).toEqual(expect.any(String));
+    expect(resp.body.remixes[0].createdAt).toEqual(expect.any(String));
+    expect(resp.body.remixes[1].name).toEqual("recipe 2.1 remix 1");
+  });
+
+  test("Throws NotFoundError if recipe with id of recipeId isn't found in the database", async function() {
+    const resp = await request(app).get("/recipes/100/remixes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("The recipe with id of 100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
+    const resp = await request(app).get("/recipes/3/remixes");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});

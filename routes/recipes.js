@@ -60,7 +60,7 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
  */
 router.get("/:recipeId/remixes", ensureLoggedIn, async function(req, res, next) {
   try {
-    const remixes = Recipe.getRemixes(req.params.recipeId);
+    const remixes = await Recipe.getRemixes(req.params.recipeId);
     return res.status(200).json({remixes});
   } catch (err) {
     return next(err);

@@ -53,7 +53,7 @@ class Recipe {
   }
 
   /** Returns all remixes for the recipe with id of recipeId and sorts them by most recent first.
-   *  Returns {id, name, description, original recipe name, image_url, created_at} for each remix.
+   *  Returns {id, name, description, image_url, created_at} for each remix.
    * 
    *  Throws a NotFoundError if the recipe with id of recipeId isn't found in the database. 
    */
