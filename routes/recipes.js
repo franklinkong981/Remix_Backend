@@ -9,7 +9,7 @@ const Recipe = require("../models/recipe.js");
 const {ensureLoggedIn, ensureIsCorrectUser} = require("../middleware/auth.js");
 
 const jsonschema = require("jsonschema");
-//insert all schemas here.
+const addRecipeSchema = require("../schemas/recipeNew.json");
 
 /** Helper function that validates the recipe search query in the request query string for GET /recipes. There should only be one attribute: recipeName. Throws BadRequestError otherwise. */
 function validateRecipeSearchQuery(query) {
