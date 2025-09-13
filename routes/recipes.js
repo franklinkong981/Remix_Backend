@@ -88,12 +88,46 @@ router.get("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) 
  * 
  * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. All will be used on the page that displays a recipe's details.
  * 
- * Authorization requried: Logged in.
+ * Authorization required: Logged in.
  */
 router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
   try {
     const recipeDetails = await Recipe.getRecipeDetails(req.params.recipeId, 3);
     return res.status(200).json({recipeDetails});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * POST /recipes => { newRecipe: {name, description, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * 
+ * Endpoint for adding a new recipe. Body is subject to the following constraints:
+ * 
+ * req.body CONSTRAINTS:
+ *  - name must be of type string, 1-100 characters.
+ *  - description must be of type string, 1-255 characters.
+ *  - ingredients must be of type string, cannot be empty.
+ *  - directions must be of type string, cannot be empty.
+ *  - cookingTime is optional, but if present, must be of type number and can't be negative.
+ *  - servings is optional, but if present, must be of type number and can't be negative.
+ *  - imageUrl is optional, but if present, must be of type string.
+ * 
+ *  - name, description, ingredients, and directions are required in the body of the request.
+ *  - req.body cannot contain any attributes other than the 7 listed above.
+ * 
+ * Authorization required: Logged in.
+ */
+router.post("/", ensureLoggedIn, async function(req, res, next) {
+  try {
+    const inputValidator = jsonschema.validate(req.body, addRecipeSchema);
+    if (!(inputValidator.valid)) {
+      const inputErrors = inputValidator.errors.map(err => err.stack);
+      throw new BadRequestError(inputErrors);
+    }
+
+    const newRecipe = await Recipe.addRecipe(req.body);
+    return res.status(201).json({newRecipe, message: "Successfully added new recipe"});
   } catch (err) {
     return next(err);
   }

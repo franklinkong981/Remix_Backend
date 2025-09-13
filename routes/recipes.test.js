@@ -162,3 +162,16 @@ describe("GET /recipes/:recipeId works as intended", function() {
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** POST /recipes*/
+
+describe("POST /recipes works as intended", function() {
+  test("user1 successfully adds another recipe with req.body meeting the correct specifications", async function() {
+    const resp = await request(app)
+        .patch("/users/user1")
+        .send({
+          email: "user1update@gmail.com"
+        })
+        .set("authorization", `${user1Token}`);
+  });
+});
