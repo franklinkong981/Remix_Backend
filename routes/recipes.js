@@ -83,4 +83,20 @@ router.get("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) 
   }
 });
 
+/**
+ * GET /recipes/:recipeId => { recipeDetails: [ {id, recipeAuthor, name, description, ingredients, directions, cookingTime, servings, remixes: [ {id, name, description, imageUrl, createdAt}, ... ], reviews: [ {id, reviewAuthor, title, content, createdAt}, ... ], imageUrl, createdAt}, ...] }
+ * 
+ * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. All will be used on the page that displays a recipe's details.
+ * 
+ * Authorization requried: Logged in.
+ */
+router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
+  try {
+    const recipeDetails = await Recipe.getRecipeDetails(req.params.recipeId, 3);
+    return res.status(200).json({recipeDetails});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
