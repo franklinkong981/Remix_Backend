@@ -67,4 +67,20 @@ router.get("/:recipeId/remixes", ensureLoggedIn, async function(req, res, next) 
   }
 });
 
+/**
+ * GET /recipes/:recipeId/reviews => { recipeReviews: [ {id, reviewAuthor, title, content, createdAt}, ...] }
+ * 
+ * Endpoint for fetching information for all reviews of a particular recipe. Will be needed for page that displays all reviews for a recipe.
+ * 
+ * Authorization requried: Logged in.
+ */
+router.get("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) {
+  try {
+    const recipeReviews = await Recipe.getRecipeReviews(req.params.recipeId);
+    return res.status(200).json({recipeReviews});
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
