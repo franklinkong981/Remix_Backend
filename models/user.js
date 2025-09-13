@@ -52,14 +52,14 @@ class User {
    * Authenticate/login a user by first checking to see if the username supplied exists in the database,
    * then comparing the password to the hashed password found in the database.
    * 
-   * Upon successful authentication, returns {username, email} of the logged in user.
+   * Upon successful authentication, returns {id, username, email} of the logged in user.
    * 
    * Throws an UnauthorizedError if username isn't found in the database or password doesn't match.
    */
   static async authenticateUser(username, password) {
     //make sure the user with the username exists in the database first.
     const userInDatabase = await db.query(
-      `SELECT username, email, hashed_password AS password FROM users WHERE username = $1`,
+      `SELECT id, username, email, hashed_password AS password FROM users WHERE username = $1`,
       [username]
     );
 

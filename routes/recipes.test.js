@@ -167,11 +167,36 @@ describe("GET /recipes/:recipeId works as intended", function() {
 
 describe("POST /recipes works as intended", function() {
   test("user1 successfully adds another recipe with req.body meeting the correct specifications", async function() {
-    const resp = await request(app)
-        .patch("/users/user1")
+    let resp = await request(app).get("/users/user1/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserRecipes.length).toEqual(2);
+
+    resp = await request(app)
+        .post("/recipes")
         .send({
-          email: "user1update@gmail.com"
+          name: "New recipe",
+          description: "A brand new recipe I just thought of",
+          ingredients: "Spaghetti, tomato sauce, meatballs",
+          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!",
+          cookingTime: 60,
+          servings: 4,
+          imageUrl: "http://spaghettiandmeatballs.img"
         })
         .set("authorization", `${user1Token}`);
+    
+    console.log(resp.error.text);
+    expect(resp.statusCode).toEqual(201);
+    expect(resp.body.newRecipe.name).toEqual("New recipe");
+    expect(resp.body.newRecipe.description).toContain("brand new recipe");
+    expect(resp.body.newRecipe.ingredients).toContain("meatballs");
+    expect(resp.body.newRecipe.directions).toContain("Pour water in pot");
+    expect(resp.body.newRecipe.cookingTime).toEqual(60);
+    expect(resp.body.newRecipe.servings).toEqual(4);
+    expect(resp.body.message).toEqual("Successfully added new recipe");
+
+    resp = await request(app).get("/users/user1/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserRecipes.length).toEqual(3);
+    expect(resp.body.allUserRecipes[0].name).toEqual("New recipe");
   });
 });

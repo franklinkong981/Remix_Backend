@@ -171,8 +171,8 @@ async function commonAfterAll() {
 }
 
 
-const user1Token = createToken({ username: "user1", email: "user1@gmail.com" });
-const user2Token = createToken({ username: "user2", email: "user2@gmail.com"});
+const user1Token = createToken({id: 1, username: "user1", email: "user1@gmail.com" });
+const user2Token = createToken({id: 2, username: "user2", email: "user2@gmail.com"});
 
 
 module.exports = {

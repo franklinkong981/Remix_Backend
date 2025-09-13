@@ -126,7 +126,8 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
       throw new BadRequestError(inputErrors);
     }
 
-    const newRecipe = await Recipe.addRecipe(req.body);
+    console.log(res.locals.user);
+    const newRecipe = await Recipe.addRecipe(res.locals.user.userId, req.body);
     return res.status(201).json({newRecipe, message: "Successfully added new recipe"});
   } catch (err) {
     return next(err);

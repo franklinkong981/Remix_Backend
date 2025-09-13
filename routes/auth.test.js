@@ -87,6 +87,7 @@ describe("POST /auth/login works as intended", function () {
     expect(resp.statusCode).toEqual(200);
     expect(resp.body).toEqual({
       userInfo: {
+        id: expect.any(Number),
         username: "user1",
         email: "user1@gmail.com"
       },
