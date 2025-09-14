@@ -9,7 +9,8 @@ const {
   ensureIsCorrectUser,
   ensureRecipeBelongsToCorrectUser,
   ensureRecipeReviewBelongsToCorrectUser,
-  ensureRemixBelongsToCorrectUser
+  ensureRemixBelongsToCorrectUser,
+  ensureRemixReviewBelongsToCorrectUser
 } = require("./auth.js");
 
 const {commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll} = require("./_testCommon.js");
@@ -175,6 +176,26 @@ describe("ensureRemixBelongsToCorrectUser works as intended", function() {
       expect(err instanceof ForbiddenError).toBeTruthy();
     }
     await ensureRemixBelongsToCorrectUser(req, res, next); 
+  });
+});
+
+describe("ensureRemixReviewBelongsToCorrectUser works as intended", function() {
+  test("Passes if user1 tries to update the recipe 1.1 remix review (id 1) since user1 created that review", async function() {
+    const req = { params: {reviewId: 1} };
+    const res = { locals: { user: { id: 1, username: "user1", email: "user1@gmail.com" } } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    }
+    await ensureRemixReviewBelongsToCorrectUser(req, res, next);
+  });
+
+  test("Fails if user2 tries to update the remix review created by user1", async function() {
+    const req = { params: {reviewId: 1} };
+    const res = { locals: { user: { id: 2, username: "user2", email: "user2@gmail.com" } } };
+    const next = function (err) {
+      expect(err instanceof ForbiddenError).toBeTruthy();
+    }
+    await ensureRemixReviewBelongsToCorrectUser(req, res, next); 
   });
 });
 

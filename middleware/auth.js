@@ -126,11 +126,32 @@ async function ensureRemixBelongsToCorrectUser(req, res, next) {
   }
 }
 
+/**
+ * This middleware function will be called when a logged in user tries to update a remix review. It will make sure that
+ * the remix review the user is trying to update was created by the user, throws a ForbiddenError otherwise.
+ * 
+ * Only the remix review's author has the ability to update the remix review.
+ */
+async function ensureRemixReviewBelongsToCorrectUser(req, res, next) {
+  try {
+    //by now, the ensureIsLoggedIn middleware has already passed, so we know a payload exists in res.locals.user.
+    const loggedInUsername = res.locals.user.username;
+    const remixReviewAuthor = await Remix.getReviewAuthor(req.params.reviewId);
+    if (loggedInUsername != remixReviewAuthor.username) {
+      throw new ForbiddenError("You can't edit this remix review because you didn't create it.");
+    }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+}
+
 module.exports = {
   authenticateJwt,
   ensureLoggedIn,
   ensureIsCorrectUser,
   ensureRecipeBelongsToCorrectUser,
   ensureRecipeReviewBelongsToCorrectUser,
-  ensureRemixBelongsToCorrectUser
+  ensureRemixBelongsToCorrectUser,
+  ensureRemixReviewBelongsToCorrectUser
 }
