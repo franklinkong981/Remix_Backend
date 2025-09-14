@@ -352,6 +352,26 @@ describe("addReview works as intended", function() {
   });
 });
 
+/************************************** getReviewAuthor */
+
+describe("getReviewAuthor works as intended", function() {
+  test("Gets the correct author for the recipe 2.1 review 1 (id 2) which is user1", async function() {
+    const review2Author = await Recipe.getReviewAuthor(2);
+    expect(review2Author.username).toEqual("user1");
+  });
+
+  test("Throws a NotFoundError if the recipe review isn't found in the database", async function() {
+    try {
+      await Recipe.getReviewAuthor(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The recipe review with id of 100 was not found in the database.")
+    }
+  });
+});
+
 /************************************** updateReview */
 describe("updateReview works as intended", function() {
   test("Partially updates the review of recipe 1.1 by user1 without issue", async function() {

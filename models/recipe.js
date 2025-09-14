@@ -272,7 +272,7 @@ class Recipe {
    */
   static async getReviewAuthor(reviewId) {
     //first check to make sure recipe review with id of recviewId is in the database.
-    const recipeReview = await db.query(`SELECT name FROM recipe_recipes WHERE id = $1`, [reviewId]);
+    const recipeReview = await db.query(`SELECT title FROM recipe_reviews WHERE id = $1`, [reviewId]);
     if (recipeReview.rows.length == 0) throw new NotFoundError(`The recipe review with id of ${reviewId} was not found in the database.`);
 
     let reviewAuthor = await db.query(`SELECT u.username FROM recipe_reviews JOIN users u ON recipe_reviews.user_id = u.id WHERE recipe_reviews.id = $1`, [reviewId]);
