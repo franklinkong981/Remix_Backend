@@ -120,8 +120,7 @@ describe("getRecipeDetails works as intended", function() {
     expect(recipe3Details.recipeAuthor).toEqual("user2");
     expect(recipe3Details.name).toEqual("recipe 2.1");
     expect(recipe3Details.description).toEqual("The first recipe by user 2");
-    expect(recipe3Details.ingredients).t
-    oContain("pork");
+    expect(recipe3Details.ingredients).toContain("pork");
     expect(recipe3Details.directions).toContain("oven");
     expect(recipe3Details.cookingTime).toEqual(120);
     expect(recipe3Details.servings).toEqual(3);
@@ -215,6 +214,26 @@ describe("addRecipe works as intended", function() {
       expect(err instanceof BadRequestError).toBeTruthy();
       expect(err.status).toEqual(400);
       expect(err.message).toEqual("The name of the recipe must be between 1 and 100 characters long.");
+    }
+  });
+});
+
+/************************************** getRecipeAuthor */
+
+describe("getRecipeAuthor works as intended", function() {
+  test("Gets the correct author for recipe 1.1 (id 1) which is user1", async function() {
+    const recipe1Author = await Recipe.getRecipeAuthor(1);
+    expect(recipe1Author.username).toEqual("user1");
+  });
+
+  test("Throws a NotFoundError if the recipe isn't found in the database", async function() {
+    try {
+      await Recipe.getRecipeAuthor(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The recipe with id of 100 was not found in the database.")
     }
   });
 });
