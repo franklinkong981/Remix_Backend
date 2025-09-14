@@ -2,7 +2,12 @@
 
 const jwt = require("jsonwebtoken");
 const {UnauthorizedError} = require("../errors/errors.js");
-const {authenticateJwt, ensureLoggedIn, ensureIsCorrectUser} = require("./auth.js");
+const {
+  authenticateJwt, 
+  ensureLoggedIn, 
+  ensureIsCorrectUser,
+  ensureRecipeBelongsToCorrectUser
+} = require("./auth.js");
 
 const { SECRET_KEY } = require("../config");
 const testJwt = jwt.sign({ username: "user1", email: "user1@gmail.com" }, SECRET_KEY);
@@ -99,6 +104,17 @@ describe("ensureIsCorrectUser works as intended", function() {
       expect(err instanceof UnauthorizedError).toBeTruthy();
     }
     ensureIsCorrectUser(req, res, next);
+  });
+});
+
+describe("ensureRecipeBelongsToCorrectUser works as intended", function() {
+  test("Passes if username in res.locals payload matches the author of the recipe supplied in req.params", async function() {
+    const req = { params: {recipeId: 1} };
+    const res = { locals: { user: { id: 1, username: "user1", email: "user1@gmail.com" } } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    }
+    await ensureRecipeBelongsToCorrectUser(req, res, next);
   });
 });
 

@@ -5,7 +5,8 @@
 
 const jwt = require("jsonwebtoken");
 const {SECRET_KEY} = require("../config.js");
-const {UnauthorizedError} = require("../errors/errors.js");
+const {UnauthorizedError, ForbiddenError} = require("../errors/errors.js");
+const Recipe = require("../models/recipe.js");
 
 /** Middleware function that authenticates the user.
  *  Will be executed before most routes. Checks the authorization attribute in the request headers to see if there is an encrypted
@@ -63,8 +64,26 @@ function ensureIsCorrectUser(req, res, next) {
   }
 }
 
+/**
+ * This middleware function will be called when a logged in user
+ */
+async function ensureRecipeBelongsToCorrectUser(req, res, next) {
+  try {
+    //by now, the ensureIsLoggedIn middleware has already passed, so we know a payload exists in res.locals.user.
+    const loggedInUsername = res.locals.user.username;
+    const recipeAuthor = await Recipe.getRecipeAuthor(req.params.recipeId);
+    if (loggedInUsername != recipeAuthor.username) {
+      throw new ForbiddenError("You can't edit this recipe because you didn't create it.");
+    }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+}
+
 module.exports = {
   authenticateJwt,
   ensureLoggedIn,
-  ensureIsCorrectUser
+  ensureIsCorrectUser,
+  ensureRecipeBelongsToCorrectUser
 }
