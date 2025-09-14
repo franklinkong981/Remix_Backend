@@ -315,6 +315,26 @@ describe("addReview works as intended", function() {
   });
 });
 
+/************************************** getReviewAuthor */
+
+describe("getReviewAuthor works as intended", function() {
+  test("Gets the correct author for the recipe 1.1 remix review (id 1) which is user1", async function() {
+    const remix1Author = await Remix.getReviewAuthor(1);
+    expect(remix1Author.username).toEqual("user1");
+  });
+
+  test("Throws a NotFoundError if the remix review isn't found in the database", async function() {
+    try {
+      await Remix.getReviewAuthor(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The remix review with id of 100 was not found in the database.")
+    }
+  });
+});
+
 /************************************** updateReview */
 describe("updateReview works as intended", function() {
   test("Partially updates the review of the recipe 1.1 remix by user1 without issue", async function() {
