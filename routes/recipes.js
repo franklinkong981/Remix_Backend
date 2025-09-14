@@ -127,7 +127,6 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
       throw new BadRequestError(inputErrors);
     }
 
-    console.log(res.locals.user);
     const newRecipe = await Recipe.addRecipe(res.locals.user.userId, req.body);
     return res.status(201).json({newRecipe, message: "Successfully added new recipe"});
   } catch (err) {
@@ -137,7 +136,14 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
 
 router.patch("/:recipeId", ensureLoggedIn, async function(req, res, next) {
   try {
-
+    const inputValidator = jsonschema.validate(req.body, updateRecipeSchema);
+    if (!(inputValidator.valid)) {
+      const inputErrors = inputValidator.errors.map(err => err.stack);
+      throw new BadRequestError(inputErrors);
+    }
+    
+    const updatedRecipe = await Recipe.updateRecipe(req.params.recipeId, req.body);
+    return res.status(200).json({updatedRecipe, message: `Successfully updated the recipe with id ${req.params.recipeId}`});
   } catch (err) {
     return next(err);
   }
