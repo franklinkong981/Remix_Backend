@@ -129,3 +129,23 @@ describe("ensureRecipeBelongsToCorrectUser works as intended", function() {
   });
 });
 
+describe("ensureRecipeReviewBelongsToCorrectUser works as intended", function() {
+  test("Passes if username in res.locals payload matches the author of the recipe review supplied in req.params", async function() {
+    const req = { params: {reviewId: 1} };
+    const res = { locals: { user: { id: 1, username: "user1", email: "user1@gmail.com" } } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    }
+    await ensureRecipeReviewBelongsToCorrectUser(req, res, next);
+  });
+
+  test("Fails if user2 tries to update a recipe review created by user1", async function() {
+    const req = { params: {reviewId: 1} };
+    const res = { locals: { user: { id: 2, username: "user2", email: "user2@gmail.com" } } };
+    const next = function (err) {
+      expect(err instanceof ForbiddenError).toBeTruthy();
+    }
+    await ensureRecipeReviewBelongsToCorrectUser(req, res, next); 
+  });
+});
+
