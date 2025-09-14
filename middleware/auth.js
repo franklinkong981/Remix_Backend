@@ -65,7 +65,10 @@ function ensureIsCorrectUser(req, res, next) {
 }
 
 /**
- * This middleware function will be called when a logged in user
+ * This middleware function will be called when a logged in user tries to update a recipe. It will make sure that
+ * the recipe the user is trying to update was created by the user, throws a ForbiddenError otherwise.
+ * 
+ * Only the recipe's author has the ability to update the recipe.
  */
 async function ensureRecipeBelongsToCorrectUser(req, res, next) {
   try {
@@ -74,6 +77,26 @@ async function ensureRecipeBelongsToCorrectUser(req, res, next) {
     const recipeAuthor = await Recipe.getRecipeAuthor(req.params.recipeId);
     if (loggedInUsername != recipeAuthor.username) {
       throw new ForbiddenError("You can't edit this recipe because you didn't create it.");
+    }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+}
+
+/**
+ * This middleware function will be called when a logged in user tries to update a recipe review. It will make sure that
+ * the recipe review the user is trying to update was created by the user, throws a ForbiddenError otherwise.
+ * 
+ * Only the recipe review's author has the ability to update the recipe review.
+ */
+async function ensureRecipeReviewBelongsToCorrectUser(req, res, next) {
+  try {
+    //by now, the ensureIsLoggedIn middleware has already passed, so we know a payload exists in res.locals.user.
+    const loggedInUsername = res.locals.user.username;
+    const recipeReviewAuthor = await Recipe.getReviewAuthor(req.params.reviewId);
+    if (loggedInUsername != recipeReviewAuthor.username) {
+      throw new ForbiddenError("You can't edit this recipe review because you didn't create it.");
     }
     return next();
   } catch (err) {
