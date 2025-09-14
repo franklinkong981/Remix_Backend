@@ -177,6 +177,20 @@ class Recipe {
     return newRecipeDetails.rows[0];
   }
 
+  /**
+   * Fetches the username of the user who created the recipe with the id of recipeId. Returns only the username.
+   * 
+   * Throws a NotFoundError if the recipe with id of recipeId isn't found in the database.
+   */
+  static async getRecipeAuthor(recipeId) {
+    //first check to make sure recipe with id of recipeId is in the database.
+    const recipe = await db.query(`SELECT name FROM recipes WHERE id = $1`, [recipeId]);
+    if (recipe.rows.length == 0) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
+
+    let recipeAuthor = await db.query(`SELECT u.username FROM recipes JOIN users u ON recipes.user_id = u.id WHERE recipes.id = $1`, [recipeId]);
+    return recipeAuthor.rows[0];
+  }
+
   /** Partially updates a recipe with a specific recipeId in the database according to the attributes found in the updateData object.
    *  Values in updateData are checked to ensure the same constraints in addRecipe method above are met, throws
    *  BadRequestError if any constraints are violated.
