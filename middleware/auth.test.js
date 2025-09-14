@@ -8,7 +8,7 @@ const {
   ensureIsCorrectUser,
   ensureRecipeBelongsToCorrectUser,
   ensureRecipeReviewBelongsToCorrectUser,
-
+  ensureRemixBelongsToCorrectUser
 } = require("./auth.js");
 
 const { SECRET_KEY } = require("../config");
