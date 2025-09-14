@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const {SECRET_KEY} = require("../config.js");
 const {UnauthorizedError, ForbiddenError} = require("../errors/errors.js");
 const Recipe = require("../models/recipe.js");
+const Remix = require("../models/remix.js");
 
 /** Middleware function that authenticates the user.
  *  Will be executed before most routes. Checks the authorization attribute in the request headers to see if there is an encrypted

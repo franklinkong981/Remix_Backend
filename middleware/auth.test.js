@@ -158,23 +158,23 @@ describe("ensureRecipeReviewBelongsToCorrectUser works as intended", function() 
   });
 });
 
-describe("ensureRecipeBelongsToCorrectUser works as intended", function() {
-  test("Passes if username in res.locals payload matches the author of the recipe supplied in req.params", async function() {
-    const req = { params: {recipeId: 1} };
+describe("ensureRemixBelongsToCorrectUser works as intended", function() {
+  test("Passes if user1 tries to update recipe 2.1 remix since user1 is the author of this remix", async function() {
+    const req = { params: {remixId: 1} };
     const res = { locals: { user: { id: 1, username: "user1", email: "user1@gmail.com" } } };
     const next = function (err) {
       expect(err).toBeFalsy();
     }
-    await ensureRecipeBelongsToCorrectUser(req, res, next);
+    await ensureRemixBelongsToCorrectUser(req, res, next);
   });
 
-  test("Fails if user2 tries to update a recipe created by user1", async function() {
-    const req = { params: {recipeId: 1} };
+  test("Fails if user2 tries to update recipe 2.1 remix since it was created by user1", async function() {
+    const req = { params: {remixId: 1} };
     const res = { locals: { user: { id: 2, username: "user2", email: "user2@gmail.com" } } };
     const next = function (err) {
       expect(err instanceof ForbiddenError).toBeTruthy();
     }
-    await ensureRecipeBelongsToCorrectUser(req, res, next); 
+    await ensureRemixBelongsToCorrectUser(req, res, next); 
   });
 });
 
