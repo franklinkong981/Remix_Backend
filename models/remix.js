@@ -115,6 +115,20 @@ class Remix {
     return newRemixDetails.rows[0];
   }
 
+  /**
+   * Fetches the username of the user who created the remix with the id of remixId. Returns only the username.
+   * 
+   * Throws a NotFoundError if the remix with id of recipeId isn't found in the database.
+   */
+  static async getRemixAuthor(remixId) {
+    //first check to make sure remix with id of recipeId is in the database.
+    const remix = await db.query(`SELECT name FROM remixes WHERE id = $1`, [remixId]);
+    if (remix.rows.length == 0) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
+
+    let remixAuthor = await db.query(`SELECT u.username FROM remixes JOIN users u ON remixes.user_id = u.id WHERE remixes.id = $1`, [remixId]);
+    return remixAuthor.rows[0];
+  }
+
   /** Partially updates a remix with a specific remixId in the database according to the attributes found in the updateData object.
    *  Values in updateData are checked to ensure the same constraints in addRemix method above are met, throws
    *  BadRequestError if any constraints are violated.
