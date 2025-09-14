@@ -10,6 +10,7 @@ const {ensureLoggedIn, ensureIsCorrectUser} = require("../middleware/auth.js");
 
 const jsonschema = require("jsonschema");
 const addRecipeSchema = require("../schemas/recipeNew.json");
+const updateRecipeSchema = require("../schemas/recipeUpdate.json");
 
 /** Helper function that validates the recipe search query in the request query string for GET /recipes. There should only be one attribute: recipeName. Throws BadRequestError otherwise. */
 function validateRecipeSearchQuery(query) {
@@ -129,6 +130,14 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
     console.log(res.locals.user);
     const newRecipe = await Recipe.addRecipe(res.locals.user.userId, req.body);
     return res.status(201).json({newRecipe, message: "Successfully added new recipe"});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.patch("/:recipeId", ensureLoggedIn, async function(req, res, next) {
+  try {
+
   } catch (err) {
     return next(err);
   }
