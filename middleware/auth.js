@@ -115,6 +115,7 @@ async function ensureRemixBelongsToCorrectUser(req, res, next) {
     //by now, the ensureIsLoggedIn middleware has already passed, so we know a payload exists in res.locals.user.
     const loggedInUsername = res.locals.user.username;
     const remixAuthor = await Remix.getRemixAuthor(req.params.remixId);
+    console.log(remixAuthor.username);
     if (loggedInUsername != remixAuthor.username) {
       throw new ForbiddenError("You can't edit this remix because you didn't create it.");
     }

@@ -1,6 +1,7 @@
 /** Contains tests for the middleware functions, all of which have to do with authentication. */
 
 const jwt = require("jsonwebtoken");
+const db = require("../db.js");
 const {UnauthorizedError, ForbiddenError} = require("../errors/errors.js");
 const {
   authenticateJwt, 
@@ -11,9 +12,17 @@ const {
   ensureRemixBelongsToCorrectUser
 } = require("./auth.js");
 
+const {commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll} = require("./_testCommon.js");
+
 const { SECRET_KEY } = require("../config");
 const testJwt = jwt.sign({ username: "user1", email: "user1@gmail.com" }, SECRET_KEY);
 const badJwt = jwt.sign({ username: "user2", email: "user2@gmail.com" }, "wrong_key");
+
+
+beforeAll(commonBeforeAll);
+beforeEach(commonBeforeEach);
+afterEach(commonAfterEach);
+afterAll(commonAfterAll);
 
 describe("authenticateJWT", function () {
   test("It works as intended with a properly encrypted jwt in the request header", function () {
@@ -146,6 +155,26 @@ describe("ensureRecipeReviewBelongsToCorrectUser works as intended", function() 
       expect(err instanceof ForbiddenError).toBeTruthy();
     }
     await ensureRecipeReviewBelongsToCorrectUser(req, res, next); 
+  });
+});
+
+describe("ensureRecipeBelongsToCorrectUser works as intended", function() {
+  test("Passes if username in res.locals payload matches the author of the recipe supplied in req.params", async function() {
+    const req = { params: {recipeId: 1} };
+    const res = { locals: { user: { id: 1, username: "user1", email: "user1@gmail.com" } } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    }
+    await ensureRecipeBelongsToCorrectUser(req, res, next);
+  });
+
+  test("Fails if user2 tries to update a recipe created by user1", async function() {
+    const req = { params: {recipeId: 1} };
+    const res = { locals: { user: { id: 2, username: "user2", email: "user2@gmail.com" } } };
+    const next = function (err) {
+      expect(err instanceof ForbiddenError).toBeTruthy();
+    }
+    await ensureRecipeBelongsToCorrectUser(req, res, next); 
   });
 });
 
