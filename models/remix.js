@@ -204,6 +204,20 @@ class Remix {
     return newReviewDetails;
   }
 
+  /**
+   * Fetches the username of the user who created the remix review with the id of reviewId. Returns only the username.
+   * 
+   * Throws a NotFoundError if the remix review with id of reviewId isn't found in the database.
+   */
+  static async getReviewAuthor(reviewId) {
+    //first check to make sure remix review with id of recviewId is in the database.
+    const remixReview = await db.query(`SELECT title FROM remix_reviews WHERE id = $1`, [reviewId]);
+    if (remixReview.rows.length == 0) throw new NotFoundError(`The remix review with id of ${reviewId} was not found in the database.`);
+
+    let reviewAuthor = await db.query(`SELECT u.username FROM remix_reviews JOIN users u ON remix_reviews.user_id = u.id WHERE remix_reviews.id = $1`, [reviewId]);
+    return reviewAuthor.rows[0];
+  }
+
   /** Partially updates a remix review with the id of reviewId in the database according to the attributes found in the updateData object.
    *  Values in updateData are checked to ensure the same constraints in addReview method above are met, throws
    *  BadRequestError if any constraints are violated.
