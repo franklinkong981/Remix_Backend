@@ -177,6 +177,26 @@ describe("addRemix works as intended", function() {
   });
 });
 
+/************************************** getRemixAuthor */
+
+describe("getRemixAuthor works as intended", function() {
+  test("Gets the correct author for recipe 1.1 remix (id 2) which is user2", async function() {
+    const remix2Author = await Remix.getRemixAuthor(2);
+    expect(remix2Author.username).toEqual("user2");
+  });
+
+  test("Throws a NotFoundError if the remix isn't found in the database", async function() {
+    try {
+      await Remix.getRemixAuthor(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("The remix with id of 100 was not found in the database.")
+    }
+  });
+});
+
 /************************************** updateRemix */
 describe("updateRemix works as intended", function() {
   test("Partially updates the recipe 1.1 remix (id 2) without issue", async function() {
