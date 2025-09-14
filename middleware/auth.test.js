@@ -1,12 +1,14 @@
 /** Contains tests for the middleware functions, all of which have to do with authentication. */
 
 const jwt = require("jsonwebtoken");
-const {UnauthorizedError} = require("../errors/errors.js");
+const {UnauthorizedError, ForbiddenError} = require("../errors/errors.js");
 const {
   authenticateJwt, 
   ensureLoggedIn, 
   ensureIsCorrectUser,
-  ensureRecipeBelongsToCorrectUser
+  ensureRecipeBelongsToCorrectUser,
+  ensureRecipeReviewBelongsToCorrectUser,
+
 } = require("./auth.js");
 
 const { SECRET_KEY } = require("../config");
@@ -115,6 +117,15 @@ describe("ensureRecipeBelongsToCorrectUser works as intended", function() {
       expect(err).toBeFalsy();
     }
     await ensureRecipeBelongsToCorrectUser(req, res, next);
+  });
+
+  test("Fails if user2 tries to update a recipe created by user1", async function() {
+    const req = { params: {recipeId: 1} };
+    const res = { locals: { user: { id: 2, username: "user2", email: "user2@gmail.com" } } };
+    const next = function (err) {
+      expect(err instanceof ForbiddenError).toBeTruthy();
+    }
+    await ensureRecipeBelongsToCorrectUser(req, res, next); 
   });
 });
 

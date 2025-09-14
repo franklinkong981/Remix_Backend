@@ -108,5 +108,7 @@ module.exports = {
   authenticateJwt,
   ensureLoggedIn,
   ensureIsCorrectUser,
-  ensureRecipeBelongsToCorrectUser
+  ensureRecipeBelongsToCorrectUser,
+  ensureRecipeReviewBelongsToCorrectUser,
+  
 }
