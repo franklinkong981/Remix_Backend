@@ -265,6 +265,20 @@ class Recipe {
     return newReviewDetails;
   }
 
+  /**
+   * Fetches the username of the user who created the recipe review with the id of reviewId. Returns only the username.
+   * 
+   * Throws a NotFoundError if the recipe review with id of reviewId isn't found in the database.
+   */
+  static async getReviewAuthor(reviewId) {
+    //first check to make sure recipe review with id of recviewId is in the database.
+    const recipeReview = await db.query(`SELECT name FROM recipe_recipes WHERE id = $1`, [reviewId]);
+    if (recipeReview.rows.length == 0) throw new NotFoundError(`The recipe review with id of ${reviewId} was not found in the database.`);
+
+    let reviewAuthor = await db.query(`SELECT u.username FROM recipe_reviews JOIN users u ON recipe_reviews.user_id = u.id WHERE recipe_reviews.id = $1`, [reviewId]);
+    return reviewAuthor.rows[0];
+  }
+
   /** Partially updates a review with the id of reviewId in the database according to the attributes found in the updateData object.
    *  Values in updateData are checked to ensure the same constraints in addReview method above are met, throws
    *  BadRequestError if any constraints are violated.
