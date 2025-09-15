@@ -34,6 +34,5 @@
     }
   },
   "additionalProperties": false,
-  "minProperties": 1,
-  "required": []
+  "minProperties": 1
 }

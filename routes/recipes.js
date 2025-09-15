@@ -16,6 +16,7 @@ const jsonschema = require("jsonschema");
 const addRecipeSchema = require("../schemas/recipeNew.json");
 const updateRecipeSchema = require("../schemas/recipeUpdate.json");
 const addRecipeReviewSchema = require("../schemas/recipeReviewNew.json");
+const updateRecipeReviewSchema = require("../schemas/recipeReviewUpdate.json");
 
 /** Helper function that validates the recipe search query in the request query string for GET /recipes. There should only be one attribute: recipeName. Throws BadRequestError otherwise. */
 function validateRecipeSearchQuery(query) {
@@ -197,6 +198,35 @@ router.post("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next)
 
     const newRecipeReview = await Recipe.addReview(res.locals.user.userId, req.params.recipeId, req.body);
     return res.status(201).json({newRecipeReview, message: `Successfully added new review for recipe with id ${req.params.recipeId}.`});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * PATCH /recipes/:recipeId/reviews/:reviewId => { updatedRecipeReview: {reviewId, userId, recipeId, title, content, createdAt}, success message }
+ * 
+ * Endpoint for updating a new recipe review. Body is subject to the following constraints:
+ * 
+ * req.body CONSTRAINTS:
+ *  - title must be a string and must be 1-100 characters long.
+ *  - content must be a string and can't be an empty string.
+ * 
+ *  - Unlike the POST route, no attribute is required in the body, BUT req.body can't be empty.
+ *  - req.body cannot contain any attributes other than the 2 listed above.
+ * 
+ * Authorization required: Logged in AND recipe review must belong to the user.
+ */
+router.post("/:recipeId/reviews/:reviewId", ensureLoggedIn, ensureRecipeReviewBelongsToCorrectUser, async function(req, res, next) {
+  try {
+    const inputValidator = jsonschema.validate(req.body, updateRecipeReviewSchema);
+    if (!(inputValidator.valid)) {
+      const inputErrors = inputValidator.errors.map(err => err.stack);
+      throw new BadRequestError(inputErrors);
+    }
+
+    const updatedRecipeReview = await Recipe.updateReview(req.params.reviewId, req.body);
+    return res.status(200).json({updatedRecipeReview, message: `Successfully updated recipe review with id ${req.params.reviewId}.`});
   } catch (err) {
     return next(err);
   }

@@ -283,7 +283,7 @@ class Recipe {
    *  Values in updateData are checked to ensure the same constraints in addReview method above are met, throws
    *  BadRequestError if any constraints are violated.
    * 
-   *  Returns {reviewId, userId, recipeId, title, content, createdat} for the updated recipe review.
+   *  Returns {reviewId, userId, recipeId, title, content, createdAt} for the updated recipe review.
    *  
    *  Throws a BadRequestError if the review of reviewId isn't found in the database.
    */

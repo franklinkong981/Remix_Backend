@@ -483,3 +483,5 @@ describe("POST /recipes/:recipeId/reviews works as intended", function() {
   });
 });
 
+/************************************** PATCH /recipes/:recipeId/reviews */
+
