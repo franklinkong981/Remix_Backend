@@ -162,7 +162,7 @@ describe("GET /recipes/:recipeId works as intended", function() {
   });
 });
 
-/************************************** POST /recipes*/
+/************************************** POST /recipes */
 
 describe("POST /recipes works as intended", function() {
   test("user1 successfully adds another recipe with req.body meeting the correct specifications", async function() {
@@ -401,6 +401,83 @@ describe("PATCH /recipes/:recipeId works as intended", function() {
 
   test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
     const resp = await request(app).patch("/recipes/1");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
+
+/************************************** POST /recipes/:recipeId/reviews */
+
+describe("POST /recipes/:recipeId/reviews works as intended", function() {
+  test("user1 successfully adds another recipe review of recipe 1.2 (id 2) with req.body meeting the correct specifications", async function() {
+    let resp = await request(app).get("/recipes/2/reviews").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.recipeReviews.length).toEqual(1);
+
+    resp = await request(app)
+        .post("/recipes/2/reviews")
+        .send({
+          title: "A hydrating,refreshing recipe",
+          content: "Very fruity and delicious!"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(201);
+    expect(resp.body.newRecipeReview.reviewId).toEqual(expect.any(Number));
+    expect(resp.body.newRecipeReview.userId).toEqual(1);
+    expect(resp.body.newRecipeReview.recipeId).toEqual(2);
+    expect(resp.body.newRecipeReview.title).toEqual("A hydrating,refreshing recipe");
+    expect(resp.body.newRecipeReview.content).toEqual("Very fruity and delicious!");
+    expect(resp.body.newRecipeReview.createdAt).toEqual(expect.any(String));
+    expect(resp.body.message).toEqual("Successfully added new review for recipe with id 2.");
+
+    resp = await request(app).get("/recipes/2/reviews").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.recipeReviews.length).toEqual(2);
+  });
+
+  test("Throws BadRequestError if empty body is passed in", async function() {
+    const resp = await request(app)
+        .post("/recipes/1/reviews")
+        .send({})
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance requires property");
+    expect(resp.error.text).toContain("title");
+    expect(resp.error.text).toContain("content");
+  });
+
+  test("Throws BadRequestError if certain strings don't meet proper requirements", async function() {
+    let resp = await request(app)
+        .post("/recipes/1/reviews")
+        .send({
+          title: "",
+          content: "I don't think this will pass"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance.title does not meet minimum length of 1");
+  });
+
+  test("Throws BadRequestError if request body contains attributes outside of the allowed attributes", async function() {
+    let resp = await request(app)
+        .post("/recipes/1/reviews")
+        .send({
+          title: "A hydrating,refreshing recipe",
+          content: "Very fruity and delicious!",
+          rating: 5
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("not allowed to have the additional property");
+    expect(resp.error.text).toContain("rating");
+  });
+
+  test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
+    const resp = await request(app).get("/recipes/1/reviews");
     expect(resp.statusCode).toEqual(401);
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });

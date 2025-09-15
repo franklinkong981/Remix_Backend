@@ -187,7 +187,7 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
  * 
  * Authorization required: Logged in.
  */
-router.post("/:recipeId/reviews", ensureLoggedIn, ensureRecipeReviewBelongsToCorrectUser, async function(req, res, next) {
+router.post("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) {
   try {
     const inputValidator = jsonschema.validate(req.body, addRecipeReviewSchema);
     if (!(inputValidator.valid)) {
