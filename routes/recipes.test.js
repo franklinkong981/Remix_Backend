@@ -4,7 +4,6 @@ const request = require("supertest");
 
 const db = require("../db.js");
 const app = require("../app.js");
-const Recipe = require("../models/recipe.js");
 
 const {
   commonBeforeAll,
@@ -303,89 +302,56 @@ describe("POST /recipes works as intended", function() {
 /************************************** PATCH /recipes/:recipeId */
 
 describe("PATCH /recipes/:recipeId works as intended", function() {
-  /*test("user1 successfully adds another recipe with req.body meeting the correct specifications", async function() {
+  test("user1 successfully updates recipe 1.1 with req.body meeting the correct specifications", async function() {
     let resp = await request(app).get("/users/user1/recipes").set("authorization", `${user1Token}`);
     expect(resp.statusCode).toEqual(200);
     expect(resp.body.allUserRecipes.length).toEqual(2);
 
     resp = await request(app)
-        .post("/recipes")
+        .patch("/recipes/1")
         .send({
-          name: "New recipe",
-          description: "A brand new recipe I just thought of",
-          ingredients: "Spaghetti, tomato sauce, meatballs",
-          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!",
-          cookingTime: 60,
-          servings: 4,
-          imageUrl: "http://spaghettiandmeatballs.img"
+          name: "Recipe 1.1, now with extra vegetables",
+          description: "The first recipe by user 1, now with more vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, bok choy",
+          cookingTime: 30,
+          imageUrl: ""
         })
         .set("authorization", `${user1Token}`);
     
-    expect(resp.statusCode).toEqual(201);
-    expect(resp.body.newRecipe.name).toEqual("New recipe");
-    expect(resp.body.newRecipe.description).toContain("brand new recipe");
-    expect(resp.body.newRecipe.ingredients).toContain("meatballs");
-    expect(resp.body.newRecipe.directions).toContain("Pour water in pot");
-    expect(resp.body.newRecipe.cookingTime).toEqual(60);
-    expect(resp.body.newRecipe.servings).toEqual(4);
-    expect(resp.body.newRecipe.imageUrl).toEqual(expect.any(String));
-    expect(resp.body.message).toEqual("Successfully added new recipe");
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.updatedRecipe.name).toEqual("Recipe 1.1, now with extra vegetables");
+    expect(resp.body.updatedRecipe.description).toContain("now with more vegetables");
+    expect(resp.body.updatedRecipe.ingredients).toContain("tomatoes");
+    expect(resp.body.updatedRecipe.directions).toContain("Put everything in a pot");
+    expect(resp.body.updatedRecipe.cookingTime).toEqual(30);
+    expect(resp.body.updatedRecipe.servings).toEqual(4);
+    expect(resp.body.updatedRecipe.imageUrl).toEqual("https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg");
+    expect(resp.body.message).toEqual("Successfully updated the recipe with id 1");
 
     resp = await request(app).get("/users/user1/recipes").set("authorization", `${user1Token}`);
     expect(resp.statusCode).toEqual(200);
-    expect(resp.body.allUserRecipes.length).toEqual(3);
-    expect(resp.body.allUserRecipes[0].name).toEqual("New recipe");
-  });
-
-  test("Creates a new recipe with just name, description, ingredients, and directions in the request body", async function() {
-    let resp = await request(app)
-        .post("/recipes")
-        .send({
-          name: "New recipe",
-          description: "A brand new recipe I just thought of",
-          ingredients: "Spaghetti, tomato sauce, meatballs",
-          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!"
-        })
-        .set("authorization", `${user1Token}`);
-    
-    expect(resp.statusCode).toEqual(201);
-    expect(resp.body.newRecipe.name).toEqual("New recipe");
-    expect(resp.body.newRecipe.description).toContain("brand new recipe");
-    expect(resp.body.newRecipe.ingredients).toContain("meatballs");
-    expect(resp.body.newRecipe.directions).toContain("Pour water in pot");
-    expect(resp.body.newRecipe.cookingTime).toEqual(0);
-    expect(resp.body.newRecipe.servings).toEqual(0);
-    expect(resp.body.newRecipe.imageUrl).toEqual(expect.any(String));
-    expect(resp.body.message).toEqual("Successfully added new recipe");
-
-    resp = await request(app).get("/users/user1/recipes").set("authorization", `${user1Token}`);
-    expect(resp.statusCode).toEqual(200);
-    expect(resp.body.allUserRecipes.length).toEqual(3);
-    expect(resp.body.allUserRecipes[0].name).toEqual("New recipe");
+    expect(resp.body.allUserRecipes.length).toEqual(2);
+    expect(resp.body.allUserRecipes[1].name).toEqual("Recipe 1.1, now with extra vegetables");
   });
 
   test("Throws BadRequestError if empty body is passed in", async function() {
     const resp = await request(app)
-        .post("/recipes")
+        .patch("/recipes/1")
         .send({})
         .set("authorization", `${user1Token}`);
     
     expect(resp.statusCode).toEqual(400);
-    expect(resp.error.text).toContain("instance requires property");
-    expect(resp.error.text).toContain("name");
-    expect(resp.error.text).toContain("description");
-    expect(resp.error.text).toContain("ingredients");
-    expect(resp.error.text).toContain("directions");
+    expect(resp.error.text).toContain("instance does not meet minimum property length of 1");
   });
 
   test("Throws BadRequestError if certain strings don't meet proper requirements", async function() {
     let resp = await request(app)
-        .post("/recipes")
+        .patch("/recipes/1")
         .send({
           name: "",
-          description: "A brand new recipe I just thought of",
-          ingredients: "Spaghetti, tomato sauce, meatballs",
-          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!"
+          description: "The first recipe by user 1, now with more vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, bok choy",
+          cookingTime: 30
         })
         .set("authorization", `${user1Token}`);
     
@@ -395,15 +361,13 @@ describe("PATCH /recipes/:recipeId works as intended", function() {
 
   test("Throws BadRequestError if cookingTime and/or servings is negative", async function() {
     let resp = await request(app)
-        .post("/recipes")
+        .patch("/recipes/1")
         .send({
-          name: "New recipe",
-          description: "A brand new recipe I just thought of",
-          ingredients: "Spaghetti, tomato sauce, meatballs",
-          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!",
-          cookingTime: -60,
-          servings: 4,
-          imageUrl: "http://spaghettiandmeatballs.img"
+          name: "Recipe 1.1, now with extra vegetables",
+          description: "The first recipe by user 1, now with more vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, bok choy",
+          cookingTime: -30,
+          imageUrl: ""
         })
         .set("authorization", `${user1Token}`);
     
@@ -413,22 +377,20 @@ describe("PATCH /recipes/:recipeId works as intended", function() {
 
   test("Throws BadRequestError if request body contains attributes outside of the allowed attributes", async function() {
     let resp = await request(app)
-        .post("/recipes")
+        .patch("/recipes/1")
         .send({
-          name: "New recipe",
-          description: "A brand new recipe I just thought of",
-          ingredients: "Spaghetti, tomato sauce, meatballs",
-          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!",
-          cookingTime: 60,
-          rating: 5,
-          imageUrl: "http://spaghettiandmeatballs.img"
+          name: "Recipe 1.1, now with extra vegetables",
+          description: "The first recipe by user 1, now with more vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, bok choy",
+          cookingTime: 30,
+          rating: 5
         })
         .set("authorization", `${user1Token}`);
     
     expect(resp.statusCode).toEqual(400);
     expect(resp.error.text).toContain("not allowed to have the additional property");
     expect(resp.error.text).toContain("rating");
-  });*/
+  });
 
   test("Throws ForbiddenError if logged in user tries to update a recipe they didn't create", async function() {
     const resp = await request(app).patch("/recipes/1").set("authorization", `${user2Token}`);
