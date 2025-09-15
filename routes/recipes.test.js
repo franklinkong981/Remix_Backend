@@ -299,3 +299,148 @@ describe("POST /recipes works as intended", function() {
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** PATCH /recipes/:recipeId */
+
+describe("PATCH /recipes/:recipeId works as intended", function() {
+  /*test("user1 successfully adds another recipe with req.body meeting the correct specifications", async function() {
+    let resp = await request(app).get("/users/user1/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserRecipes.length).toEqual(2);
+
+    resp = await request(app)
+        .post("/recipes")
+        .send({
+          name: "New recipe",
+          description: "A brand new recipe I just thought of",
+          ingredients: "Spaghetti, tomato sauce, meatballs",
+          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!",
+          cookingTime: 60,
+          servings: 4,
+          imageUrl: "http://spaghettiandmeatballs.img"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(201);
+    expect(resp.body.newRecipe.name).toEqual("New recipe");
+    expect(resp.body.newRecipe.description).toContain("brand new recipe");
+    expect(resp.body.newRecipe.ingredients).toContain("meatballs");
+    expect(resp.body.newRecipe.directions).toContain("Pour water in pot");
+    expect(resp.body.newRecipe.cookingTime).toEqual(60);
+    expect(resp.body.newRecipe.servings).toEqual(4);
+    expect(resp.body.newRecipe.imageUrl).toEqual(expect.any(String));
+    expect(resp.body.message).toEqual("Successfully added new recipe");
+
+    resp = await request(app).get("/users/user1/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserRecipes.length).toEqual(3);
+    expect(resp.body.allUserRecipes[0].name).toEqual("New recipe");
+  });
+
+  test("Creates a new recipe with just name, description, ingredients, and directions in the request body", async function() {
+    let resp = await request(app)
+        .post("/recipes")
+        .send({
+          name: "New recipe",
+          description: "A brand new recipe I just thought of",
+          ingredients: "Spaghetti, tomato sauce, meatballs",
+          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(201);
+    expect(resp.body.newRecipe.name).toEqual("New recipe");
+    expect(resp.body.newRecipe.description).toContain("brand new recipe");
+    expect(resp.body.newRecipe.ingredients).toContain("meatballs");
+    expect(resp.body.newRecipe.directions).toContain("Pour water in pot");
+    expect(resp.body.newRecipe.cookingTime).toEqual(0);
+    expect(resp.body.newRecipe.servings).toEqual(0);
+    expect(resp.body.newRecipe.imageUrl).toEqual(expect.any(String));
+    expect(resp.body.message).toEqual("Successfully added new recipe");
+
+    resp = await request(app).get("/users/user1/recipes").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.allUserRecipes.length).toEqual(3);
+    expect(resp.body.allUserRecipes[0].name).toEqual("New recipe");
+  });
+
+  test("Throws BadRequestError if empty body is passed in", async function() {
+    const resp = await request(app)
+        .post("/recipes")
+        .send({})
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance requires property");
+    expect(resp.error.text).toContain("name");
+    expect(resp.error.text).toContain("description");
+    expect(resp.error.text).toContain("ingredients");
+    expect(resp.error.text).toContain("directions");
+  });
+
+  test("Throws BadRequestError if certain strings don't meet proper requirements", async function() {
+    let resp = await request(app)
+        .post("/recipes")
+        .send({
+          name: "",
+          description: "A brand new recipe I just thought of",
+          ingredients: "Spaghetti, tomato sauce, meatballs",
+          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance.name does not meet minimum length of 1");
+  });
+
+  test("Throws BadRequestError if cookingTime and/or servings is negative", async function() {
+    let resp = await request(app)
+        .post("/recipes")
+        .send({
+          name: "New recipe",
+          description: "A brand new recipe I just thought of",
+          ingredients: "Spaghetti, tomato sauce, meatballs",
+          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!",
+          cookingTime: -60,
+          servings: 4,
+          imageUrl: "http://spaghettiandmeatballs.img"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance.cookingTime must be greater than or equal to 0");
+  });
+
+  test("Throws BadRequestError if request body contains attributes outside of the allowed attributes", async function() {
+    let resp = await request(app)
+        .post("/recipes")
+        .send({
+          name: "New recipe",
+          description: "A brand new recipe I just thought of",
+          ingredients: "Spaghetti, tomato sauce, meatballs",
+          directions: "Pour water in pot, wait until it boils. Then add spaghetti and let it cook. Then add meatballs. Then take spaghetti out and put sauce on. Enjoy!",
+          cookingTime: 60,
+          rating: 5,
+          imageUrl: "http://spaghettiandmeatballs.img"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("not allowed to have the additional property");
+    expect(resp.error.text).toContain("rating");
+  });*/
+
+  test("Throws ForbiddenError if logged in user tries to update a recipe they didn't create", async function() {
+    const resp = await request(app).patch("/recipes/1").set("authorization", `${user2Token}`);
+    //user1 created recipe 1.1 (id 1), so ForbiddenError should be thrown.
+    expect(resp.statusCode).toEqual(403);
+    expect(resp.error.text).toContain("You can't edit this recipe because you didn't create it.");
+  });
+
+  test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
+    const resp = await request(app).patch("/recipes/1");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
+

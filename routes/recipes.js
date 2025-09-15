@@ -6,7 +6,11 @@ const router = new express.Router();
 const {createToken} = require("../helpers/token.js");
 const {BadRequestError, UnauthorizedError, NotFoundError} = require("../errors/errors.js");
 const Recipe = require("../models/recipe.js");
-const {ensureLoggedIn, ensureIsCorrectUser} = require("../middleware/auth.js");
+const {ensureLoggedIn, 
+  ensureIsCorrectUser,
+  ensureRecipeBelongsToCorrectUser,
+  ensureRecipeReviewBelongsToCorrectUser
+} = require("../middleware/auth.js");
 
 const jsonschema = require("jsonschema");
 const addRecipeSchema = require("../schemas/recipeNew.json");
@@ -134,7 +138,7 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
   }
 });
 
-router.patch("/:recipeId", ensureLoggedIn, async function(req, res, next) {
+router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, async function(req, res, next) {
   try {
     const inputValidator = jsonschema.validate(req.body, updateRecipeSchema);
     if (!(inputValidator.valid)) {
