@@ -195,7 +195,7 @@ class Recipe {
    *  Values in updateData are checked to ensure the same constraints in addRecipe method above are met, throws
    *  BadRequestError if any constraints are violated.
    * 
-   *  Returns {name, description, ingredients, directions, cookingTime, imageUrl} for the updated recipe.
+   *  Returns {name, description, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
    *  
    *  Throws a BadRequestError if the recipe with id of recipeId isn't found in the database.
    */

@@ -138,6 +138,25 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
   }
 });
 
+/**
+ * PATCH /recipes => { updatedRecipe: {name, description, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * 
+ * Endpoint for updating a new recipe. Body is subject to the following constraints:
+ * 
+ * req.body CONSTRAINTS:
+ *  - name must be of type string, 1-100 characters.
+ *  - description must be of type string, 1-255 characters.
+ *  - ingredients must be of type string, cannot be empty.
+ *  - directions must be of type string, cannot be empty.
+ *  - cookingTime is optional, but if present, must be of type number and can't be negative.
+ *  - servings is optional, but if present, must be of type number and can't be negative.
+ *  - imageUrl is optional, but if present, must be of type string.
+ * 
+ *  - Unlike the POST route, no attribute is required in the body, BUT req.body can't be empty.
+ *  - req.body cannot contain any attributes other than the 7 listed above.
+ * 
+ * Authorization required: Logged in AND the user sending the request must have created this recipe.
+ */
 router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, async function(req, res, next) {
   try {
     const inputValidator = jsonschema.validate(req.body, updateRecipeSchema);
@@ -152,5 +171,7 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
     return next(err);
   }
 });
+
+
 
 module.exports = router;
