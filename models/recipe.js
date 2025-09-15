@@ -234,7 +234,7 @@ class Recipe {
   /** Adds a review for the recipe with id of recipeId made by user with id of userId.
    *  Review must have title and content, both of which must be non-empty strings, otherwise a BadRequestError is thrown.
    * 
-   *  If successful, returns new information about the review: {userId, reviewAuthor, recipeId, recipeName, title, content, created_at}
+   *  If successful, returns new information about the review: {reviewId, userId, recipeId, title, content, createdAt}
    * 
    *  Throws a NotFoundError if the user with id of userId or recipe with id of recipeId are not found in the database.
    */

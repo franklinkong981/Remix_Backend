@@ -15,6 +15,7 @@ const {ensureLoggedIn,
 const jsonschema = require("jsonschema");
 const addRecipeSchema = require("../schemas/recipeNew.json");
 const updateRecipeSchema = require("../schemas/recipeUpdate.json");
+const addRecipeReviewSchema = require("../schemas/recipeReviewNew.json");
 
 /** Helper function that validates the recipe search query in the request query string for GET /recipes. There should only be one attribute: recipeName. Throws BadRequestError otherwise. */
 function validateRecipeSearchQuery(query) {
@@ -172,6 +173,33 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
   }
 });
 
+/**
+ * POST /recipes/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content, createdAt}, success message }
+ * 
+ * Endpoint for adding a new recipe review. Body is subject to the following constraints:
+ * 
+ * req.body CONSTRAINTS:
+ *  - title must be a string and must be 1-100 characters long.
+ *  - content must be a string and can't be an empty string.
+ * 
+ *  - title and content attributes are required in req.body.
+ *  - req.body cannot contain any attributes other than the 2 listed above.
+ * 
+ * Authorization required: Logged in.
+ */
+router.post("/:recipeId/reviews", ensureLoggedIn, ensureRecipeReviewBelongsToCorrectUser, async function(req, res, next) {
+  try {
+    const inputValidator = jsonschema.validate(req.body, addRecipeReviewSchema);
+    if (!(inputValidator.valid)) {
+      const inputErrors = inputValidator.errors.map(err => err.stack);
+      throw new BadRequestError(inputErrors);
+    }
 
+    const newRecipeReview = await Recipe.addReview(res.locals.user.userId, req.params.recipeId, req.body);
+    return res.status(201).json({newRecipeReview, message: `Successfully added new review for recipe with id ${req.params.recipeId}.`});
+  } catch (err) {
+    return next(err);
+  }
+});
 
 module.exports = router;
