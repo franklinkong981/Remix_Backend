@@ -15,6 +15,7 @@ const jsonschema = require("jsonschema");
 const addRemixSchema = require("../schemas/remixNew.json");
 const updateRemixSchema = require("../schemas/remixUpdate.json");
 const addRemixReviewSchema = require("../schemas/remixReviewNew.json");
+const updateRemixReviewSchema = require("../schemas/remixReviewUpdate.json");
 
 /**
  * GET /remixes/:remixId/reviews => { remixReviews: [ {id, reviewAuthor, title, content, createdAt}, ...] }
@@ -143,6 +144,35 @@ router.post("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) 
 
     const newRemixReview = await Remix.addReview(res.locals.user.userId, req.params.remixId, req.body);
     return res.status(201).json({newRemixReview, message: `Successfully added new review for remix with id ${req.params.remixId}.`});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * PATCH /remixes/:remixId/reviews/:reviewId => { updatedRemixReview: {reviewId, userId, recipeId, title, content, createdAt}, success message }
+ * 
+ * Endpoint for updating a new remix review. Body is subject to the following constraints:
+ * 
+ * req.body CONSTRAINTS:
+ *  - title must be a string and must be 1-100 characters long.
+ *  - content must be a string and can't be an empty string.
+ * 
+ *  - Unlike the POST route, no attribute is required in the body, BUT req.body can't be empty.
+ *  - req.body cannot contain any attributes other than the 2 listed above.
+ * 
+ * Authorization required: Logged in AND remix review must belong to the user.
+ */
+router.patch("/:remixId/reviews/:reviewId", ensureLoggedIn, ensureRemixReviewBelongsToCorrectUser, async function(req, res, next) {
+  try {
+    const inputValidator = jsonschema.validate(req.body, updateRemixReviewSchema);
+    if (!(inputValidator.valid)) {
+      const inputErrors = inputValidator.errors.map(err => err.stack);
+      throw new BadRequestError(inputErrors);
+    }
+
+    const updatedRemixReview = await Remix.updateReview(req.params.reviewId, req.body);
+    return res.status(200).json({updatedRemixReview, message: `Successfully updated remix review with id ${req.params.reviewId}.`});
   } catch (err) {
     return next(err);
   }
