@@ -13,6 +13,7 @@ const {ensureLoggedIn,
 
 const jsonschema = require("jsonschema");
 const addRemixSchema = require("../schemas/remixNew.json");
+const updateRemixSchema = require("../schemas/remixUpdate.json");
 
 /**
  * GET /remixes/:remixId/reviews => { remixReviews: [ {id, reviewAuthor, title, content, createdAt}, ...] }
@@ -77,6 +78,41 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
 
     const newRemix = await Remix.addRemix(res.locals.user.userId, req.body.originalRecipeId, req.body);
     return res.status(201).json({newRemix, message: `Successfully added new remix of recipe with id of ${req.body.originalRecipeId}`});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * PATCH /remixes => { updatedRecipe: {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * 
+ * Endpoint for updating a new remix. Body is subject to the following constraints:
+ * 
+ * req.body CONSTRAINTS:
+ *  - name must be of type string, 1-100 characters.
+ *  - description must be of type string, 1-255 characters.
+ *  - purpose must be of type string, 10-255 characters.
+ *  - ingredients must be of type string, cannot be empty.
+ *  - directions must be of type string, cannot be empty.
+ *  - cookingTime is optional, but if present, must be of type number and can't be negative.
+ *  - servings is optional, but if present, must be of type number and can't be negative.
+ *  - imageUrl is optional, but if present, must be of type string.
+ * 
+ *  - Unlike the POST route, no attribute is required in the body, BUT req.body can't be empty.
+ *  - req.body cannot contain any attributes other than the 8 listed above.
+ * 
+ * Authorization required: Logged in AND the user sending the request must have created this remix.
+ */
+router.patch("/:remixId", ensureLoggedIn, ensureRemixBelongsToCorrectUser, async function(req, res, next) {
+  try {
+    const inputValidator = jsonschema.validate(req.body, updateRemixSchema);
+    if (!(inputValidator.valid)) {
+      const inputErrors = inputValidator.errors.map(err => err.stack);
+      throw new BadRequestError(inputErrors);
+    }
+    
+    const updatedRemix = await Remix.updateRemix(req.params.remixId, req.body);
+    return res.status(200).json({updatedRemix, message: `Successfully updated the remix with id ${req.params.remixId}`});
   } catch (err) {
     return next(err);
   }
