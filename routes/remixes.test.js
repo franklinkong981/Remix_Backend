@@ -45,3 +45,39 @@ describe("GET /remixes/:remixId/reviews works as intended", function() {
     expect(resp.error.text).toContain("You must be logged in to access this!");
   });
 });
+
+/************************************** GET /remixes/:remixId */
+describe("GET /remixes/:remixId works as intended", function() {
+  test("Successfully fetches detailed information of recipe 2.1 remix 1 (id 1), including both of its reviews, with user1 logged in", async function() {
+    const resp = await request(app).get("/remixes/1").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    
+    const remix = resp.body.remixDetails;
+    expect(remix.remixAuthor).toEqual("user1");
+    expect(remix.name).toEqual("recipe 2.1 remix 1");
+    expect(remix.ingredients).toContain("mutton");
+    expect(remix.directions).toContain("oven");
+    expect(remix.cookingTime).toEqual(0);
+    expect(remix.servings).toEqual(5);
+    expect(remix.imageUrl).toEqual(expect.any(String));
+    expect(remix.createdAt).toEqual(expect.any(String));
+
+    const remixReviews = remix.reviews;
+    expect(remixReviews.length).toEqual(2);
+    //most recently added review should be first.
+    expect(remixReviews[0].title).toEqual("I love meat!");
+    expect(remixReviews[1].title).toEqual("New meat is good");
+  });
+
+  test("Throws NotFoundError if remix with id of remixId isn't found in the database", async function() {
+    const resp = await request(app).get("/remixes/100").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("The remix with id of 100 was not found in the database.");
+  });
+
+  test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
+    const resp = await request(app).get("/remixes/1");
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
