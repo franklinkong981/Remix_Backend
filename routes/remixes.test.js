@@ -360,3 +360,84 @@ describe("PATCH /remixes/:remixId works as intended", function() {
   });
 });
 
+/************************************** POST /remixes/:remixId/reviews */
+
+describe("POST /remixes/:remixId/reviews works as intended", function() {
+  test("user1 successfully adds another remix review of recipe 1.1 remix (id 3) with req.body meeting the correct specifications", async function() {
+    let resp = await request(app).get("/remixes/3/reviews").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.remixReviews.length).toEqual(1);
+
+    resp = await request(app)
+        .post("/remixes/3/reviews")
+        .send({
+          title: "New review for recipe 1.1 remix",
+          content: "New content for recipe 1.1 remix review"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(201);
+    expect(resp.body.newRemixReview.reviewId).toEqual(expect.any(Number));
+    expect(resp.body.newRemixReview.userId).toEqual(1);
+    expect(resp.body.newRemixReview.remixId).toEqual(3);
+    expect(resp.body.newRemixReview.title).toEqual("New review for recipe 1.1 remix");
+    expect(resp.body.newRemixReview.content).toEqual("New content for recipe 1.1 remix review");
+    expect(resp.body.newRemixReview.createdAt).toEqual(expect.any(String));
+    expect(resp.body.message).toEqual("Successfully added new review for remix with id 3.");
+
+    resp = await request(app).get("/remixes/3/reviews").set("authorization", `${user1Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.remixReviews.length).toEqual(2);
+  });
+
+  test("Throws BadRequestError if empty body is passed in", async function() {
+    const resp = await request(app)
+        .post("/remixes/3/reviews")
+        .send({})
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance requires property");
+    expect(resp.error.text).toContain("title");
+    expect(resp.error.text).toContain("content");
+  });
+
+  test("Throws BadRequestError if certain strings don't meet proper requirements", async function() {
+    let resp = await request(app)
+        .post("/remixes/3/reviews")
+        .send({
+          title: "",
+          content: "I don't think this will pass"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance.title does not meet minimum length of 1");
+  });
+
+  test("Throws BadRequestError if request body contains attributes outside of the allowed attributes", async function() {
+    let resp = await request(app)
+        .post("/remixes/3/reviews")
+        .send({
+          title: "New review for recipe 1.1 remix",
+          content: "New content for recipe 1.1 remix review",
+          rating: 5
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("not allowed to have the additional property");
+    expect(resp.error.text).toContain("rating");
+  });
+
+  test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
+    const resp = await request(app)
+        .post("/remixes/3/reviews")
+        .send({
+          title: "New review for recipe 1.1 remix",
+          content: "New content for recipe 1.1 remix review"
+        });
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
