@@ -240,3 +240,123 @@ describe("POST /remixes works as intended", function() {
   });
 });
 
+/************************************** PATCH /remixes/:remixId */
+
+describe("PATCH /remixes/:remixId works as intended", function() {
+  test("user2 successfully updates their recipe 1.1 remix (id 3) with req.body meeting the correct specifications", async function() {
+    let resp = await request(app).get("/recipes/1/remixes").set("authorization", `${user2Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.remixes.length).toEqual(1);
+
+    resp = await request(app)
+        .patch("/remixes/3")
+        .send({
+          name: "recipe 1.1 remix now with 2 new vegetables",
+          purpose: "Add 2 new vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, brocolli",
+          imageUrl: ""
+        })
+        .set("authorization", `${user2Token}`);
+    
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.updatedRemix.name).toEqual("recipe 1.1 remix now with 2 new vegetables");
+    expect(resp.body.updatedRemix.description).toContain("The remix of recipe 1.1 by user 2");
+    expect(resp.body.updatedRemix.ingredients).toContain("brocolli");
+    expect(resp.body.updatedRemix.cookingTime).toEqual(40);
+    expect(resp.body.updatedRemix.servings).toEqual(0);
+    expect(resp.body.updatedRemix.imageUrl).toEqual("https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg");
+    expect(resp.body.message).toEqual("Successfully updated the remix with id 3");
+
+    resp = await request(app).get("/recipes/1/remixes").set("authorization", `${user2Token}`);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.remixes.length).toEqual(1);
+  });
+
+  test("Throws BadRequestError if empty body is passed in", async function() {
+    resp = await request(app)
+        .patch("/remixes/3")
+        .send({})
+        .set("authorization", `${user2Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance does not meet minimum property length of 1");
+  });
+
+  test("Throws BadRequestError if certain strings don't meet proper requirements", async function() {
+    let resp = await request(app)
+        .patch("/remixes/3")
+        .send({
+          name: "recipe 1.1 remix now with 2 new vegetables",
+          purpose: "",
+          ingredients: "Onions, celery, garlic, tomatoes, brocolli",
+          imageUrl: ""
+        })
+        .set("authorization", `${user2Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance.purpose does not meet minimum length of 10");
+  });
+
+  test("Throws BadRequestError if cookingTime and/or servings is negative", async function() {
+    let resp = await request(app)
+        .patch("/remixes/3")
+        .send({
+          name: "recipe 1.1 remix now with 2 new vegetables",
+          purpose: "Add 2 new vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, brocolli",
+          cookingTime: -60,
+          imageUrl: ""
+        })
+        .set("authorization", `${user2Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance.cookingTime must be greater than or equal to 0");
+  });
+
+  test("Throws BadRequestError if request body contains attributes outside of the allowed attributes", async function() {
+    let resp = await request(app)
+        .patch("/remixes/3")
+        .send({
+          name: "recipe 1.1 remix now with 2 new vegetables",
+          purpose: "Add 2 new vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, brocolli",
+          cookingTime: 60,
+          rating: 5,
+          imageUrl: ""
+        })
+        .set("authorization", `${user2Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("not allowed to have the additional property");
+    expect(resp.error.text).toContain("rating");
+  });
+
+  test("Throws ForbiddenError if logged in user tries to update a recipe they didn't create", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3")
+        .send({
+          name: "recipe 1.1 remix now with 2 new vegetables",
+          purpose: "Add 2 new vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, brocolli",
+          imageUrl: ""
+        })
+        .set("authorization", `${user1Token}`);
+    //user2 created recipe 1.1 remix (id 3), so ForbiddenError should be thrown.
+    expect(resp.statusCode).toEqual(403);
+    expect(resp.error.text).toContain("You can't edit this remix because you didn't create it.");
+  });
+
+  test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3")
+        .send({
+          name: "recipe 1.1 remix now with 2 new vegetables",
+          purpose: "Add 2 new vegetables",
+          ingredients: "Onions, celery, garlic, tomatoes, brocolli",
+          imageUrl: ""
+        });
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
+
