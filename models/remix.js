@@ -41,7 +41,7 @@ class Remix {
     return allReviews.rows;
   }
 
-  /**   Returns detailed information of the remix with id of remixId in the database.
+  /** Returns detailed information of the remix with id of remixId in the database.
    *  Returns {id, remixAuthor (username of user who created the recipe), purpose, name, description, originalRecipe (name of original recipe), ingredients, directions, cookingTime, servings, imageUrl, createdAt, reviews (array of review detail objects)} for each remix.
    * 
    *  Throws a 404 NotFoundError if the remix with id of remixId was not found in the database.
@@ -79,6 +79,8 @@ class Remix {
    *  Ingredients and directions cannot be blank.
    *  Cooking time and servings must be >= 0.
    *  Throws a BadRequestError if any of the above constraints are violated.
+   * 
+   *  Also Throws NotFoundError if originalRecipeId doesn't exist in the database.
    */
   static async addRemix(userId, originalRecipeId, {name, description, purpose, ingredients, directions, cookingTime = COOKING_TIME_DEFAULT, servings = SERVINGS_DEFAULT, imageUrl = IMAGE_URL_DEFAULT}) {
     // first make sure the inputs all follow the proper format. name and description must be of a certain length, cookingTime and servings should already
@@ -92,6 +94,9 @@ class Remix {
     if (servings < 0) throw new BadRequestError("The servings cannot be negative.");
     //if image_url is left blank, automatically assign to it the default value.
     if (imageUrl.length < 1) imageUrl = IMAGE_URL_DEFAULT;
+
+    const originalRecipe = await db.query(`SELECT name FROM recipes WHERE id = $1`, [originalRecipeId]);
+    if (originalRecipe.rows.length == 0) throw new NotFoundError(`The recipe with id of ${originalRecipeId} was not found in the database.`);
 
     //Inconvenience about node-pg: DEFAULT keyword can't be passed as a parameter in the parametrized query, it must be part of the string itself,
     //which means I'll need to type out the query twice.

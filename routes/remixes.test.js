@@ -146,6 +146,23 @@ describe("POST /remixes works as intended", function() {
     expect(resp.body.remixes[0].name).toEqual("New remix");
   });
 
+  test("Throws NotFoundError if originalRecipeId in request body contains id of recipe that doesn't exist in the database", async function() {
+    let resp = await request(app)
+        .post("/remixes")
+        .send({
+          name: "New remix",
+          description: "Here's some more vegetables to add",
+          purpose: "To add more vegetables",
+          ingredients: "Onions, celery, garlic, peppers, corn",
+          directions: "Pour everything into a pan and stir fry it!",
+          originalRecipeId: 100
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.error.text).toContain("The recipe with id of 100 was not found in the database.")
+  });
+
   test("Throws BadRequestError if empty body is passed in", async function() {
     const resp = await request(app)
         .post("/remixes")
@@ -436,6 +453,106 @@ describe("POST /remixes/:remixId/reviews works as intended", function() {
         .send({
           title: "New review for recipe 1.1 remix",
           content: "New content for recipe 1.1 remix review"
+        });
+    expect(resp.statusCode).toEqual(401);
+    expect(resp.error.text).toContain("You must be logged in to access this!");
+  });
+});
+
+/************************************** PATCH /remixes/:remixId/reviews/:reviewId */
+
+describe("PATCH /remixes/:remixId/reviews/:reviewId works as intended", function() {
+  test("user1 successfully edits their recipe 1.1 remix (id 3) review (id 1) with req.body meeting the correct specifications", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3/reviews/1")
+        .send({
+          title: "new title",
+          content: "new content"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    console.log(resp.error.text);
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.updatedRemixReview.reviewId).toEqual(1);
+    expect(resp.body.updatedRemixReview.userId).toEqual(1);
+    expect(resp.body.updatedRemixReview.remixId).toEqual(3);
+    expect(resp.body.updatedRemixReview.title).toEqual("new title");
+    expect(resp.body.updatedRemixReview.content).toEqual("new content");
+    expect(resp.body.updatedRemixReview.createdAt).toEqual(expect.any(String));
+    expect(resp.body.message).toEqual("Successfully updated remix review with id 1.");
+  });
+
+  test("user1 successfully edits their recipe 1.1 remix (id 3) review (id 1) with only title being changed", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3/reviews/1")
+        .send({
+          title: "new title"
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body.updatedRemixReview.title).toEqual("new title");
+    expect(resp.body.updatedRemixReview.content).toEqual("I'm going to add more vegetables to this remix later.");
+  });
+
+  test("Throws BadRequestError if empty body is passed in", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3/reviews/1")
+        .send({})
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance does not meet minimum property length of 1");
+  });
+
+  test("Throws BadRequestError if certain strings don't meet proper requirements", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3/reviews/1")
+        .send({
+          title: ""
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("instance.title does not meet minimum length of 1");
+  });
+
+  test("Throws BadRequestError if request body contains attributes outside of the allowed attributes", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3/reviews/1")
+        .send({
+          title: "new title",
+          content: "new content",
+          rating: 5
+        })
+        .set("authorization", `${user1Token}`);
+    
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.error.text).toContain("not allowed to have the additional property");
+    expect(resp.error.text).toContain("rating");
+  });
+
+  test("user2 can't edit a recipe review created by user1", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3/reviews/1")
+        .send({
+          title: "new title",
+          content: "new content",
+          rating: 5
+        })
+        .set("authorization", `${user2Token}`);
+    
+    expect(resp.statusCode).toEqual(403);
+    expect(resp.error.text).toContain("You can't edit this remix review because you didn't create it.");
+  });
+
+  test("Throws UnauthorizedError if request is sent by user who is not logged in", async function() {
+    const resp = await request(app)
+        .patch("/remixes/3/reviews/1")
+        .send({
+          title: "new title",
+          content: "new content",
+          rating: 5
         });
     expect(resp.statusCode).toEqual(401);
     expect(resp.error.text).toContain("You must be logged in to access this!");
