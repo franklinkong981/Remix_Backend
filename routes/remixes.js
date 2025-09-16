@@ -12,6 +12,7 @@ const {ensureLoggedIn,
 } = require("../middleware/auth.js");
 
 const jsonschema = require("jsonschema");
+const addRemixSchema = require("../schemas/remixNew.json");
 
 /**
  * GET /remixes/:remixId/reviews => { remixReviews: [ {id, reviewAuthor, title, content, createdAt}, ...] }
@@ -40,6 +41,42 @@ router.get("/:remixId", ensureLoggedIn, async function(req, res, next) {
   try {
     const remixDetails = await Remix.getRemixDetails(req.params.remixId, 3);
     return res.status(200).json({remixDetails});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * POST /remixes => { newRemix: {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * 
+ * Endpoint for adding a new remix. Body is subject to the following constraints:
+ * 
+ * req.body CONSTRAINTS:
+ *  - name must be of type string, 1-100 characters.
+ *  - description must be of type string, 1-255 characters.
+ *  - purpose must be of type string, 10-255 characters.
+ *  - originalRecipeId must be a number, AND it must equal the id of a recipe found in the database.
+ *  - ingredients must be of type string, cannot be empty.
+ *  - directions must be of type string, cannot be empty.
+ *  - cookingTime is optional, but if present, must be of type number and can't be negative.
+ *  - servings is optional, but if present, must be of type number and can't be negative.
+ *  - imageUrl is optional, but if present, must be of type string.
+ * 
+ *  - name, description, purpose, originalRecipeId, ingredients, and directions are required in the body of the request.
+ *  - req.body cannot contain any attributes other than the 9 listed above.
+ * 
+ * Authorization required: Logged in.
+ */
+router.post("/", ensureLoggedIn, async function(req, res, next) {
+  try {
+    const inputValidator = jsonschema.validate(req.body, addRemixSchema);
+    if (!(inputValidator.valid)) {
+      const inputErrors = inputValidator.errors.map(err => err.stack);
+      throw new BadRequestError(inputErrors);
+    }
+
+    const newRemix = await Remix.addRemix(res.locals.user.userId, req.body.originalRecipeId, req.body);
+    return res.status(201).json({newRemix, message: `Successfully added new remix of recipe with id of ${req.body.originalRecipeId}`});
   } catch (err) {
     return next(err);
   }

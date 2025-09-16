@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 255
+    },
+    "originalRecipeId": {
+      "type": "number",
+      "minimum": 1
+    },
+    "ingredients": {
+      "type": "string",
+      "minLength": 1
+    },
+    "directions": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cookingTime": {
+      "type": "number",
+      "minimum": 0
+    },
+    "servings": {
+      "type": "number",
+      "minimum": 0
+    },
+    "imageUrl": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "description",
+    "purpose",
+    "originalRecipeId",
+    "ingredients",
+    "directions"
+  ]
+}
