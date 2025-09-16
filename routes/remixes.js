@@ -14,6 +14,7 @@ const {ensureLoggedIn,
 const jsonschema = require("jsonschema");
 const addRemixSchema = require("../schemas/remixNew.json");
 const updateRemixSchema = require("../schemas/remixUpdate.json");
+const addRemixReviewSchema = require("../schemas/remixReviewNew.json");
 
 /**
  * GET /remixes/:remixId/reviews => { remixReviews: [ {id, reviewAuthor, title, content, createdAt}, ...] }
@@ -113,6 +114,35 @@ router.patch("/:remixId", ensureLoggedIn, ensureRemixBelongsToCorrectUser, async
     
     const updatedRemix = await Remix.updateRemix(req.params.remixId, req.body);
     return res.status(200).json({updatedRemix, message: `Successfully updated the remix with id ${req.params.remixId}`});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
+ * POST /remixes/reviews => { newRecipeReview: {reviewId, userId, remixId, title, content, createdAt}, success message }
+ * 
+ * Endpoint for adding a new remix review. Body is subject to the following constraints:
+ * 
+ * req.body CONSTRAINTS:
+ *  - title must be a string and must be 1-100 characters long.
+ *  - content must be a string and can't be an empty string.
+ * 
+ *  - title and content attributes are required in req.body.
+ *  - req.body cannot contain any attributes other than the 2 listed above.
+ * 
+ * Authorization required: Logged in.
+ */
+router.post("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) {
+  try {
+    const inputValidator = jsonschema.validate(req.body, addRemixReviewSchema);
+    if (!(inputValidator.valid)) {
+      const inputErrors = inputValidator.errors.map(err => err.stack);
+      throw new BadRequestError(inputErrors);
+    }
+
+    const newRemixReview = await Remix.addReview(res.locals.user.userId, req.params.remixId, req.body);
+    return res.status(201).json({newRemixReview, message: `Successfully added new review for remix with id ${req.params.remixId}.`});
   } catch (err) {
     return next(err);
   }

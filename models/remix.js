@@ -173,7 +173,7 @@ class Remix {
   /** Adds a review for the remix with id of remixId made by user with id of userId.
    *  Review must have title and content, both of which must be non-empty strings, otherwise a BadRequestError is thrown.
    * 
-   *  If successful, returns new information about the review: {userId, reviewAuthor, remixId, remixName, title, content, createdAt}
+   *  If successful, returns new information about the review: {reviewId, userId, reviewAuthor, remixId, title, content, createdAt}
    * 
    *  Throws a NotFoundError if the user with id of userId or remix with id of remixId are not found in the database.
    */
