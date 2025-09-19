@@ -3,6 +3,7 @@
 
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 
 //errors imports here
 const { NotFoundError }= require("./errors/errors.js");
@@ -17,6 +18,9 @@ const recipeRoutes = require("./routes/recipes.js");
 const remixRoutes = require("./routes/remixes.js");
 
 const app = express();
+
+//DON'T DELETE THIS, you won't be able to send requests without cors.
+app.use(cors());
 
 //allow form-encoded and json-encoded parsing.
 app.use(express.json());
