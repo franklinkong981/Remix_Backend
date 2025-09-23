@@ -139,6 +139,7 @@ class User {
    * 
    *  Throws a BadRequestError if data to update contains anything other than username and/or email, OR if new username and/or email doesn't match database requirements.
    *  Throws a NotFoundError if user cannot be found in the database.
+   *  Throws a BadRequestError if the new updated username is a duplicate of another username in the database.
    */
   static async updateUser(username, updateData) {
     //check to make sure updateData only has the keys of username and/or email.
@@ -153,6 +154,11 @@ class User {
     if (updateData.email && !(updateData["email"].includes("@"))) {
       throw new BadRequestError("The new email must be valid.");
     }
+
+    //finally, make sure the updated username isn't a duplicate of an existing username in the database.
+    const duplicateUsernameQuery = await db.query(`SELECT username FROM users WHERE username = $1`, [updateData.username]);
+    const duplicateUserResult = duplicateUsernameQuery.rows[0];
+    if (duplicateUserResult) throw new BadRequestError(`There is already a user with the username of ${updateData.username}. Please try another username.`);
 
     const {setCols, values} = sqlForPartialUpdate(updateData);
     const usernameParameterIndex = "$" + (values.length + 1);
