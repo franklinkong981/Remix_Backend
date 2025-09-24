@@ -86,7 +86,7 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * PATCH /remixes => { updatedRecipe: {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * PATCH /remixes/:remixId => { updatedRecipe: {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
  * 
  * Endpoint for updating a new remix. Body is subject to the following constraints:
  * 
@@ -121,7 +121,7 @@ router.patch("/:remixId", ensureLoggedIn, ensureRemixBelongsToCorrectUser, async
 });
 
 /**
- * POST /remixes/reviews => { newRecipeReview: {reviewId, userId, remixId, title, content, createdAt}, success message }
+ * POST /remixes/:remixId/reviews => { newRecipeReview: {reviewId, userId, remixId, title, content, createdAt}, success message }
  * 
  * Endpoint for adding a new remix review. Body is subject to the following constraints:
  * 

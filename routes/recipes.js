@@ -174,7 +174,7 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
 });
 
 /**
- * POST /recipes/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content, createdAt}, success message }
+ * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content, createdAt}, success message }
  * 
  * Endpoint for adding a new recipe review. Body is subject to the following constraints:
  * 

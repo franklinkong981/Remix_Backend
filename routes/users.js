@@ -62,6 +62,8 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
  *  - Updated email has to be proper email format.
  * 
  *  Returns newly updated username and email in updatedUser object.
+ * 
+ *  Also creates and returns a new token based on the updated user information.
  *
  * Authorization required: logged in and username must match.
  **/
@@ -74,8 +76,10 @@ router.patch("/:username", ensureLoggedIn, ensureIsCorrectUser, async function (
       throw new BadRequestError(inputErrors);
     }
 
-    const user = await User.updateUser(req.params.username, req.body);
-    return res.status(200).json({ updatedUser: user });
+    const updatedUserInfo= await User.updateUser(req.params.username, req.body);
+    const token = createToken(updatedUserInfo);
+
+    return res.status(200).json({ updatedUser: updatedUserInfo, updatedToken: token });
   } catch (err) {
     return next(err);
   }
