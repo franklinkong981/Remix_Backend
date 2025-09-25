@@ -41,6 +41,16 @@ function convertToReadableDateTime(sqlTimestamp) {
   return `${month} ${day}, ${year} at ${hours}:${minutes}${amOrPm}`;
 }
 
+/* If the parameter object has an attribute "createdAt" which should be an SQL timestamp, converts thatinto a readable datetime string
+   and returns the object */
+function changeCreatedAtAttribute(obj) {
+  if ("createdAt" in obj) {
+    let rawDateTime = obj.createdAt;
+    obj.createdAt = convertToReadableDateTime(rawDateTime);
+  }
+  return obj;
+}
+
 console.log(convertToReadableDateTime("2025-08-02 00:08:01.472785"));
 
-module.exports = {convertToReadableDateTime};
+module.exports = {convertToReadableDateTime, changeCreatedAtAttribute};
