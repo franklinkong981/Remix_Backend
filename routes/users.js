@@ -76,7 +76,7 @@ router.patch("/:username", ensureLoggedIn, ensureIsCorrectUser, async function (
       throw new BadRequestError(inputErrors);
     }
 
-    const updatedUserInfo= await User.updateUser(req.params.username, req.body);
+    const updatedUserInfo = await User.updateUser(req.params.username, req.body);
     const token = createToken(updatedUserInfo);
 
     return res.status(200).json({ updatedUser: updatedUserInfo, updatedToken: token });
