@@ -3,7 +3,7 @@
 const express = require("express");
 const router = new express.Router();
 
-const {convertToReadableDateTime} = require("../helpers/dateTime.js");
+const {changeCreatedAtAttribute} = require("../helpers/dateTime.js");
 const {BadRequestError, UnauthorizedError, NotFoundError} = require("../errors/errors.js");
 const Recipe = require("../models/recipe.js");
 const {ensureLoggedIn, 
@@ -42,15 +42,18 @@ function validateRecipeSearchQuery(query) {
  * Authorization required: Logged in.
  */
 router.get("/", ensureLoggedIn, async function(req, res, next) {
-  let allRecipes;
+  let allRecipesRaw;
   try {
     if (Object.keys(req.query).length === 0) {
-      allRecipes = await Recipe.getAllRecipesBasicInfo();
+      allRecipesRaw = await Recipe.getAllRecipesBasicInfo();
     } else {
       validateRecipeSearchQuery(req.query);
 
-      allRecipes = await Recipe.searchRecipes(req.query.recipeName);
+      allRecipesRaw = await Recipe.searchRecipes(req.query.recipeName);
     }
+    
+    //convert createdAt attribute for each recipe object from an sql datetimestamp to a readable string.
+    const allRecipes = allRecipesRaw.map(recipe => changeCreatedAtAttribute(recipe));
 
     return res.status(200).json({recipeSearchResults: allRecipes});
   } catch (err) {

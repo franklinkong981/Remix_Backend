@@ -4,7 +4,7 @@ const express = require("express");
 const router = new express.Router();
 
 const {createToken} = require("../helpers/token.js");
-const {convertToReadableDateTime} = require("../helpers/dateTime.js");
+const {changeCreatedAtAttribute} = require("../helpers/dateTime.js");
 const {BadRequestError, UnauthorizedError, NotFoundError} = require("../errors/errors.js");
 const User = require("../models/user.js");
 const {ensureLoggedIn, ensureIsCorrectUser} = require("../middleware/auth.js");

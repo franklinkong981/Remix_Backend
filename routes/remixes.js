@@ -3,7 +3,7 @@
 const express = require("express");
 const router = new express.Router();
 
-const {convertToReadableDateTime} = require("../helpers/dateTime.js");
+const {changeCreatedAtAttribute} = require("../helpers/dateTime.js");
 const {BadRequestError, UnauthorizedError, NotFoundError} = require("../errors/errors.js");
 const Remix = require("../models/remix.js");
 const {ensureLoggedIn, 
