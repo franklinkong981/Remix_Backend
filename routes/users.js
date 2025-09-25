@@ -95,7 +95,8 @@ router.patch("/:username", ensureLoggedIn, ensureIsCorrectUser, async function (
  */
 router.get("/:username/recipes", ensureLoggedIn, async function (req, res, next) {
   try {
-    const allUserRecipes = await User.getRecipesFromUser(req.params.username);
+    const allUserRecipesRaw = await User.getRecipesFromUser(req.params.username);
+    const allUserRecipes = allUserRecipesRaw.map(recipe => changeCreatedAtAttribute(recipe));
     return res.status(200).json({allUserRecipes});
   } catch (err) {
     return next(err);
@@ -111,7 +112,8 @@ router.get("/:username/recipes", ensureLoggedIn, async function (req, res, next)
  */
 router.get("/:username/remixes", ensureLoggedIn, async function (req, res, next) {
   try {
-    const allUserRemixes = await User.getRemixesFromUser(req.params.username);
+    const allUserRemixesRaw = await User.getRemixesFromUser(req.params.username);
+    const allUserRemixes = allUserRemixesRaw.map(remix => changeCreatedAtAttribute(remix));
     return res.status(200).json({allUserRemixes});
   } catch (err) {
     return next(err);
@@ -151,7 +153,7 @@ router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, 
 });
 
 /**
- * GET /users/:username => { userDetails: {username, email, recipes: [ {id, name, description, imageUrl}, ... ], remixes: [ {id, name, description, originalRecipe, imageUrl}, ... ] } }
+ * GET /users/:username => { userDetails: {username, email, recipes: [ {id, name, description, imageUrl, createdAt}, ... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}, ... ] } }
  * 
  * Endpoint for fetching detailed information about a specific user, fetches all information that will be displayed on the user's profile page.
  * 
@@ -159,7 +161,16 @@ router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, 
  */
 router.get("/:username", ensureLoggedIn, async function (req, res, next) {
   try {
-    const userDetails = await User.getUsersDetailedInfo(req.params.username);
+    let userDetailsRaw = await User.getUsersDetailedInfo(req.params.username);
+
+    //convert each recipe and remix object's createdAt attribute to a readable string.
+    let rawRecipeList = userDetailsRaw.recipes;
+    let rawRemixList = userDetailsRaw.remixes;
+    const recipeList = rawRecipeList.map(recipe => changeCreatedAtAttribute(recipe));
+    const remixList = rawRemixList.map(remix => changeCreatedAtAttribute(remix));
+
+    let userDetails = {...userDetailsRaw, recipes: recipeList, remixes: remixList};
+
     return res.status(200).json({userDetails});
   } catch (err) {
     return next(err);
@@ -175,7 +186,8 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
  */
 router.get("/:username/reviews/recipes", ensureLoggedIn, async function (req, res, next) {
   try {
-    const userRecipeReviews = await User.getUsersRecipeReviews(req.params.username);
+    const userRecipeReviewsRaw = await User.getUsersRecipeReviews(req.params.username);
+    const userRecipeReviews = userRecipeReviewsRaw.map(recipeReview => changeCreatedAtAttribute(recipeReview));
     return res.status(200).json({userRecipeReviews});
   } catch (err) {
     return next(err);
@@ -191,7 +203,8 @@ router.get("/:username/reviews/recipes", ensureLoggedIn, async function (req, re
  */
 router.get("/:username/reviews/remixes", ensureLoggedIn, async function (req, res, next) {
   try {
-    const userRemixReviews = await User.getUsersRemixReviews(req.params.username);
+    const userRemixReviewsRaw = await User.getUsersRemixReviews(req.params.username);
+    const userRemixRevies = userRemixReviewsRaw.map(remixReview => changeCreatedAtAttribute(remixReview));
     return res.status(200).json({userRemixReviews});
   } catch (err) {
     return next(err);

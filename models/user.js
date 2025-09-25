@@ -177,7 +177,7 @@ class User {
 
   /** Fetches all original recipes (not remixes) created by the user matching the inputted username.
    *  If a limit n is supplied, fetches only the n most recently added recipes by that user, newest first.
-   *  Returns {id, name, description, image_url, created_at} for each recipe.
+   *  Returns {id, name, description, imageUrl, createdAt} for each recipe.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
    */
@@ -204,7 +204,7 @@ class User {
 
   /** Fetches all remixes created by the user matching the inputted username.
    *  If a limit n is supplied, fetches only the n most recently added remixes by that user, newest first.
-   *  Returns {id, name, description, original_recipe_name, image_url, created_at} for each remix.
+   *  Returns {id, name, description, originalRecipe, imageUrl, createdAt} for each remix.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
    */
@@ -286,7 +286,7 @@ class User {
    *  This includes user account information like their username and email, as well as up to 3 of their most recently
    *  created recipes and remixes.
    * 
-   *  Returns {username, email, recipes: [ {id, name, description, imageUrl}... ], remixes: [ {id, name, description, originalRecipe, imageUrl}... ]}
+   *  Returns {username, email, recipes: [ {id, name, description, imageUrl, createdAt}... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}... ]}
    */
   static async getUsersDetailedInfo(username) {
     let userInfo = await User.getUserBasicInfo(username);
