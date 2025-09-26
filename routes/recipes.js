@@ -70,7 +70,9 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
  */
 router.get("/:recipeId/remixes", ensureLoggedIn, async function(req, res, next) {
   try {
-    const remixes = await Recipe.getRemixes(req.params.recipeId);
+    const remixesRaw = await Recipe.getRemixes(req.params.recipeId);
+    const remixes = remixesRaw.map(remix => changeCreatedAtAttribute(remix));
+
     return res.status(200).json({remixes});
   } catch (err) {
     return next(err);
@@ -86,7 +88,9 @@ router.get("/:recipeId/remixes", ensureLoggedIn, async function(req, res, next) 
  */
 router.get("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) {
   try {
-    const recipeReviews = await Recipe.getRecipeReviews(req.params.recipeId);
+    const recipeReviewsRaw = await Recipe.getRecipeReviews(req.params.recipeId);
+    const recipeReviews = recipeReviewsRaw.map(recipeReviews => changeCreatedAtAttribute(recipeReviews));
+
     return res.status(200).json({recipeReviews});
   } catch (err) {
     return next(err);
@@ -102,7 +106,18 @@ router.get("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) 
  */
 router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
   try {
-    const recipeDetails = await Recipe.getRecipeDetails(req.params.recipeId, 3);
+    const recipeDetailsRaw = await Recipe.getRecipeDetails(req.params.recipeId, 3);
+
+    //convert each recipe and remix object's createdAt attribute to a readable string.
+    let rawRemixList = recipeDetailsRaw.remixes;
+    let rawRecipeReviewsList = recipeDetailsRaw.reviews;
+    const remixList = rawRemixList.map(remix => changeCreatedAtAttribute(remix));
+    const recipeReviewsList = rawRecipeReviewsList.map(recipeReviews => changeCreatedAtAttribute(recipeReviews));
+    let createdAtRaw = recipeDetailsRaw.createdAt;
+    const createdAt = changeCreatedAtAttribute(createdAtRaw);
+
+    const recipeDetails = {...recipeDetailsRaw, remixes: remixList, reviews: recipeReviewsList, createdAt};
+
     return res.status(200).json({recipeDetails});
   } catch (err) {
     return next(err);
@@ -178,7 +193,7 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
 });
 
 /**
- * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content, createdAt}, success message }
+ * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content}, success message }
  * 
  * Endpoint for adding a new recipe review. Body is subject to the following constraints:
  * 
@@ -207,7 +222,7 @@ router.post("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next)
 });
 
 /**
- * PATCH /recipes/:recipeId/reviews/:reviewId => { updatedRecipeReview: {reviewId, userId, recipeId, title, content, createdAt}, success message }
+ * PATCH /recipes/:recipeId/reviews/:reviewId => { updatedRecipeReview: {reviewId, userId, recipeId, title, content}, success message }
  * 
  * Endpoint for updating a new recipe review. Body is subject to the following constraints:
  * 

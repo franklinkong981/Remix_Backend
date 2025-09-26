@@ -234,7 +234,7 @@ class Recipe {
   /** Adds a review for the recipe with id of recipeId made by user with id of userId.
    *  Review must have title and content, both of which must be non-empty strings, otherwise a BadRequestError is thrown.
    * 
-   *  If successful, returns new information about the review: {reviewId, userId, recipeId, title, content, createdAt}
+   *  If successful, returns new information about the review: {reviewId, userId, recipeId, title, content}
    * 
    *  Throws a NotFoundError if the user with id of userId or recipe with id of recipeId are not found in the database.
    */
@@ -256,7 +256,7 @@ class Recipe {
     const addReviewResult = await db.query(
       `INSERT INTO recipe_reviews (user_id, recipe_id, title, content)
        VALUES ($1, $2, $3, $4)
-       RETURNING id AS "reviewId", user_id AS "userId", recipe_id AS "recipeId", title, content, created_at AS "createdAt"`,
+       RETURNING id AS "reviewId", user_id AS "userId", recipe_id AS "recipeId", title, content`,
        [userId, recipeId, title, content]
     );
 
@@ -283,7 +283,7 @@ class Recipe {
    *  Values in updateData are checked to ensure the same constraints in addReview method above are met, throws
    *  BadRequestError if any constraints are violated.
    * 
-   *  Returns {reviewId, userId, recipeId, title, content, createdAt} for the updated recipe review.
+   *  Returns {reviewId, userId, recipeId, title, content} for the updated recipe review.
    *  
    *  Throws a BadRequestError if the review of reviewId isn't found in the database.
    */
@@ -304,7 +304,7 @@ class Recipe {
     const sqlUpdateQuery = `UPDATE recipe_reviews
                             SET ${setCols}
                             WHERE id = ${reviewIdParameterIndex}
-                            RETURNING id AS "reviewId", user_id AS "userId", recipe_id AS "recipeId", title, content, created_at AS "createdAt"`;
+                            RETURNING id AS "reviewId", user_id AS "userId", recipe_id AS "recipeId", title, content`;
     const updateResult = await db.query(sqlUpdateQuery, [...values, reviewId]);
     const updatedReview = updateResult.rows[0];
 

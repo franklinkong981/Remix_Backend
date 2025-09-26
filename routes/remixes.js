@@ -27,7 +27,9 @@ const updateRemixReviewSchema = require("../schemas/remixReviewUpdate.json");
  */
 router.get("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) {
   try {
-    const remixReviews = await Remix.getRemixReviews(req.params.remixId);
+    const remixReviewsRaw = await Remix.getRemixReviews(req.params.remixId);
+    const remixReviews = remixReviewsRaw.map(remixReview => changeCreatedAtAttribute(remixReview));
+
     return res.status(200).json({remixReviews});
   } catch (err) {
     return next(err);
@@ -43,7 +45,16 @@ router.get("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) {
  */
 router.get("/:remixId", ensureLoggedIn, async function(req, res, next) {
   try {
-    const remixDetails = await Remix.getRemixDetails(req.params.remixId, 3);
+    const remixDetailsRaw = await Remix.getRemixDetails(req.params.remixId, 3);
+
+    //convert each remix review and remixDetailsRaw object's createdAt attribute to a readable string.
+    let rawRemixReviewsList = remixDetailsRaw.reviews;
+    const remixReviewsList = rawRemixReviewsList.map(remixReview => changeCreatedAtAttribute(remixReview));
+    let createdAtRaw = remixDetailsRaw.createdAt;
+    const createdAt = changeCreatedAtAttribute(createdAtRaw);
+
+    const remixDetails = {...remixDetailsRaw, reviews: remixReviewsList, createdAt};
+
     return res.status(200).json({remixDetails});
   } catch (err) {
     return next(err);
@@ -122,7 +133,7 @@ router.patch("/:remixId", ensureLoggedIn, ensureRemixBelongsToCorrectUser, async
 });
 
 /**
- * POST /remixes/:remixId/reviews => { newRecipeReview: {reviewId, userId, remixId, title, content, createdAt}, success message }
+ * POST /remixes/:remixId/reviews => { newRecipeReview: {reviewId, userId, remixId, title, content}, success message }
  * 
  * Endpoint for adding a new remix review. Body is subject to the following constraints:
  * 
@@ -151,7 +162,7 @@ router.post("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * PATCH /remixes/:remixId/reviews/:reviewId => { updatedRemixReview: {reviewId, userId, recipeId, title, content, createdAt}, success message }
+ * PATCH /remixes/:remixId/reviews/:reviewId => { updatedRemixReview: {reviewId, userId, recipeId, title, content}, success message }
  * 
  * Endpoint for updating a new remix review. Body is subject to the following constraints:
  * 
