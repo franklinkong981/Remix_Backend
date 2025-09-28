@@ -53,7 +53,7 @@ class Recipe {
   }
 
   /** Returns all remixes for the recipe with id of recipeId and sorts them by most recent first.
-   *  Returns {id, name, description, image_url, created_at} for each remix.
+   *  Returns {id, name, purpose, description, image_url, created_at} for each remix.
    * 
    *  Throws a NotFoundError if the recipe with id of recipeId isn't found in the database. 
    */
@@ -63,7 +63,7 @@ class Recipe {
     if (recipe.rows.length == 0) throw new NotFoundError(`The recipe with id of ${recipeId} was not found in the database.`);
 
     const allRemixes = await db.query(
-      `SELECT rem.id, rem.name, rem.description, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
+      `SELECT rem.id, rem.name, rem.description, rem.purpose, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
        FROM recipes rec
        JOIN remixes rem ON rem.recipe_id = rec.id
        WHERE rec.id = $1
