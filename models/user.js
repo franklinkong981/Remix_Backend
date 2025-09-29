@@ -377,7 +377,7 @@ class User {
    */
   static async getUsersMostRecentRemixReview(username) {
     const mostRecentRemixReview = await User.getUsersRemixReviews(username, 1);
-    if (mostRecentRecipeReview.length) {
+    if (mostRecentRemixReview.length) {
       return mostRecentRemixReview[0];
     } else {
       return {};
