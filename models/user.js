@@ -300,23 +300,28 @@ class User {
   /** Fetches and returns all recipe reviews belonging to a specific user, newest ones first.
    *  Returns {recipeId, recipeName, title, content, createdAt } for each review.
    * 
+   *  If a limit n is supplied, fetches only the n most recently added recipe reviews by that user, newest first.
+   * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
    */
-  static async getUsersRecipeReviews(username) {
+  static async getUsersRecipeReviews(username, limit = 0) {
     //make sure username supplied exists in the database.
     const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
     const userInfo = user.rows[0];
 
     if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
     const userId = userInfo.id;
+    //if limit ? 0, include the limit at the end of the sql query.
+    const parametrizedQueryAddition = (limit > 0) ? ` LIMIT $2` : ``;
+    const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
 
     const usersRecipeReviews = await db.query(
       `SELECT rev.recipe_id AS "recipeId", rec.name AS "recipeName", rev.title, rev.content, rev.created_at AS "createdAt"
        FROM recipe_reviews rev
        JOIN recipes rec ON rev.recipe_id = rec.id
        WHERE rev.user_id = $1
-       ORDER BY rev.created_at DESC, rev.title`,
-       [userId]
+       ORDER BY rev.created_at DESC, rev.title`+ parametrizedQueryAddition,
+       parametrizedQueryValues
     );
 
     return usersRecipeReviews.rows;
@@ -325,23 +330,28 @@ class User {
   /** Fetches and returns all remix reviews belonging to a specific user, newest ones first.
    *  Returns {remixId, remixName, title, content, createdAt } for each review.
    * 
+   *  If a limit n is supplied, fetches only the n most recently added remix reviews by that user, newest first.
+   * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
    */
-  static async getUsersRemixReviews(username) {
+  static async getUsersRemixReviews(username, limit = 0) {
     //make sure username supplied exists in the database.
     const user = await db.query(`SELECT id, username FROM users WHERE username = $1`, [username]);
     const userInfo = user.rows[0];
 
     if (!userInfo) throw new NotFoundError(`The user with username ${username} was not found in the database.`);
     const userId = userInfo.id;
+    //if limit ? 0, include the limit at the end of the sql query.
+    const parametrizedQueryAddition = (limit > 0) ? ` LIMIT $2` : ``;
+    const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
 
     const usersRemixReviews = await db.query(
       `SELECT rev.remix_id AS "remixId", rem.name AS "remixName", rev.title, rev.content, rev.created_at AS "createdAt"
        FROM remix_reviews rev
        JOIN remixes rem ON rev.remix_id = rem.id
        WHERE rev.user_id = $1
-       ORDER BY rev.created_at DESC, rev.title`,
-       [userId]
+       ORDER BY rev.created_at DESC, rev.title` + parametrizedQueryAddition,
+       parametrizedQueryValues
     );
 
     return usersRemixReviews.rows;
