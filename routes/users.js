@@ -153,7 +153,8 @@ router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, 
 });
 
 /**
- * GET /users/:username => { userDetails: {username, email, recipes: [ {id, name, description, imageUrl, createdAt}, ... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}, ... ] } }
+ * GET /users/:username => { userDetails: {username, email, recipes: [ {id, name, description, imageUrl, createdAt}, ... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}, ... ],
+ *                                          recipeReview: [{recipeId, recipeName, title, content, createdAt}], remixReivew: [{remixId, remixName, title, content, createdAt}] } }
  * 
  * Endpoint for fetching detailed information about a specific user, fetches all information that will be displayed on the user's profile page.
  * 
@@ -166,10 +167,15 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
     //convert each recipe and remix object's createdAt attribute to a readable string.
     let rawRecipeList = userDetailsRaw.recipes;
     let rawRemixList = userDetailsRaw.remixes;
+    let rawRecipeReview = userDetailsRaw.recipeReview;
+    let rawRemixReview = userDetailsRaw.remixReview;
     const recipeList = rawRecipeList.map(recipe => changeCreatedAtAttribute(recipe));
     const remixList = rawRemixList.map(remix => changeCreatedAtAttribute(remix));
+    const recipeReview = rawRecipeReview.map(recipeReview => changeCreatedAtAttribute(recipeReview));
+    const remixReview = rawRemixReview.map(remixReview => changeCreatedAtAttribute(remixReview));
+    
 
-    let userDetails = {...userDetailsRaw, recipes: recipeList, remixes: remixList};
+    let userDetails = {...userDetailsRaw, recipes: recipeList, remixes: remixList, recipeReview, remixReview};
 
     return res.status(200).json({userDetails});
   } catch (err) {

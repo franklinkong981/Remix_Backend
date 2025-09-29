@@ -284,16 +284,19 @@ class User {
 
   /** Fetches and returns detailed information about the user that will be displayed on the user's main profile page.
    *  This includes user account information like their username and email, as well as up to 3 of their most recently
-   *  created recipes and remixes.
+   *  created recipes and remixes, as well as their most recently created recipe review and remix review.
    * 
-   *  Returns {username, email, recipes: [ {id, name, description, imageUrl, createdAt}... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}... ]}
+   *  Returns {username, email, recipes: [ {id, name, description, imageUrl, createdAt}... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}... ],
+   *           recipeReview: [{recipeId, recipeName, title, content, createdAt}], remixReivew: [{remixId, remixName, title, content, createdAt}]}
    */
   static async getUsersDetailedInfo(username) {
     let userInfo = await User.getUserBasicInfo(username);
-    let userRecipes = await User.getRecipesFromUser(username, 3);
-    let userRemixes = await User.getRemixesFromUser(username, 3);
+    let userRecentRecipes = await User.getRecipesFromUser(username, 3);
+    let userRecentRemixes = await User.getRemixesFromUser(username, 3);
+    let userRecentRecipeReview = await User.getUsersRecipeReviews(username, 1);
+    let userRecentRemixReview = await User.getUsersRemixReviews(username, 1);
 
-    userInfo = {...userInfo, recipes: userRecipes, remixes: userRemixes};
+    userInfo = {...userInfo, recipes: userRecentRecipes, remixes: userRecentRemixes, recipeReview: userRecentRecipeReview, remixReview: userRecentRemixReview};
     return userInfo;
   }
 
