@@ -154,7 +154,7 @@ router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, 
 
 /**
  * GET /users/:username => { userDetails: {username, email, recipes: [ {id, name, description, imageUrl, createdAt}, ... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}, ... ],
- *                                          recipeReview: [{recipeId, recipeName, title, content, createdAt}], remixReivew: [{remixId, remixName, title, content, createdAt}] } }
+ *                                          recipeReview: {recipeId, recipeName, title, content, createdAt}, remixReivew: {remixId, remixName, title, content, createdAt} } }
  * 
  * Endpoint for fetching detailed information about a specific user, fetches all information that will be displayed on the user's profile page.
  * 
