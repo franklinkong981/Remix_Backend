@@ -204,7 +204,7 @@ router.get("/:username/reviews/recipes", ensureLoggedIn, async function (req, re
 router.get("/:username/reviews/remixes", ensureLoggedIn, async function (req, res, next) {
   try {
     const userRemixReviewsRaw = await User.getUsersRemixReviews(req.params.username);
-    const userRemixRevies = userRemixReviewsRaw.map(remixReview => changeCreatedAtAttribute(remixReview));
+    const userRemixReviews = userRemixReviewsRaw.map(remixReview => changeCreatedAtAttribute(remixReview));
     return res.status(200).json({userRemixReviews});
   } catch (err) {
     return next(err);
