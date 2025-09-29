@@ -171,8 +171,8 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
     let rawRemixReview = userDetailsRaw.remixReview;
     const recipeList = rawRecipeList.map(recipe => changeCreatedAtAttribute(recipe));
     const remixList = rawRemixList.map(remix => changeCreatedAtAttribute(remix));
-    const recipeReview = rawRecipeReview.map(recipeReview => changeCreatedAtAttribute(recipeReview));
-    const remixReview = rawRemixReview.map(remixReview => changeCreatedAtAttribute(remixReview));
+    const recipeReview = changeCreatedAtAttribute(rawRecipeReview);
+    const remixReview = changeCreatedAtAttribute(rawRemixReview);
     
 
     let userDetails = {...userDetailsRaw, recipes: recipeList, remixes: remixList, recipeReview, remixReview};
