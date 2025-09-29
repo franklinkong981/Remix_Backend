@@ -287,14 +287,14 @@ class User {
    *  created recipes and remixes, as well as their most recently created recipe review and remix review.
    * 
    *  Returns {username, email, recipes: [ {id, name, description, imageUrl, createdAt}... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}... ],
-   *           recipeReview: [{recipeId, recipeName, title, content, createdAt}], remixReivew: [{remixId, remixName, title, content, createdAt}]}
+   *           recipeReview: {recipeId, recipeName, title, content, createdAt}, remixReivew: {remixId, remixName, title, content, createdAt} }
    */
   static async getUsersDetailedInfo(username) {
     let userInfo = await User.getUserBasicInfo(username);
     let userRecentRecipes = await User.getRecipesFromUser(username, 3);
     let userRecentRemixes = await User.getRemixesFromUser(username, 3);
-    let userRecentRecipeReview = await User.getUsersRecipeReviews(username, 1);
-    let userRecentRemixReview = await User.getUsersRemixReviews(username, 1);
+    let userRecentRecipeReview = await User.getUsersMostRecentRecipeReview(username);
+    let userRecentRemixReview = await User.getUsersMostRecentRemixReview(username);
 
     userInfo = {...userInfo, recipes: userRecentRecipes, remixes: userRecentRemixes, recipeReview: userRecentRecipeReview, remixReview: userRecentRemixReview};
     return userInfo;
@@ -330,6 +330,18 @@ class User {
     return usersRecipeReviews.rows;
   }
 
+  /** Fetches and returns the most recently added recipe review added by the user with the specified username.
+   *  Returns either the review {recipeId, recipeName, title, content, createdAt } or an empty object if the user has no recipe reviews.
+   */
+  static async getUsersMostRecentRecipeReview(username) {
+    const mostRecentRecipeReview = await User.getUsersRecipeReviews(username, 1);
+    if (mostRecentRecipeReview.length) {
+      return mostRecentRecipeReview[0];
+    } else {
+      return {};
+    }
+  }
+
   /** Fetches and returns all remix reviews belonging to a specific user, newest ones first.
    *  Returns {remixId, remixName, title, content, createdAt } for each review.
    * 
@@ -358,6 +370,18 @@ class User {
     );
 
     return usersRemixReviews.rows;
+  }
+
+  /** Fetches and returns the most recently added remix review added by the user with the specified username.
+   *  Returns either the review {remixId, remixName, title, content, createdAt } or an empty object if the user has no remix reviews.
+   */
+  static async getUsersMostRecentRemixReview(username) {
+    const mostRecentRemixReview = await User.getUsersRemixReviews(username, 1);
+    if (mostRecentRecipeReview.length) {
+      return mostRecentRemixReview[0];
+    } else {
+      return {};
+    }
   }
 
   /** Adds the recipe with id of recipeId to the favorite recipes list of a user.
