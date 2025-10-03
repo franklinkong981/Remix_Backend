@@ -102,8 +102,8 @@ class Recipe {
   }
 
   /** Returns detailed information of a recipe with the id of recipeId. 
-   *  Returns {id, recipeAuthor (username of user who created the recipe), name, description, ingredients, directions, cooking_time, servings, image_url, created_at} for each recipe.
-   * 
+   *  Returns {id, recipeAuthor (username of user who created the recipe), name, description, ingredients, directions, cookingTime, servings, imageUrl, createdAt, remixes: [ {id, name, description, imageUrl, createdAt}, ... ], reviews: [ {id, reviewAuthor, title, content, createdAt}, ... ], imageUrl, createdAt}, ...] } for each recipe.
+   *  
    *  Throws a 404 NotFoundError if the recipe with id of recipeId was not found in the database.
    */
   static async getRecipeDetails(recipeId, limit = 0) {

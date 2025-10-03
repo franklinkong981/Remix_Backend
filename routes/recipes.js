@@ -98,25 +98,27 @@ router.get("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * GET /recipes/:recipeId => { recipeDetails: [ {id, recipeAuthor, name, description, ingredients, directions, cookingTime, servings, remixes: [ {id, name, description, imageUrl, createdAt}, ... ], reviews: [ {id, reviewAuthor, title, content, createdAt}, ... ], imageUrl, createdAt}, ...] }
+ * GET /recipes/:recipeId => { recipeDetails: {id, recipeAuthor, name, description, ingredients, directions, cookingTime, servings, 
+ * remixes: [ {id, name, description, imageUrl, createdAt}, ... ], mostRecentRecipeReview: {id, reviewAuthor, title, content, createdAt}, imageUrl, createdAt} }
  * 
- * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. All will be used on the page that displays a recipe's details.
+ * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. 
+ * All will be used on the page that displays a recipe's details. Also contains the full list of remixes belonging to the recipe as well as the recipe's most recently added review.
  * 
  * Authorization required: Logged in.
  */
 router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
   try {
-    const recipeDetailsRaw = await Recipe.getRecipeDetails(req.params.recipeId, 3);
+    const recipeDetailsRaw = await Recipe.getRecipeDetails(req.params.recipeId, 1);
 
     //convert each recipe and remix object's createdAt attribute to a readable string.
     let rawRemixList = recipeDetailsRaw.remixes;
-    let rawRecipeReviewsList = recipeDetailsRaw.reviews;
+    let rawRecipeReview = recipeDetailsRaw.reviews[0];
     const remixList = rawRemixList.map(remix => changeCreatedAtAttribute(remix));
-    const recipeReviewsList = rawRecipeReviewsList.map(recipeReviews => changeCreatedAtAttribute(recipeReviews));
+    const mostRecentRecipeReview = changeCreatedAtAttribute(rawRecipeReview);
     let createdAtRaw = recipeDetailsRaw.createdAt;
     const createdAt = changeCreatedAtAttribute(createdAtRaw);
 
-    const recipeDetails = {...recipeDetailsRaw, remixes: remixList, reviews: recipeReviewsList, createdAt};
+    const recipeDetails = {...recipeDetailsRaw, remixes: remixList, mostRecentRecipeReview, createdAt};
 
     return res.status(200).json({recipeDetails});
   } catch (err) {
