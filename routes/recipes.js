@@ -114,7 +114,13 @@ router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
     let rawRemixList = recipeDetailsRaw.remixes;
     let rawRecipeReview = recipeDetailsRaw.reviews[0];
     const remixList = rawRemixList.map(remix => changeCreatedAtAttribute(remix));
-    const mostRecentRecipeReview = changeCreatedAtAttribute(rawRecipeReview);
+
+    //if the recipe doesn't yet have any recipe reviews, recipeDetailsRaw.reviews will be an empty array.
+    let mostRecentRecipeReview = {};
+    if (recipeDetailsRaw.reviews.length > 0) {
+      mostRecentRecipeReview = changeCreatedAtAttribute(recipeDetailsRaw.reviews[0]);
+    }
+    
     let createdAtRaw = recipeDetailsRaw.createdAt;
     const createdAt = changeCreatedAtAttribute(createdAtRaw);
 
