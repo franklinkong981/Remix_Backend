@@ -62,7 +62,7 @@ router.get("/", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * GET /recipes/:recipeId/remixes => { remixes: [ {id, name, description, imageUrl, createdAt}, ...] }
+ * GET /recipes/:recipeId/remixes => { remixes: [ {id, name, remixAuthor, description, imageUrl, createdAt}, ...] }
  * 
  * Endpoint for fetching basic information on all remixes of a recipe with a specific id.
  * 

@@ -53,7 +53,7 @@ class Recipe {
   }
 
   /** Returns all remixes for the recipe with id of recipeId and sorts them by most recent first.
-   *  Returns {id, name, description, image_url, created_at} for each remix.
+   *  Returns {id, name, description, remixAuthor (username of user who created the remix), image_url, created_at} for each remix.
    * 
    *  If a limit n is supplied, returns the n first remixes listed.
    * 
@@ -68,9 +68,10 @@ class Recipe {
     const parametrizedQueryValues = (limit > 0) ? [recipeId, limit] : [recipeId];
 
     const allRemixes = await db.query(
-      `SELECT rem.id, rem.name, rem.description, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
+      `SELECT rem.id, rem.name, users.username AS "remixAuthor", rem.description, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
        FROM recipes rec
        JOIN remixes rem ON rem.recipe_id = rec.id
+       JOIN users ON rem.user_id = users.id
        WHERE rec.id = $1
        ORDER BY rem.created_at DESC, rem.name` + parametrizedQueryAddition,
        parametrizedQueryValues
