@@ -99,16 +99,16 @@ router.get("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) 
 
 /**
  * GET /recipes/:recipeId => { recipeDetails: {id, recipeAuthor, name, description, ingredients, directions, cookingTime, servings, 
- * remixes: [ {id, name, description, imageUrl, createdAt}, ... ], mostRecentRecipeReview: {id, reviewAuthor, title, content, createdAt}, imageUrl, createdAt} }
+ * (3 most recent)remixes: [ {id, name, description, imageUrl, createdAt}, ... ], mostRecentRecipeReview: {id, reviewAuthor, title, content, createdAt}, imageUrl, createdAt} }
  * 
  * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. 
- * All will be used on the page that displays a recipe's details. Also contains the full list of remixes belonging to the recipe as well as the recipe's most recently added review.
+ * All will be used on the page that displays a recipe's details. Also contains the 3 most recently created remixes of the recipe as well as the recipe's most recently added review.
  * 
  * Authorization required: Logged in.
  */
 router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
   try {
-    const recipeDetailsRaw = await Recipe.getRecipeDetails(req.params.recipeId, 1);
+    const recipeDetailsRaw = await Recipe.getRecipeDetails(req.params.recipeId, 3, 1);
 
     //convert each recipe and remix object's createdAt attribute to a readable string.
     let rawRemixList = recipeDetailsRaw.remixes;
