@@ -3,7 +3,7 @@
 const express = require("express");
 const router = new express.Router();
 
-const {changeCreatedAtAttribute} = require("../helpers/dateTime.js");
+const {convertToReadableDateTime, changeCreatedAtAttribute} = require("../helpers/dateTime.js");
 const {BadRequestError, UnauthorizedError, NotFoundError} = require("../errors/errors.js");
 const Recipe = require("../models/recipe.js");
 const {ensureLoggedIn, 
@@ -112,7 +112,6 @@ router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
 
     //convert each recipe and remix object's createdAt attribute to a readable string.
     let rawRemixList = recipeDetailsRaw.remixes;
-    let rawRecipeReview = recipeDetailsRaw.reviews[0];
     const remixList = rawRemixList.map(remix => changeCreatedAtAttribute(remix));
 
     //if the recipe doesn't yet have any recipe reviews, recipeDetailsRaw.reviews will be an empty array.
@@ -122,7 +121,7 @@ router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
     }
     
     let createdAtRaw = recipeDetailsRaw.createdAt;
-    const createdAt = changeCreatedAtAttribute(createdAtRaw);
+    const createdAt = convertToReadableDateTime(createdAtRaw);
 
     const recipeDetails = {...recipeDetailsRaw, remixes: remixList, mostRecentRecipeReview, createdAt};
 
