@@ -37,23 +37,26 @@ router.get("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * GET /remixes/:remixId => { remixDetails: [ {id, remixAuthor, purpose, name, description, originalRecipe, ingredients, directions, cookingTime, servings, reviews: [ {id, reviewAuthor, title, content, createdAt}, ... ], imageUrl, createdAt}, ...] }
+ * GET /remixes/:remixId => { remixDetails: [ {id, remixAuthor, purpose, name, description, originalRecipe, ingredients, directions, cookingTime, servings, mostRecentRemixReview: {id, reviewAuthor, title, content, createdAt}, imageUrl, createdAt}, ...] }
  * 
- * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. All will be used on the page that displays a recipe's details.
+ * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. All will be used on the page that displays a remix's details.
  * 
  * Authorization required: Logged in.
  */
 router.get("/:remixId", ensureLoggedIn, async function(req, res, next) {
   try {
-    const remixDetailsRaw = await Remix.getRemixDetails(req.params.remixId, 3);
+    const remixDetailsRaw = await Remix.getRemixDetails(req.params.remixId, 1);
 
-    //convert each remix review and remixDetailsRaw object's createdAt attribute to a readable string.
-    let rawRemixReviewsList = remixDetailsRaw.reviews;
-    const remixReviewsList = rawRemixReviewsList.map(remixReview => changeCreatedAtAttribute(remixReview));
+    //convert the remix review and remixDetailsRaw object's createdAt attribute to a readable string.
+    let mostRecentRemixReview = {};
+    if (remixDetailsRaw.reviews.length > 0) {
+      mostRecentRemixReview = changeCreatedAtAttribute(remixDetailsRaw.reviews[0]);
+    }
+
     let createdAtRaw = remixDetailsRaw.createdAt;
     const createdAt = changeCreatedAtAttribute(createdAtRaw);
 
-    const remixDetails = {...remixDetailsRaw, reviews: remixReviewsList, createdAt};
+    const remixDetails = {...remixDetailsRaw, mostRecentRemixReview, createdAt};
 
     return res.status(200).json({remixDetails});
   } catch (err) {

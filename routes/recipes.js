@@ -99,7 +99,7 @@ router.get("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next) 
 
 /**
  * GET /recipes/:recipeId => { recipeDetails: {id, recipeAuthor, name, description, ingredients, directions, cookingTime, servings, 
- * (3 most recent)remixes: [ {id, name, description, imageUrl, createdAt}, ... ], mostRecentRecipeReview: {id, reviewAuthor, title, content, createdAt}, imageUrl, createdAt} }
+ * (3 most recent) remixes: [ {id, name, description, imageUrl, createdAt}, ... ], mostRecentRecipeReview: {id, reviewAuthor, title, content, createdAt}, imageUrl, createdAt} }
  * 
  * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. 
  * All will be used on the page that displays a recipe's details. Also contains the 3 most recently created remixes of the recipe as well as the recipe's most recently added review.
