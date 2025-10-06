@@ -42,7 +42,8 @@ class Remix {
   }
 
   /** Returns detailed information of the remix with id of remixId in the database.
-   *  Returns {id, remixAuthor (username of user who created the recipe), purpose, name, description, originalRecipe (name of original recipe), ingredients, directions, cookingTime, servings, imageUrl, createdAt, reviews (array of review detail objects)} for each remix.
+   *  Returns {id, remixAuthor (username of user who created the recipe), purpose, name, description, originalRecipeId (id of original recipe), 
+   *  originalRecipe (name of original recipe), ingredients, directions, cookingTime, servings, imageUrl, createdAt, reviews (array of review detail objects)} for each remix.
    * 
    *  Throws a 404 NotFoundError if the remix with id of remixId was not found in the database.
    */
@@ -52,7 +53,7 @@ class Remix {
     if (remix.rows.length == 0) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
 
     const remixResult = await db.query(
-      `SELECT rem.id, users.username AS "remixAuthor", rem.purpose, rem.name, rem.description, rec.name AS "originalRecipe", rem.ingredients, rem.directions, rem.cooking_time AS "cookingTime", rem.servings, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
+      `SELECT rem.id, users.username AS "remixAuthor", rem.purpose, rem.name, rem.description, rem.recipe_id AS "originalRecipeId", rec.name AS "originalRecipe", rem.ingredients, rem.directions, rem.cooking_time AS "cookingTime", rem.servings, rem.image_url AS "imageUrl", rem.created_at AS "createdAt"
         FROM remixes rem
         JOIN users ON rem.user_id = users.id
         JOIN recipes rec ON rem.recipe_id = rec.id

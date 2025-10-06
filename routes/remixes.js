@@ -37,7 +37,7 @@ router.get("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * GET /remixes/:remixId => { remixDetails: [ {id, remixAuthor, purpose, name, description, originalRecipe, ingredients, directions, cookingTime, servings, mostRecentRemixReview: {id, reviewAuthor, title, content, createdAt}, imageUrl, createdAt}, ...] }
+ * GET /remixes/:remixId => { remixDetails: [ {id, remixAuthor, purpose, name, description, originalRecipeId, originalRecipe, ingredients, directions, cookingTime, servings, mostRecentRemixReview: {id, reviewAuthor, title, content, createdAt}, imageUrl, createdAt}, ...] }
  * 
  * Endpoint for fetching information for detailed information for a particular recipe, such as the ingredients, instructions, the user who created it, etc. All will be used on the page that displays a remix's details.
  * 
