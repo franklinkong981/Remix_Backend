@@ -143,7 +143,7 @@ class Recipe {
   }
 
   /** Adds a new recipe to the database and returns information about it.
-   *  Returns {name, description, ingredients, directions, cookingTime, servings, imageUrl} for the newly created recipe.
+   *  Returns {id, name, description, ingredients, directions, cookingTime, servings, imageUrl} for the newly created recipe.
    *  
    *  CONSTRAINTS:
    *  Name of the recipe must be between 1-100 characters long.
@@ -171,14 +171,14 @@ class Recipe {
       newRecipeDetails = await db.query(
         `INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
         [userId, name, description, ingredients, directions, cookingTime, servings, imageUrl]
       );
     } else {
       newRecipeDetails = await db.query(
         `INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, DEFAULT)
-        RETURNING name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
         [userId, name, description, ingredients, directions, cookingTime, servings]
       );
     }

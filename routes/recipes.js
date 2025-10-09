@@ -132,7 +132,7 @@ router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * POST /recipes => { newRecipe: {name, description, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * POST /recipes => { newRecipe: {id, name, description, ingredients, directions, cookingTime, servings, imageUrl}, success message }
  * 
  * Endpoint for adding a new recipe. Body is subject to the following constraints:
  * 
