@@ -132,7 +132,7 @@ router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * POST /recipes => { newRecipe: {id, name, description, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * POST /recipes => { newRecipe: {id, name, description, ingredients, directions, cookingTime, servings, imageUrl} }
  * 
  * Endpoint for adding a new recipe. Body is subject to the following constraints:
  * 
@@ -159,7 +159,7 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
     }
 
     const newRecipe = await Recipe.addRecipe(res.locals.user.userId, req.body);
-    return res.status(201).json({newRecipe, message: "Successfully added new recipe"});
+    return res.status(201).json({newRecipe});
   } catch (err) {
     return next(err);
   }
