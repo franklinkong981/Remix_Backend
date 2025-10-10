@@ -28,7 +28,7 @@ function validateRecipeSearchQuery(query) {
 }
 
 /**
- * GET /recipes => {recipeSearchResults: [{id, name, description, imageUrl, createdAt}, ...]}
+ * GET /recipes => {recipeSearchResults: [{id, name, recipeAuthor, description, imageUrl, createdAt}, ...]}
  * 
  * Endpoint for recipe searchbar search results in the app. Returns basic information for all recipes whose names match the search term.
  * If request object contains a query string with property "recipeName", returns recipe information for all recipes whose names match the search term,
@@ -166,7 +166,7 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * PATCH /recipes => { updatedRecipe: {name, description, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * PATCH /recipes => { updatedRecipe: {id, name, description, ingredients, directions, cookingTime, servings, imageUrl}, success message }
  * 
  * Endpoint for updating a new recipe. Body is subject to the following constraints:
  * 
@@ -193,7 +193,7 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
     }
     
     const updatedRecipe = await Recipe.updateRecipe(req.params.recipeId, req.body);
-    return res.status(200).json({updatedRecipe, message: `Successfully updated the recipe with id ${req.params.recipeId}`});
+    return res.status(200).json({updatedRecipe});
   } catch (err) {
     return next(err);
   }

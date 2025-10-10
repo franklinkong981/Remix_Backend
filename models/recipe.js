@@ -15,12 +15,13 @@ const IMAGE_URL_DEFAULT = "https://upload.wikimedia.org/wikipedia/commons/1/14/N
 
 class Recipe {
   /** Fetches basic information of all recipes (NOT remixes) in the database and returns them by recipe name in alphabetical order.
-   *  Returns {id, name, description, imageUrl, createdAt } for each recipe.
+   *  Returns {id, name, recipeAuthor, description, imageUrl, createdAt } for each recipe.
    */
   static async getAllRecipesBasicInfo() {
     const allRecipesBasicInfo = await db.query(
-      `SELECT id, name, description, image_url AS "imageUrl", created_at AS "createdAt"
-       FROM recipes
+      `SELECT rec.id, rec.name, users.username AS "recipeAuthor", rec.description, rec.image_url AS "imageUrl", rec.created_at AS "createdAt"
+       FROM recipes rec
+       JOIN users ON rec.user_id = users.id
        ORDER BY name`
     );
     
@@ -30,15 +31,16 @@ class Recipe {
   /** Searches for recipes in the database whose recipe names contain the search term and returns all matching recipes in alphabetical order.
    *  Returns all recipes if the search term is undefined or empty.
    * 
-   *  Returns {id, name, description, imageUrl, createdAt} for each recipe.
+   *  Returns {id, name, recipeAuthor, description, imageUrl, createdAt} for each recipe.
    */
   static async searchRecipes(searchTerm) {
     let searchResults;
 
     if (searchTerm) {
       let matchingRecipes = await db.query(
-      `SELECT id, name, description, image_url AS "imageUrl", created_at AS "createdAt"
-       FROM recipes
+      `SELECT rec.id, rec.name, users.username AS "recipeAuthor", rec.description, rec.image_url AS "imageUrl", rec.created_at AS "createdAt"
+       FROM recipes rec
+       JOIN users ON rec.user_id = users.id
        WHERE name ILIKE $1
        ORDER BY name`,
       [`%${searchTerm}%`]
@@ -204,7 +206,7 @@ class Recipe {
    *  Values in updateData are checked to ensure the same constraints in addRecipe method above are met, throws
    *  BadRequestError if any constraints are violated.
    * 
-   *  Returns {name, description, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
+   *  Returns {id, name, description, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
    *  
    *  Throws a BadRequestError if the recipe with id of recipeId isn't found in the database.
    */
@@ -231,7 +233,7 @@ class Recipe {
     const sqlUpdateQuery = `UPDATE recipes
                             SET ${setCols}
                             WHERE id = ${recipeIdParameterIndex}
-                            RETURNING name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`;
+                            RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`;
     const updateResult = await db.query(sqlUpdateQuery, [...values, recipeId]);
     const updatedRecipe = updateResult.rows[0];
 
