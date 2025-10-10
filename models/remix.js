@@ -71,7 +71,7 @@ class Remix {
   }
 
   /** Adds a new remix for the recipe with id of recipeId by user with id of userId to the database and returns information about it.
-   *  Returns {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the newly created remix.
+   *  Returns {id, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the newly created remix.
    * 
    *  CONSTRAINTS:
    *  Name of the remix must be between 1-100 characters long.
@@ -106,14 +106,14 @@ class Remix {
       newRemixDetails = await db.query(
         `INSERT INTO remixes (user_id, recipe_id, name, description, purpose, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        RETURNING name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
         [userId, originalRecipeId, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl]
       );
     } else {
       newRemixDetails = await db.query(
         `INSERT INTO remixes (user_id, recipe_id, name, description, purpose, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, DEFAULT)
-        RETURNING name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
         [userId, originalRecipeId, name, description, purpose, ingredients, directions, cookingTime, servings]
       );
     }

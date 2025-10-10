@@ -65,7 +65,7 @@ router.get("/:remixId", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * POST /remixes => { newRemix: {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * POST /remixes => { newRemix: {id, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
  * 
  * Endpoint for adding a new remix. Body is subject to the following constraints:
  * 
