@@ -101,7 +101,7 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * PATCH /remixes/:remixId => { updatedRecipe: {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * PATCH /remixes/:remixId => { updatedRemix: {id, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} }
  * 
  * Endpoint for updating a new remix. Body is subject to the following constraints:
  * 
@@ -129,7 +129,7 @@ router.patch("/:remixId", ensureLoggedIn, ensureRemixBelongsToCorrectUser, async
     }
     
     const updatedRemix = await Remix.updateRemix(req.params.remixId, req.body);
-    return res.status(200).json({updatedRemix, message: `Successfully updated the remix with id ${req.params.remixId}`});
+    return res.status(200).json({updatedRemix});
   } catch (err) {
     return next(err);
   }

@@ -139,7 +139,7 @@ class Remix {
    *  Values in updateData are checked to ensure the same constraints in addRemix method above are met, throws
    *  BadRequestError if any constraints are violated.
    * 
-   *  Returns {name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
+   *  Returns {id, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
    *  
    *  Throws a BadRequestError if the remix with id of remixId isn't found in the database.
    */
@@ -167,7 +167,7 @@ class Remix {
     const sqlUpdateQuery = `UPDATE remixes
                             SET ${setCols}
                             WHERE id = ${remixIdParameterIndex}
-                            RETURNING name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`;
+                            RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`;
     const updateResult = await db.query(sqlUpdateQuery, [...values, remixId]);
     const updatedRemix = updateResult.rows[0];
 
