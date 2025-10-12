@@ -200,7 +200,7 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
 });
 
 /**
- * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content}, success message }
+ * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content} }
  * 
  * Endpoint for adding a new recipe review. Body is subject to the following constraints:
  * 
@@ -222,7 +222,7 @@ router.post("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next)
     }
 
     const newRecipeReview = await Recipe.addReview(res.locals.user.userId, req.params.recipeId, req.body);
-    return res.status(201).json({newRecipeReview, message: `Successfully added new review for recipe with id ${req.params.recipeId}.`});
+    return res.status(201).json({newRecipeReview});
   } catch (err) {
     return next(err);
   }
