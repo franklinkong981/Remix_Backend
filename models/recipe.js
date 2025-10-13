@@ -242,6 +242,25 @@ class Recipe {
     return updatedRecipe;
   }
 
+  /** Returns detailed information about a specific recipe review in the database.
+   * If successful, returns the information about the recipe review in an object: {id, reviewAuthor, title, content, createdAt}
+   * 
+   * Throws a NotFoundError if the recipe review with id of reviewId was not found in the database.
+   */
+  static async getRecipeReviewDetails(reviewId) {
+    const searchReviewRes = await db.query(
+      `SELECT rev.id, users.username AS "reviewAuthor", rev.title, rev.content, rev.created_at AS "createdAt"
+       FROM recipe_reviews rev
+       JOIN users ON rev.user_id = users.id
+       WHERE rev.id = $1`,
+       [reviewId]
+    );
+
+    if (searchReviewRes.rows.length === 0) throw new NotFoundError(`The recipe review with id of ${reviewId} was not found in the database.`);
+
+    return searchReviewRes.rows[0];
+  }
+
   /** Adds a review for the recipe with id of recipeId made by user with id of userId.
    *  Review must have title and content, both of which must be non-empty strings, otherwise a BadRequestError is thrown.
    * 
