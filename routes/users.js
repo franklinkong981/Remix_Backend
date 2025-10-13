@@ -201,7 +201,7 @@ router.get("/:username/reviews/recipes", ensureLoggedIn, async function (req, re
 });
 
 /**
- * GET /users/:username/reviews/remixes => { userRemixReviews: [ {remixId, remixName, title, content, createdAt}, ... ] }
+ * GET /users/:username/reviews/remixes => { userRemixReviews: [ {id, remixId, remixName, title, content, createdAt}, ... ] }
  * 
  * Endpoint for fetching information on all remix reviews by a specific user, as well as the name and id of the remix of each review is on.
  * 

@@ -19,7 +19,7 @@ const addRemixReviewSchema = require("../schemas/remixReviewNew.json");
 const updateRemixReviewSchema = require("../schemas/remixReviewUpdate.json");
 
 /**
- * GET /remixes/:remixId/reviews => { remixReviews: [ {id, reviewAuthor, title, content, createdAt}, ...] }
+ * GET /remixes/:remixId/reviews => { remixReviews: [ {id, remixId, remixName, reviewAuthor, title, content, createdAt}, ...] }
  * 
  * Endpoint for fetching information for all reviews of a particular remix. Will be needed for page that displays all reviews for a remix.
  * 

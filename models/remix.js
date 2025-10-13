@@ -17,7 +17,7 @@ class Remix {
   /** Returns all the reviews for the remix with id of remixId, or the n most recent ones if a limit n is supplied.
    *  Reviews will be sorted by newest first, if multiple reviews were created at the same time, they'll be sorted by review title in alphabetical order.
    * 
-   *  Returns {id, reviewAuthor (username of user who created the review), title, content, createdAt} for each remix review.
+   *  Returns {id, remixId, remixName reviewAuthor (username of user who created the review), title, content, createdAt} for each remix review.
    * 
    *  Throws a 404 NotFoundError if the remix with id of remixId was not found in the database.
    */
@@ -30,9 +30,10 @@ class Remix {
     const parametrizedQueryValues = (limit > 0) ? [remixId, limit] : [remixId];
 
     const allReviews = await db.query(
-      `SELECT rev.id, users.username AS "reviewAuthor", rev.title, rev.content, rev.created_at AS "createdAt"
+      `SELECT rev.id, rem.id AS "remixId", rem.name AS "remixName", users.username AS "reviewAuthor", rev.title, rev.content, rev.created_at AS "createdAt"
        FROM remix_reviews rev
        JOIN users ON rev.user_id = users.id
+       JOIN remixes rem ON rev.remix_id = rem.id
        WHERE rev.remix_id = $1
        ORDER BY rev.created_at DESC, rev.title` + parametrizedQueryAddition,
        parametrizedQueryValues

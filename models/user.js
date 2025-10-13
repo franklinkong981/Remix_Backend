@@ -343,7 +343,7 @@ class User {
   }
 
   /** Fetches and returns all remix reviews belonging to a specific user, newest ones first.
-   *  Returns {remixId, remixName, title, content, createdAt } for each review.
+   *  Returns {id, remixId, remixName, title, content, createdAt } for each review.
    * 
    *  If a limit n is supplied, fetches only the n most recently added remix reviews by that user, newest first.
    * 
@@ -361,7 +361,7 @@ class User {
     const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
 
     const usersRemixReviews = await db.query(
-      `SELECT rev.remix_id AS "remixId", rem.name AS "remixName", rev.title, rev.content, rev.created_at AS "createdAt"
+      `SELECT rev.id, rev.remix_id AS "remixId", rem.name AS "remixName", rev.title, rev.content, rev.created_at AS "createdAt"
        FROM remix_reviews rev
        JOIN remixes rem ON rev.remix_id = rem.id
        WHERE rev.user_id = $1
