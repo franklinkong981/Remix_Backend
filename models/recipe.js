@@ -247,7 +247,7 @@ class Recipe {
    * 
    * Throws a NotFoundError if the recipe review with id of reviewId was not found in the database.
    */
-  static async getRecipeReviewDetails(reviewId) {
+  static async getRecipeReview(reviewId) {
     const searchReviewRes = await db.query(
       `SELECT rev.id, users.username AS "reviewAuthor", rev.title, rev.content, rev.created_at AS "createdAt"
        FROM recipe_reviews rev

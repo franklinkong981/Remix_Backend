@@ -200,6 +200,24 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
 });
 
 /**
+ * GET /recipes/reviews/:reviewId => { recipeReview: [ {id, reviewAuthor, title, content, createdAt}, ...] }
+ * 
+ * Endpoint for fetching information for a single review by fetching the review that has review id of reviewId.
+ * 
+ * Authorization requried: Logged in.
+ */
+router.get("/reviews/:reviewId", ensureLoggedIn, async function(req, res, next) {
+  try {
+    const recipeReviewRaw = await Recipe.getRecipeReview(req.params.reviewId);
+    const recipeReview = changeCreatedAtAttribute(recipeReviewRaw);
+
+    return res.status(200).json({recipeReview});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
  * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content} }
  * 
  * Endpoint for adding a new recipe review. Body is subject to the following constraints:
