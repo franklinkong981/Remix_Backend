@@ -184,7 +184,7 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
 });
 
 /**
- * GET /users/:username/reviews/recipes => { userRecipeReviews: [ {recipeId, recipeName, title, content, createdAt}, ... ] }
+ * GET /users/:username/reviews/recipes => { userRecipeReviews: [ {id, recipeId, recipeName, title, content, createdAt}, ... ] }
  * 
  * Endpoint for fetching information on all original recipe reviews by a specific user, as well as the name and id of the recipe of each review is on.
  * 

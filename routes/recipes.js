@@ -80,7 +80,7 @@ router.get("/:recipeId/remixes", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * GET /recipes/:recipeId/reviews => { recipeReviews: [ {id, reviewAuthor, recipeName, title, content, createdAt}, ...] }
+ * GET /recipes/:recipeId/reviews => { recipeReviews: [ {id, reviewAuthor, recipeId, recipeName, title, content, createdAt}, ...] }
  * 
  * Endpoint for fetching information for all reviews of a particular recipe. Will be needed for page that displays all reviews for a recipe.
  * 
@@ -218,7 +218,7 @@ router.get("/reviews/:reviewId", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, title, content} }
+ * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, recipeName, title, content} }
  * 
  * Endpoint for adding a new recipe review. Body is subject to the following constraints:
  * 
@@ -247,7 +247,7 @@ router.post("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next)
 });
 
 /**
- * PATCH /recipes/:recipeId/reviews/:reviewId => { updatedRecipeReview: {reviewId, userId, recipeId, title, content}, success message }
+ * PATCH /recipes/reviews/:reviewId => { updatedRecipeReview: {reviewId, userId, recipeId, title, content}, success message }
  * 
  * Endpoint for updating a new recipe review. Body is subject to the following constraints:
  * 
@@ -260,7 +260,7 @@ router.post("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next)
  * 
  * Authorization required: Logged in AND recipe review must belong to the user.
  */
-router.patch("/:recipeId/reviews/:reviewId", ensureLoggedIn, ensureRecipeReviewBelongsToCorrectUser, async function(req, res, next) {
+router.patch("/reviews/:reviewId", ensureLoggedIn, ensureRecipeReviewBelongsToCorrectUser, async function(req, res, next) {
   try {
     const inputValidator = jsonschema.validate(req.body, updateRecipeReviewSchema);
     if (!(inputValidator.valid)) {
