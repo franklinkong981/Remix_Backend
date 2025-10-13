@@ -80,7 +80,7 @@ router.get("/:recipeId/remixes", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * GET /recipes/:recipeId/reviews => { recipeReviews: [ {id, reviewAuthor, title, content, createdAt}, ...] }
+ * GET /recipes/:recipeId/reviews => { recipeReviews: [ {id, reviewAuthor, recipeName, title, content, createdAt}, ...] }
  * 
  * Endpoint for fetching information for all reviews of a particular recipe. Will be needed for page that displays all reviews for a recipe.
  * 

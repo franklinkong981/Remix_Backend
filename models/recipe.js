@@ -87,7 +87,7 @@ class Recipe {
    * 
    *  If a limit n is supplied, returns the first n reviews listed.
    * 
-   *  Returns {id, reviewAuthor (username of user who created the review), title, content, createdAt} for each recipe review.
+   *  Returns {id, reviewAuthor (username of user who created the review), recipeName, title, content, createdAt} for each recipe review.
    * 
    *  Throws a 404 NotFoundError if the recipe with id of recipeId was not found in the database.
    */
@@ -100,9 +100,10 @@ class Recipe {
     const parametrizedQueryValues = (limit > 0) ? [recipeId, limit] : [recipeId];
 
     const allReviews = await db.query(
-      `SELECT rev.id, users.username AS "reviewAuthor", rev.title, rev.content, rev.created_at AS "createdAt"
+      `SELECT rev.id, users.username AS "reviewAuthor", rec.name AS "recipeName", rev.title, rev.content, rev.created_at AS "createdAt"
        FROM recipe_reviews rev
        JOIN users ON rev.user_id = users.id
+       JOIN recipes rec ON rev.recipe_id = rec.id
        WHERE rev.recipe_id = $1
        ORDER BY rev.created_at DESC, rev.title` + parametrizedQueryAddition,
        parametrizedQueryValues
