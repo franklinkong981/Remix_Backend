@@ -183,7 +183,7 @@ router.post("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * PATCH /remixes/:remixId/reviews/:reviewId => { updatedRemixReview: {reviewId, userId, recipeId, title, content}, success message }
+ * PATCH /remixes/reviews/:reviewId => { updatedRemixReview: {reviewId, userId, recipeId, title, content}, success message }
  * 
  * Endpoint for updating a new remix review. Body is subject to the following constraints:
  * 
@@ -196,7 +196,7 @@ router.post("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) 
  * 
  * Authorization required: Logged in AND remix review must belong to the user.
  */
-router.patch("/:remixId/reviews/:reviewId", ensureLoggedIn, ensureRemixReviewBelongsToCorrectUser, async function(req, res, next) {
+router.patch("/reviews/:reviewId", ensureLoggedIn, ensureRemixReviewBelongsToCorrectUser, async function(req, res, next) {
   try {
     const inputValidator = jsonschema.validate(req.body, updateRemixReviewSchema);
     if (!(inputValidator.valid)) {
