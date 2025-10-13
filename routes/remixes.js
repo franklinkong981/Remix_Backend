@@ -136,6 +136,24 @@ router.patch("/:remixId", ensureLoggedIn, ensureRemixBelongsToCorrectUser, async
 });
 
 /**
+ * GET /remixes/reviews/:reviewId => { remixReview: [ {id, reviewAuthor, title, content, createdAt}, ...] }
+ * 
+ * Endpoint for fetching information for a single remix review by fetching the review that has review id of reviewId.
+ * 
+ * Authorization requried: Logged in.
+ */
+router.get("/reviews/:reviewId", ensureLoggedIn, async function(req, res, next) {
+  try {
+    const remixReviewRaw = await Remix.getRemixReview(req.params.reviewId);
+    const remixReview = changeCreatedAtAttribute(remixReviewRaw);
+
+    return res.status(200).json({remixReview});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**
  * POST /remixes/:remixId/reviews => { newRecipeReview: {reviewId, userId, remixId, title, content}, success message }
  * 
  * Endpoint for adding a new remix review. Body is subject to the following constraints:

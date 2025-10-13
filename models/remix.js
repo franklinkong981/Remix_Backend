@@ -177,6 +177,25 @@ class Remix {
     return updatedRemix;
   }
 
+  /** Returns detailed information about a specific remix review in the database.
+   * If successful, returns the information about the remix review in an object: {id, reviewAuthor, title, content, createdAt}
+   * 
+   * Throws a NotFoundError if the remix review with id of reviewId was not found in the database.
+   */
+  static async getRemixReview(reviewId) {
+    const searchReviewRes = await db.query(
+      `SELECT rev.id, users.username AS "reviewAuthor", rev.title, rev.content, rev.created_at AS "createdAt"
+       FROM remix_reviews rev
+       JOIN users ON rev.user_id = users.id
+       WHERE rev.id = $1`,
+       [reviewId]
+    );
+
+    if (searchReviewRes.rows.length === 0) throw new NotFoundError(`The remix review with id of ${reviewId} was not found in the database.`);
+
+    return searchReviewRes.rows[0];
+  }
+
   /** Adds a review for the remix with id of remixId made by user with id of userId.
    *  Review must have title and content, both of which must be non-empty strings, otherwise a BadRequestError is thrown.
    * 
