@@ -284,10 +284,12 @@ class User {
 
   /** Fetches and returns detailed information about the user that will be displayed on the user's main profile page.
    *  This includes user account information like their username and email, as well as up to 3 of their most recently
-   *  created recipes and remixes, as well as their most recently created recipe review and remix review.
+   *  created recipes and remixes, their most recently created recipe and remix review, as well as a list of their
+   *  favorite recipes and remixes.
    * 
    *  Returns {username, email, recipes: [ {id, name, description, imageUrl, createdAt}... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}... ],
-   *           recipeReview: {recipeId, recipeName, title, content, createdAt}, remixReivew: {remixId, remixName, title, content, createdAt} }
+   *           recipeReview: {recipeId, recipeName, title, content, createdAt}, remixReivew: {remixId, remixName, title, content, createdAt},
+   *          favoriteRecipes: [ {id, name, description, imageUrl, createdAt} ... ], favoriteRemixes: [ {id, name, description, originalRecipe, imageUrl, createdAt} ... ] }
    */
   static async getUsersDetailedInfo(username) {
     let userInfo = await User.getUserBasicInfo(username);
@@ -296,7 +298,10 @@ class User {
     let userRecentRecipeReview = await User.getUsersMostRecentRecipeReview(username);
     let userRecentRemixReview = await User.getUsersMostRecentRemixReview(username);
 
-    userInfo = {...userInfo, recipes: userRecentRecipes, remixes: userRecentRemixes, recipeReview: userRecentRecipeReview, remixReview: userRecentRemixReview};
+    let userFavoriteRecipes = await User.getUsersFavoriteRecipes(username);
+    let userFavoriteRemixes = await User.getUsersFavoriteRemixes(username);
+
+    userInfo = {...userInfo, recipes: userRecentRecipes, remixes: userRecentRemixes, recipeReview: userRecentRecipeReview, remixReview: userRecentRemixReview, favoriteRecipes: userFavoriteRecipes, favoriteRemixes: userFavoriteRemixes};
     return userInfo;
   }
 

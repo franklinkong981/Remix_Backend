@@ -156,7 +156,8 @@ router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, 
 
 /**
  * GET /users/:username => { userDetails: {username, email, recipes: [ {id, name, description, imageUrl, createdAt}, ... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}, ... ],
- *                                          recipeReview: {recipeId, recipeName, title, content, createdAt}, remixReivew: {remixId, remixName, title, content, createdAt} } }
+ *                                          recipeReview: {recipeId, recipeName, title, content, createdAt}, remixReivew: {remixId, remixName, title, content, createdAt}, 
+ *                                        favoriteRecipeIds: [id, ...], favoriteRemixIds: [id, ...] } }
  * 
  * Endpoint for fetching detailed information about a specific user, fetches all information that will be displayed on the user's profile page.
  * 
@@ -175,9 +176,15 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
     const remixList = rawRemixList.map(remix => changeCreatedAtAttribute(remix));
     const recipeReview = changeCreatedAtAttribute(rawRecipeReview);
     const remixReview = changeCreatedAtAttribute(rawRemixReview);
+
+    //convert each favorite recipe and remix to an id, only need to return an array of the ids.
+    let favoriteRecipeDetails = userDetailsRaw.favoriteRecipes;
+    let favoriteRemixDetails = userDetailsRaw.favoriteRemixes;
+    const favoriteRecipeIds = favoriteRecipeDetails.map(fav => fav.id);
+    const favoriteRemixIds = favoriteRemixDetails.map(fav => fav.id);
     
 
-    let userDetails = {...userDetailsRaw, recipes: recipeList, remixes: remixList, recipeReview, remixReview};
+    let userDetails = {...userDetailsRaw, recipes: recipeList, remixes: remixList, recipeReview, remixReview, favoriteRecipeIds, favoriteRemixIds};
 
     return res.status(200).json({userDetails});
   } catch (err) {
