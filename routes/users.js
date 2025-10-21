@@ -121,7 +121,7 @@ router.get("/:username/remixes", ensureLoggedIn, async function (req, res, next)
 });
 
 /**
- * GET /users/:username/favorites/recipes => {allUserFavoriteRecipes: [{id, name, description, imageUrl}, ...] }
+ * GET /users/:username/favorites/recipes => {allUserFavoriteRecipes: [{id, name, description, imageUrl, createdAt}, ...] }
  * 
  * Endpoint that allows retrieval of a specific user's favorite recipes. Gives basic info such as recipe id, name, description, and image.
  * 
@@ -129,7 +129,8 @@ router.get("/:username/remixes", ensureLoggedIn, async function (req, res, next)
  */
 router.get("/:username/favorites/recipes", ensureLoggedIn, async function (req, res, next) {
   try {
-    const allUserFavoriteRecipes = await User.getUsersFavoriteRecipes(req.params.username);
+    const allUserFavoriteRecipesRaw = await User.getUsersFavoriteRecipes(req.params.username);
+    const allUserFavoriteRecipes = allUserFavoriteRecipesRaw.map(fav => changeCreatedAtAttribute(fav));
     return res.status(200).json({allUserFavoriteRecipes});
   } catch (err) {
     return next(err);
@@ -137,7 +138,7 @@ router.get("/:username/favorites/recipes", ensureLoggedIn, async function (req, 
 });
 
 /**
- * GET /users/:username/favorites/remixes => {allUserFavoriteRemixes: [{id, name, description, originalRecipe, imageUrl}, ...] }
+ * GET /users/:username/favorites/remixes => {allUserFavoriteRemixes: [{id, name, description, originalRecipe, imageUrl, createdAt}, ...] }
  * 
  * Endpoint that allows retrieval of a specific user's favorite remixes. Gives basic info.
  * 
@@ -145,7 +146,8 @@ router.get("/:username/favorites/recipes", ensureLoggedIn, async function (req, 
  */
 router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, res, next) {
   try {
-    const allUserFavoriteRemixes = await User.getUsersFavoriteRemixes(req.params.username);
+    const allUserFavoriteRemixesRaw = await User.getUsersFavoriteRemixes(req.params.username);
+    const allUserFavoriteRemixes = allUserFavoriteRemixesRaw.map(fav => changeCreatedAtAttribute(fav));
     return res.status(200).json({allUserFavoriteRemixes});
   } catch (err) {
     return next(err);

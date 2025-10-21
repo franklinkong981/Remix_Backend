@@ -231,7 +231,7 @@ class User {
     return remixesFromUser.rows;
   }
 
-  /** Returns {id, name, description, imageUrl} of each recipe currently listed in a specific user's favorite recipes,
+  /** Returns {id, name, description, imageUrl, createdAt} of each recipe currently listed in a specific user's favorite recipes,
    *  sorts favorite recipes by recipe name alphabetical order.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
@@ -245,7 +245,7 @@ class User {
     const userId = userInfo.id;
 
     const usersFavoriteRecipes = await db.query(
-      `SELECT rec.id, rec.name, rec.description, rec.image_url AS "imageUrl"
+      `SELECT rec.id, rec.name, rec.description, rec.image_url AS "imageUrl", rec.created_at AS "createdAt"
        FROM recipe_favorites favs
        JOIN recipes rec ON favs.recipe_id = rec.id
        WHERE favs.user_id = $1
@@ -256,7 +256,7 @@ class User {
     return usersFavoriteRecipes.rows;
   }
 
-  /** Returns {id, name, description, originalRecipe, imageUrl} of each remix currently listed in a specific user's favorite remixes,
+  /** Returns {id, name, description, originalRecipe, imageUrl, createdAt} of each remix currently listed in a specific user's favorite remixes,
    *  sorts by remix name in alphabetical order.
    * 
    *  Throws a NotFoundError if the username supplied doesn't belong to any user in the database.
@@ -270,7 +270,7 @@ class User {
     const userId = userInfo.id;
 
     const usersFavoriteRemixes = await db.query(
-      `SELECT rem.id, rem.name, rem.description, rec.name AS "originalRecipe", rem.image_url AS "imageUrl"
+      `SELECT rem.id, rem.name, rem.description, rec.name AS "originalRecipe", rem.image_url AS "imageUrl", rec.created_at AS "createdAt"
        FROM remix_favorites favs
        JOIN remixes rem ON favs.remix_id = rem.id
        JOIN recipes rec ON rem.recipe_id = rec.id
