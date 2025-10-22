@@ -65,7 +65,7 @@ router.get("/:remixId", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * POST /remixes => { newRemix: {id, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * POST /remixes => { newRemix: {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
  * 
  * Endpoint for adding a new remix. Body is subject to the following constraints:
  * 
@@ -101,7 +101,7 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * PATCH /remixes/:remixId => { updatedRemix: {id, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} }
+ * PATCH /remixes/:remixId => { updatedRemix: {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl} }
  * 
  * Endpoint for updating a new remix. Body is subject to the following constraints:
  * 

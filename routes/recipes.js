@@ -132,7 +132,7 @@ router.get("/:recipeId", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * POST /recipes => { newRecipe: {id, name, description, ingredients, directions, cookingTime, servings, imageUrl} }
+ * POST /recipes => { newRecipe: {id, name, description, ingredients, directions, cookingTime, servings, imageUrl, createdAt} }
  * 
  * Endpoint for adding a new recipe. Body is subject to the following constraints:
  * 
@@ -166,7 +166,7 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * PATCH /recipes => { updatedRecipe: {id, name, description, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * PATCH /recipes => { updatedRecipe: {id, name, description, ingredients, directions, cookingTime, servings, imageUrl, createdAt}, success message }
  * 
  * Endpoint for updating a new recipe. Body is subject to the following constraints:
  * 

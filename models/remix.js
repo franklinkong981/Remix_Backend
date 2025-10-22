@@ -72,7 +72,7 @@ class Remix {
   }
 
   /** Adds a new remix for the recipe with id of recipeId by user with id of userId to the database and returns information about it.
-   *  Returns {id, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the newly created remix.
+   *  Returns {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the newly created remix.
    * 
    *  CONSTRAINTS:
    *  Name of the remix must be between 1-100 characters long.
@@ -119,7 +119,9 @@ class Remix {
       );
     }
 
-    return newRemixDetails.rows[0];
+    const newRemix = newRemixDetails.rows[0];
+
+    return {...newRemix, originalRecipe};
   }
 
   /**
@@ -140,7 +142,7 @@ class Remix {
    *  Values in updateData are checked to ensure the same constraints in addRemix method above are met, throws
    *  BadRequestError if any constraints are violated.
    * 
-   *  Returns {id, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
+   *  Returns {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
    *  
    *  Throws a BadRequestError if the remix with id of remixId isn't found in the database.
    */
@@ -174,7 +176,16 @@ class Remix {
 
     if (!updatedRemix) throw new NotFoundError(`The remix with id of ${remixId} was not found in the database.`);
 
-    return updatedRemix;
+    const originalRecipe = await db.query(
+      `SELECT rec.name AS "originalRecipe"
+      FROM remixes rem
+      JOIN recipes rec ON rem.recipe_id = rec.id
+      WHERE rem.id = $1`, 
+      [remixId]);
+    
+    const originalRecipeName = originalRecipe.rows[0].name;
+
+    return {...updatedRemix, originalRecipe: originalRecipeName};
   }
 
   /** Returns detailed information about a specific remix review in the database.

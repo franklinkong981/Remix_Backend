@@ -146,7 +146,7 @@ class Recipe {
   }
 
   /** Adds a new recipe to the database and returns information about it.
-   *  Returns {id, name, description, ingredients, directions, cookingTime, servings, imageUrl} for the newly created recipe.
+   *  Returns {id, name, description, ingredients, directions, cookingTime, servings, imageUrl, createdAt} for the newly created recipe.
    *  
    *  CONSTRAINTS:
    *  Name of the recipe must be between 1-100 characters long.
@@ -174,14 +174,14 @@ class Recipe {
       newRecipeDetails = await db.query(
         `INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt`,
         [userId, name, description, ingredients, directions, cookingTime, servings, imageUrl]
       );
     } else {
       newRecipeDetails = await db.query(
         `INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, DEFAULT)
-        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt`,
         [userId, name, description, ingredients, directions, cookingTime, servings]
       );
     }
@@ -207,7 +207,7 @@ class Recipe {
    *  Values in updateData are checked to ensure the same constraints in addRecipe method above are met, throws
    *  BadRequestError if any constraints are violated.
    * 
-   *  Returns {id, name, description, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
+   *  Returns {id, name, description, ingredients, directions, cookingTime, servings, imageUrl, createdAt} for the updated recipe.
    *  
    *  Throws a BadRequestError if the recipe with id of recipeId isn't found in the database.
    */
@@ -234,7 +234,7 @@ class Recipe {
     const sqlUpdateQuery = `UPDATE recipes
                             SET ${setCols}
                             WHERE id = ${recipeIdParameterIndex}
-                            RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`;
+                            RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt`;
     const updateResult = await db.query(sqlUpdateQuery, [...values, recipeId]);
     const updatedRecipe = updateResult.rows[0];
 
