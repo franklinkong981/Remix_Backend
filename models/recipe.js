@@ -174,14 +174,14 @@ class Recipe {
       newRecipeDetails = await db.query(
         `INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt`,
+        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt"`,
         [userId, name, description, ingredients, directions, cookingTime, servings, imageUrl]
       );
     } else {
       newRecipeDetails = await db.query(
         `INSERT INTO recipes (user_id, name, description, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, DEFAULT)
-        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt`,
+        RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt"`,
         [userId, name, description, ingredients, directions, cookingTime, servings]
       );
     }
@@ -234,7 +234,7 @@ class Recipe {
     const sqlUpdateQuery = `UPDATE recipes
                             SET ${setCols}
                             WHERE id = ${recipeIdParameterIndex}
-                            RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt`;
+                            RETURNING id, name, description, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt"`;
     const updateResult = await db.query(sqlUpdateQuery, [...values, recipeId]);
     const updatedRecipe = updateResult.rows[0];
 

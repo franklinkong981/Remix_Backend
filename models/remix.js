@@ -72,7 +72,7 @@ class Remix {
   }
 
   /** Adds a new remix for the recipe with id of recipeId by user with id of userId to the database and returns information about it.
-   *  Returns {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the newly created remix.
+   *  Returns {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl, createdAt} for the newly created remix.
    * 
    *  CONSTRAINTS:
    *  Name of the remix must be between 1-100 characters long.
@@ -107,14 +107,14 @@ class Remix {
       newRemixDetails = await db.query(
         `INSERT INTO remixes (user_id, recipe_id, name, description, purpose, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt"`,
         [userId, originalRecipeId, name, description, purpose, ingredients, directions, cookingTime, servings, imageUrl]
       );
     } else {
       newRemixDetails = await db.query(
         `INSERT INTO remixes (user_id, recipe_id, name, description, purpose, ingredients, directions, cooking_time, servings, image_url)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, DEFAULT)
-        RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`,
+        RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt"`,
         [userId, originalRecipeId, name, description, purpose, ingredients, directions, cookingTime, servings]
       );
     }
@@ -142,7 +142,7 @@ class Remix {
    *  Values in updateData are checked to ensure the same constraints in addRemix method above are met, throws
    *  BadRequestError if any constraints are violated.
    * 
-   *  Returns {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl} for the updated recipe.
+   *  Returns {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl, createdAt} for the updated recipe.
    *  
    *  Throws a BadRequestError if the remix with id of remixId isn't found in the database.
    */
@@ -170,7 +170,7 @@ class Remix {
     const sqlUpdateQuery = `UPDATE remixes
                             SET ${setCols}
                             WHERE id = ${remixIdParameterIndex}
-                            RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl"`;
+                            RETURNING id, name, description, purpose, ingredients, directions, cooking_time AS "cookingTime", servings, image_url AS "imageUrl", created_at AS "createdAt"`;
     const updateResult = await db.query(sqlUpdateQuery, [...values, remixId]);
     const updatedRemix = updateResult.rows[0];
 
