@@ -158,7 +158,8 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
       throw new BadRequestError(inputErrors);
     }
 
-    const newRecipe = await Recipe.addRecipe(res.locals.user.userId, req.body);
+    const newRecipeRaw = await Recipe.addRecipe(res.locals.user.userId, req.body);
+    const newRecipe = changeCreatedAtAttribute(newRecipeRaw);
     return res.status(201).json({newRecipe});
   } catch (err) {
     return next(err);
@@ -192,7 +193,8 @@ router.patch("/:recipeId", ensureLoggedIn, ensureRecipeBelongsToCorrectUser, asy
       throw new BadRequestError(inputErrors);
     }
     
-    const updatedRecipe = await Recipe.updateRecipe(req.params.recipeId, req.body);
+    const updatedRecipeRaw = await Recipe.updateRecipe(req.params.recipeId, req.body);
+    const updatedRecipe = changeCreatedAtAttribute(updatedRecipeRaw);
     return res.status(200).json({updatedRecipe});
   } catch (err) {
     return next(err);

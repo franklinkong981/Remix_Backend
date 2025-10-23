@@ -65,7 +65,7 @@ router.get("/:remixId", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * POST /remixes => { newRemix: {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl}, success message }
+ * POST /remixes => { newRemix: {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl, createdAt}, success message }
  * 
  * Endpoint for adding a new remix. Body is subject to the following constraints:
  * 
@@ -93,7 +93,8 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
       throw new BadRequestError(inputErrors);
     }
 
-    const newRemix = await Remix.addRemix(res.locals.user.userId, req.body.originalRecipeId, req.body);
+    const newRemixRaw = await Remix.addRemix(res.locals.user.userId, req.body.originalRecipeId, req.body);
+    const newRemix = changeCreatedAtAttribute(newRemixRaw);
     return res.status(201).json({newRemix, message: `Successfully added new remix of recipe with id of ${req.body.originalRecipeId}`});
   } catch (err) {
     return next(err);
@@ -101,7 +102,7 @@ router.post("/", ensureLoggedIn, async function(req, res, next) {
 });
 
 /**
- * PATCH /remixes/:remixId => { updatedRemix: {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl} }
+ * PATCH /remixes/:remixId => { updatedRemix: {id, name, description, originalRecipe, purpose, ingredients, directions, cookingTime, servings, imageUrl, createdAt} }
  * 
  * Endpoint for updating a new remix. Body is subject to the following constraints:
  * 
@@ -128,7 +129,8 @@ router.patch("/:remixId", ensureLoggedIn, ensureRemixBelongsToCorrectUser, async
       throw new BadRequestError(inputErrors);
     }
     
-    const updatedRemix = await Remix.updateRemix(req.params.remixId, req.body);
+    const updatedRemixRaw = await Remix.updateRemix(req.params.remixId, req.body);
+    const updatedRemix = changeCreatedAtAttribute(updatedRemixRaw);
     return res.status(200).json({updatedRemix});
   } catch (err) {
     return next(err);
