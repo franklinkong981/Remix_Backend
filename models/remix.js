@@ -287,16 +287,16 @@ class Remix {
     if (!updatedReview) throw new NotFoundError(`The remix review of id ${reviewId} was not found in the database.`);
 
     const reviewRemix = await db.query(
-      `SELECT rec.name AS "recipeName"
-      FROM recipe_reviews rev
-      JOIN recipes rec ON rev.recipe_id = rec.id
+      `SELECT rem.name AS "remixName"
+      FROM remix_reviews rev
+      JOIN remixes rem ON rev.remix_id = rem.id
       WHERE rev.id = $1`, 
       [reviewId]);
     
-    const reviewRecipeName = reviewRecipe.rows[0].recipeName;
+    const reviewRemixName = reviewRemix.rows[0].remixName;
 
 
-    return {...updatedReview, recipeName: reviewRecipeName};
+    return {...updatedReview, remixName: reviewRemixName};
   }
 }
 

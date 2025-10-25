@@ -156,7 +156,7 @@ router.get("/reviews/:reviewId", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * POST /remixes/:remixId/reviews => { newRecipeReview: {reviewId, userId, remixId, title, content}, success message }
+ * POST /remixes/:remixId/reviews => { newRecipeReview: {reviewId, remixId, remixName, title, content, createdAt}, success message }
  * 
  * Endpoint for adding a new remix review. Body is subject to the following constraints:
  * 
@@ -177,7 +177,8 @@ router.post("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) 
       throw new BadRequestError(inputErrors);
     }
 
-    const newRemixReview = await Remix.addReview(res.locals.user.userId, req.params.remixId, req.body);
+    const newRemixReviewRaw = await Remix.addReview(res.locals.user.userId, req.params.remixId, req.body);
+    const newRemixReview = changeCreatedAtAttribute(newRemixReviewRaw);
     return res.status(201).json({newRemixReview, message: `Successfully added new review for remix with id ${req.params.remixId}.`});
   } catch (err) {
     return next(err);
@@ -185,7 +186,7 @@ router.post("/:remixId/reviews", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * PATCH /remixes/reviews/:reviewId => { updatedRemixReview: {reviewId, userId, recipeId, title, content}, success message }
+ * PATCH /remixes/reviews/:reviewId => { updatedRemixReview: {reviewId, remixId, remixName, title, content, createdAt}, success message }
  * 
  * Endpoint for updating a new remix review. Body is subject to the following constraints:
  * 
@@ -206,7 +207,8 @@ router.patch("/reviews/:reviewId", ensureLoggedIn, ensureRemixReviewBelongsToCor
       throw new BadRequestError(inputErrors);
     }
 
-    const updatedRemixReview = await Remix.updateReview(req.params.reviewId, req.body);
+    const updatedRemixReviewRaw = await Remix.updateReview(req.params.reviewId, req.body);
+    const updatedRemixReview = changeCreatedAtAttribute(updatedRemixReviewRaw);
     return res.status(200).json({updatedRemixReview, message: `Successfully updated remix review with id ${req.params.reviewId}.`});
   } catch (err) {
     return next(err);

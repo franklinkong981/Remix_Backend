@@ -220,7 +220,7 @@ router.get("/reviews/:reviewId", ensureLoggedIn, async function(req, res, next) 
 });
 
 /**
- * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, userId, recipeId, recipeName, title, content} }
+ * POST /recipes/:recipeId/reviews => { newRecipeReview: {reviewId, recipeId, recipeName, title, content, createdAt} }
  * 
  * Endpoint for adding a new recipe review. Body is subject to the following constraints:
  * 
@@ -241,7 +241,8 @@ router.post("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next)
       throw new BadRequestError(inputErrors);
     }
 
-    const newRecipeReview = await Recipe.addReview(res.locals.user.userId, req.params.recipeId, req.body);
+    const newRecipeReviewRaw = await Recipe.addReview(res.locals.user.userId, req.params.recipeId, req.body);
+    const newRecipeReview = changeCreatedAtAttribute(newRecipeReviewRaw);
     return res.status(201).json({newRecipeReview});
   } catch (err) {
     return next(err);
@@ -249,7 +250,7 @@ router.post("/:recipeId/reviews", ensureLoggedIn, async function(req, res, next)
 });
 
 /**
- * PATCH /recipes/reviews/:reviewId => { updatedRecipeReview: {reviewId, userId, recipeId, title, content}, success message }
+ * PATCH /recipes/reviews/:reviewId => { updatedRecipeReview: {reviewId, recipeId, recipeName, title, content, createdAt}, success message }
  * 
  * Endpoint for updating a new recipe review. Body is subject to the following constraints:
  * 
@@ -270,7 +271,8 @@ router.patch("/reviews/:reviewId", ensureLoggedIn, ensureRecipeReviewBelongsToCo
       throw new BadRequestError(inputErrors);
     }
 
-    const updatedRecipeReview = await Recipe.updateReview(req.params.reviewId, req.body);
+    const updatedRecipeReviewRaw = await Recipe.updateReview(req.params.reviewId, req.body);
+    const updatedRecipeReview = changeCreatedAtAttribute(updatedRecipeReviewRaw);
     return res.status(200).json({updatedRecipeReview, message: `Successfully updated recipe review with id ${req.params.reviewId}.`});
   } catch (err) {
     return next(err);
