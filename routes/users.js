@@ -156,7 +156,7 @@ router.get("/:username/favorites/remixes", ensureLoggedIn, async function (req, 
 
 /**
  * GET /users/:username => { userDetails: {username, email, recipes: [ {id, name, description, imageUrl, createdAt}, ... ], remixes: [ {id, name, description, originalRecipe, imageUrl, createdAt}, ... ],
- *                                          recipeReview: {recipeId, recipeName, title, content, createdAt}, remixReivew: {remixId, remixName, title, content, createdAt}, 
+ *                                          recipeReview: {reviewId, recipeId, recipeName, title, content, createdAt}, remixReivew: {reviewId, remixId, remixName, title, content, createdAt}, 
  *                                        favoriteRecipeIds: [id, ...], favoriteRemixIds: [id, ...] } }
  * 
  * Endpoint for fetching detailed information about a specific user, fetches all information that will be displayed on the user's profile page.
@@ -193,7 +193,7 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
 });
 
 /**
- * GET /users/:username/reviews/recipes => { userRecipeReviews: [ {id, recipeId, recipeName, title, content, createdAt}, ... ] }
+ * GET /users/:username/reviews/recipes => { userRecipeReviews: [ {reviewId, recipeId, recipeName, title, content, createdAt}, ... ] }
  * 
  * Endpoint for fetching information on all original recipe reviews by a specific user, as well as the name and id of the recipe of each review is on.
  * 
@@ -210,7 +210,7 @@ router.get("/:username/reviews/recipes", ensureLoggedIn, async function (req, re
 });
 
 /**
- * GET /users/:username/reviews/remixes => { userRemixReviews: [ {id, remixId, remixName, title, content, createdAt}, ... ] }
+ * GET /users/:username/reviews/remixes => { userRemixReviews: [ {reviewId, remixId, remixName, title, content, createdAt}, ... ] }
  * 
  * Endpoint for fetching information on all remix reviews by a specific user, as well as the name and id of the remix of each review is on.
  * 

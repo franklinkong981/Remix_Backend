@@ -306,7 +306,7 @@ class User {
   }
 
   /** Fetches and returns all recipe reviews belonging to a specific user, newest ones first.
-   *  Returns {id, recipeId, recipeName, title, content, createdAt } for each review.
+   *  Returns {reviewId, recipeId, recipeName, title, content, createdAt } for each review.
    * 
    *  If a limit n is supplied, fetches only the n most recently added recipe reviews by that user, newest first.
    * 
@@ -324,7 +324,7 @@ class User {
     const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
 
     const usersRecipeReviews = await db.query(
-      `SELECT rev.id, rev.recipe_id AS "recipeId", rec.name AS "recipeName", rev.title, rev.content, rev.created_at AS "createdAt"
+      `SELECT rev.id AS "reviewId", rev.recipe_id AS "recipeId", rec.name AS "recipeName", rev.title, rev.content, rev.created_at AS "createdAt"
        FROM recipe_reviews rev
        JOIN recipes rec ON rev.recipe_id = rec.id
        WHERE rev.user_id = $1
@@ -348,7 +348,7 @@ class User {
   }
 
   /** Fetches and returns all remix reviews belonging to a specific user, newest ones first.
-   *  Returns {id, remixId, remixName, title, content, createdAt } for each review.
+   *  Returns {reviewId, remixId, remixName, title, content, createdAt } for each review.
    * 
    *  If a limit n is supplied, fetches only the n most recently added remix reviews by that user, newest first.
    * 
@@ -366,7 +366,7 @@ class User {
     const parametrizedQueryValues = (limit > 0) ? [userId, limit] : [userId];
 
     const usersRemixReviews = await db.query(
-      `SELECT rev.id, rev.remix_id AS "remixId", rem.name AS "remixName", rev.title, rev.content, rev.created_at AS "createdAt"
+      `SELECT rev.id AS "reviewId", rev.remix_id AS "remixId", rem.name AS "remixName", rev.title, rev.content, rev.created_at AS "createdAt"
        FROM remix_reviews rev
        JOIN remixes rem ON rev.remix_id = rem.id
        WHERE rev.user_id = $1
