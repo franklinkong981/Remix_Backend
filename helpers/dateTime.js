@@ -14,7 +14,7 @@ const months = {
   9: "October",
   10: "November",
   11: "December"
-}
+};
 
 /* Converts an SQL timestamp fetched from the Remix SQL database and converts it into a readable datetime string. */
 function convertToReadableDateTime(sqlTimestamp) {
@@ -41,8 +41,8 @@ function convertToReadableDateTime(sqlTimestamp) {
   return `${month} ${day}, ${year} at ${hours}:${minutes}${amOrPm}`;
 }
 
-/* If the parameter object has an attribute "createdAt" which should be an SQL timestamp, converts thatinto a readable datetime string
-   and returns the object */
+/* If the parameter object has an attribute "createdAt" which should be an SQL timestamp, converts that into a readable datetime string
+   and returns the object. */
 function changeCreatedAtAttribute(obj) {
   if ("createdAt" in obj) {
     let rawDateTime = obj.createdAt;

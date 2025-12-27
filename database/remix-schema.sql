@@ -1,3 +1,4 @@
+
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(30) NOT NULL UNIQUE CHECK (LENGTH(username) >= 5),
