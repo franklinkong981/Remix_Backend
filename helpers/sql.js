@@ -1,5 +1,5 @@
 /* This file contains helper functions that have to do with the SQL database that the backend interacts with.
-Functions include handling the partial update of a user, recipe, and/or remix in the database.
+Currently only has one function: sqlForPartialUpdate, which is crucial for partially updating a User, Recipe, or Remix.
 */
 
 const { BadRequestError } = require("../errors/errors.js");
