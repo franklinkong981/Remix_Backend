@@ -51,6 +51,6 @@ function changeCreatedAtAttribute(obj) {
   return obj;
 }
 
-console.log(convertToReadableDateTime("2025-08-02 00:08:01.472785"));
+//console.log(convertToReadableDateTime("2025-08-02 00:08:01.472785"));
 
 module.exports = {convertToReadableDateTime, changeCreatedAtAttribute};
