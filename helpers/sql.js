@@ -1,5 +1,5 @@
 /* This file contains helper functions that have to do with the SQL database that the backend interacts with.
-Currently only has one function: sqlForPartialUpdate, which is crucial for partially updating a User, Recipe, or Remix.
+Currently only has one function: sqlForPartialUpdate, which is crucial for partially updating a User, Recipe, Remix, or review.
 */
 
 const { BadRequestError } = require("../errors/errors.js");
@@ -16,7 +16,7 @@ NOTE: jsToSql only contains the key-value pairs of attributes that are different
 
 RETURN VALUES:
 Function returns an object that contains 2 attributes:
-setCols: A string that will be plugged into the SQL query after the SET keyword. It contains the SQL name of each attribute to update
+setCols: A string that will be plugged into the update SQL query after the SET keyword. It contains the SQL name of each attribute to update
 in the database followed by the parametrized marking. Ex. first_name = $1, last_name = $2  
 values: The array of new values you want to update each attribute to, the order of values correspond to the order they appear in the
 setCols string.
@@ -33,7 +33,7 @@ Then sqlForPartialUpdate(dataToUpdate, jsToSql) -->
 
 function sqlForPartialUpdate(dataToUpdate, jsToSql = {}) {
   const keys = Object.keys(dataToUpdate);
-  if (keys.length === 0) throw new BadRequestError("No data");
+  if (keys.length === 0) throw new BadRequestError("Object containing data to update cannot be empty");
 
   // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
   const cols = keys.map((colName, idx) =>
