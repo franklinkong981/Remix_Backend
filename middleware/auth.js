@@ -1,6 +1,6 @@
 /** This file contains the middleware for Remix, all of which involve authentication. Many actions within the app 
- * require the user to be logged in, and some actions (ie. editing a review) are only allowed when a certain user is already
- * logged in (ie. the review's author must be logged in). The middleware functions here help enforce these restrictions.
+ * require the user to be logged in, and some actions (ie. editing a review) are only allowed when a specific user is
+ * logged in (ie. the review's author must be logged in).
  */
 
 const jwt = require("jsonwebtoken");
@@ -12,9 +12,10 @@ const Remix = require("../models/remix.js");
 /** Middleware function that authenticates the user.
  *  Will be executed before most routes. Checks the authorization attribute in the request headers to see if there is an encrypted
  *  jwt. This jwt will be only be supplied if a user is currently logged in. If it's not there, no error is thrown and the function returns.
- *  If it is, the token is decrypted with a secret key and the decrypted payload (username, email) is stored in the user attribute in res.locals.
+ *  If it is, the token is decrypted with a secret key and the decrypted payload (username, email) is stored in the user attribute in 
+ *  the locals attribute of the response object (res.locals).
  * 
- *  NOTE: Won't be an error if the token is invalid either.
+ *  NOTE: Won't be an error if the token is invalid either (JsonWebTokenError).
  * 
  *  NOTE: This middleware function will be run before almost every route since res.locals is not shared between different request/response cycles.
  */
@@ -28,6 +29,7 @@ function authenticateJwt(req, res, next) {
     }
     return next();
   } catch (err) {
+    //if error is related to JWT (ex. the token is invalid), execution continues.
     if (err instanceof jwt.JsonWebTokenError) return next();
     return next(err);
   }
@@ -50,14 +52,14 @@ function ensureLoggedIn(req, res, next) {
  *  This middleware function ensures that the user attempting to perform this action (the current username supplied in the res.locals.user decrypted payload of the user's jwt)
  *  matches the username supplied in request parameters (the username that the remix/review belongs to).
  * 
- *  If it doens't match, returns an UnauthorizedError.
+ *  If the user isn't logged in, throw UnauthorizedError. If the username doesn't match, throw ForbiddenError.
  */
 function ensureIsCorrectUser(req, res, next) {
   try {
     const userPayload = res.locals.user;
     if (!userPayload) throw new UnauthorizedError("You must be logged in to perform this action!");
     if (userPayload.username != req.params.username) {
-      throw new UnauthorizedError("You can only edit/delete your own recipes/remixes/reviews or information from your own account!");
+      throw new ForbiddenError("You can only edit/delete your own recipes/remixes/reviews or information from your own account!");
     }
     return next();
   } catch (err) {
@@ -74,6 +76,7 @@ function ensureIsCorrectUser(req, res, next) {
 async function ensureRecipeBelongsToCorrectUser(req, res, next) {
   try {
     //by now, the ensureIsLoggedIn middleware has already passed, so we know a payload exists in res.locals.user.
+    // This is because all requests that attempt to update a resource first calls ensureIsLoggedIn middleware.
     const loggedInUsername = res.locals.user.username;
     const recipeAuthor = await Recipe.getRecipeAuthor(req.params.recipeId);
     if (loggedInUsername != recipeAuthor.username) {
@@ -94,6 +97,7 @@ async function ensureRecipeBelongsToCorrectUser(req, res, next) {
 async function ensureRecipeReviewBelongsToCorrectUser(req, res, next) {
   try {
     //by now, the ensureIsLoggedIn middleware has already passed, so we know a payload exists in res.locals.user.
+    // This is because all requests that attempt to update a resource first calls ensureIsLoggedIn middleware.
     const loggedInUsername = res.locals.user.username;
     const recipeReviewAuthor = await Recipe.getReviewAuthor(req.params.reviewId);
     if (loggedInUsername != recipeReviewAuthor.username) {
@@ -114,9 +118,9 @@ async function ensureRecipeReviewBelongsToCorrectUser(req, res, next) {
 async function ensureRemixBelongsToCorrectUser(req, res, next) {
   try {
     //by now, the ensureIsLoggedIn middleware has already passed, so we know a payload exists in res.locals.user.
+    // This is because all requests that attempt to update a resource first calls ensureIsLoggedIn middleware.
     const loggedInUsername = res.locals.user.username;
     const remixAuthor = await Remix.getRemixAuthor(req.params.remixId);
-    console.log(remixAuthor.username);
     if (loggedInUsername != remixAuthor.username) {
       throw new ForbiddenError("You can't edit this remix because you didn't create it.");
     }
@@ -135,6 +139,7 @@ async function ensureRemixBelongsToCorrectUser(req, res, next) {
 async function ensureRemixReviewBelongsToCorrectUser(req, res, next) {
   try {
     //by now, the ensureIsLoggedIn middleware has already passed, so we know a payload exists in res.locals.user.
+    // This is because all requests that attempt to update a resource first calls ensureIsLoggedIn middleware.
     const loggedInUsername = res.locals.user.username;
     const remixReviewAuthor = await Remix.getReviewAuthor(req.params.reviewId);
     if (loggedInUsername != remixReviewAuthor.username) {
@@ -154,4 +159,4 @@ module.exports = {
   ensureRecipeReviewBelongsToCorrectUser,
   ensureRemixBelongsToCorrectUser,
   ensureRemixReviewBelongsToCorrectUser
-}
+};
