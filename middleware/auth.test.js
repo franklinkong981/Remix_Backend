@@ -44,7 +44,7 @@ describe("authenticateJWT", function () {
     });
   });
 
-  test("Works as intended even with no header", function () {
+  test("Works as intended even with no jwt defined in the req header", function () {
     expect.assertions(2);
     const req = {};
     const res = { locals: {} };
@@ -55,7 +55,7 @@ describe("authenticateJWT", function () {
     expect(res.locals).toEqual({});
   });
 
-  test("works: invalid token", function () {
+  test("works, doesn't throw error even if jwt is invalid because it's signed with the wrong key", function () {
     expect.assertions(2);
     const req = { headers: { authorization: `${badJwt}` } };
     const res = { locals: {} };
@@ -100,11 +100,11 @@ describe("ensureIsCorrectUser works as intended", function() {
     ensureIsCorrectUser(req, res, next);
   }); 
   
-  test("Throws UnauthorizedError if username in res.locals payload doesn't match the username in req.params.", function() {
+  test("Throws ForbiddenError if username in res.locals payload doesn't match the username in req.params.", function() {
     const req = { params: {username: "user2"} };
     const res = { locals: { user: { username: "user1", email: "user1@gmail.com" } } };
     const next = function (err) {
-      expect(err instanceof UnauthorizedError).toBeTruthy();
+      expect(err instanceof ForbiddenError).toBeTruthy();
     }
     ensureIsCorrectUser(req, res, next);
   });
@@ -121,6 +121,7 @@ describe("ensureIsCorrectUser works as intended", function() {
 
 describe("ensureRecipeBelongsToCorrectUser works as intended", function() {
   test("Passes if username in res.locals payload matches the author of the recipe supplied in req.params", async function() {
+    //recipeId 1 is created by user_id 1.
     const req = { params: {recipeId: 1} };
     const res = { locals: { user: { id: 1, username: "user1", email: "user1@gmail.com" } } };
     const next = function (err) {
@@ -141,6 +142,7 @@ describe("ensureRecipeBelongsToCorrectUser works as intended", function() {
 
 describe("ensureRecipeReviewBelongsToCorrectUser works as intended", function() {
   test("Passes if username in res.locals payload matches the author of the recipe review supplied in req.params", async function() {
+    //recipeReviewId 1 is created by user_id 1.
     const req = { params: {reviewId: 1} };
     const res = { locals: { user: { id: 1, username: "user1", email: "user1@gmail.com" } } };
     const next = function (err) {
