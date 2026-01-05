@@ -134,12 +134,13 @@ class User {
   }
 
   /** Updates the user with the correct username's username and/or email.
-   *  Users can not yet update the password, that may be a separate method in the future.
+   *  Users can not yet update the password, that will be a separate method in the future.
    *  Upon successful update, returns the user's updated username and email.
    * 
    *  Throws a BadRequestError if data to update contains anything other than username and/or email, OR if new username and/or email doesn't match database requirements.
-   *  Throws a NotFoundError if user cannot be found in the database.
+   *  Throws a BadRequestError if updateData object is empty.
    *  Throws a BadRequestError if the new updated username is a duplicate of another username in the database.
+   *  Throws a NotFoundError if user cannot be found in the database.
    */
   static async updateUser(username, updateData) {
     //check to make sure updateData only has the keys of username and/or email.
