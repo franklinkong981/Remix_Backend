@@ -133,8 +133,8 @@ class User {
     return searchResults;
   }
 
-  /** Updates the user with the correct username's username and/or email.
-   *  Users can not yet update the password, that will be a separate method in the future.
+  /** Updates the logged in user's username and/or email.
+   *  NOTE: Users can not yet update the password, that will be a separate method in the future.
    *  Upon successful update, returns the user's updated username and email.
    * 
    *  Throws a BadRequestError if data to update contains anything other than username and/or email, OR if new username and/or email doesn't match database requirements.
